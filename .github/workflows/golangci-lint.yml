@@ -17,6 +17,8 @@ jobs:
     steps:
       - uses: actions/setup-go@v2
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v2
         with:
