@@ -28,7 +28,7 @@ jobs:
 
           # Optional: golangci-lint command line arguments.
           # args: --issues-exit-code=0
-          args: --new-from-rev=${{github.event.pull_request.head.ref}}
+          args: --new-from-rev=${{github.event.pull_request.base.sha}}
 
           # Optional: show only new issues if it's a pull request. The default value is `false`.
           # only-new-issues: true
