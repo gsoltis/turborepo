@@ -219,7 +219,7 @@ func (c *RunCommand) Run(args []string) int {
 	}
 	c.Config.Logger.Debug("global hash", "value", ctx.GlobalHash)
 	c.Config.Logger.Debug("local cache folder", "path", runOptions.cacheFolder)
-	fs.EnsureDir(runOptions.cacheFolder)
+	runOptions.cacheFolder.EnsureDir()
 
 	// TODO: consolidate some of these arguments
 	g := &completeGraph{
@@ -413,7 +413,7 @@ type RunOptions struct {
 	// Cache results, false only if --no-cache is set, there is no flag to force caching
 	cache bool
 	// Cache folder
-	cacheFolder string
+	cacheFolder fs.AbsolutePath
 	// Immediately exit on task failure
 	bail            bool
 	passThroughArgs []string
@@ -608,7 +608,7 @@ func parseRunArgs(args []string, cwd fs.AbsolutePath, output cli.Ui) (*RunOption
 	}
 
 	// We can only set this cache folder after we know actual cwd
-	runOptions.cacheFolder = filepath.Join(runOptions.cwd, unresolvedCacheFolder)
+	runOptions.cacheFolder = fs.UnsafeToAbsolutePath(runOptions.cwd).Join(unresolvedCacheFolder)
 
 	return runOptions, nil
 }
@@ -882,7 +882,7 @@ func (e *execContext) exec(pt *packageTask, deps dag.Set) error {
 	// Cache ---------------------------------------------
 	var hit bool
 	if !e.rs.Opts.forceExecution {
-		hit, _, _, err = e.turboCache.Fetch(e.rs.Opts.cwd, hash, nil)
+		hit, _, _, err = e.turboCache.Fetch(fs.UnsafeToAbsolutePath(e.rs.Opts.cwd), hash)
 		if err != nil {
 			targetUi.Error(fmt.Sprintf("error fetching from cache: %s", err))
 		} else if hit {
@@ -1011,11 +1011,15 @@ func (e *execContext) exec(pt *packageTask, deps dag.Set) error {
 		ignore := []string{}
 		outputs := []string{}
 		for _, output := range pt.HashableOutputs() {
-			outputs =append(outputs, filepath.Join(pt.pkg.Dir, output))
+			outputs = append(outputs, filepath.Join(pt.pkg.Dir, output))
 		}
 		targetLogger.Debug("caching output", "outputs", outputs)
 		filesToBeCached := globby.GlobFiles(e.rs.Opts.cwd, outputs, ignore)
-		if err := e.turboCache.Put(e.rs.Opts.cwd, hash, int(time.Since(cmdTime).Milliseconds()), filesToBeCached); err != nil {
+		absoluteFilesToBeCached := make([]fs.AbsolutePath, len(filesToBeCached))
+		for i, f := range filesToBeCached {
+			absoluteFilesToBeCached[i] = fs.UnsafeToAbsolutePath(f)
+		}
+		if err := e.turboCache.Put(fs.UnsafeToAbsolutePath(e.rs.Opts.cwd), hash, int(time.Since(cmdTime).Milliseconds()), absoluteFilesToBeCached); err != nil {
 			e.logError(targetLogger, "", fmt.Errorf("error caching output: %w", err))
 		}
 	}

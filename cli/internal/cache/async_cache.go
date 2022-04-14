@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/vercel/turborepo/cli/internal/config"
+	"github.com/vercel/turborepo/cli/internal/fs"
 )
 
 // An asyncCache is a wrapper around a Cache interface that handles incoming
@@ -22,10 +23,10 @@ type asyncCache struct {
 
 // A cacheRequest models an incoming cache request on our queue.
 type cacheRequest struct {
-	target   string
+	root     fs.AbsolutePath
 	key      string
 	duration int
-	files    []string
+	files    []fs.AbsolutePath
 }
 
 func newAsyncCache(realCache Cache, config *config.Config) Cache {
@@ -40,9 +41,9 @@ func newAsyncCache(realCache Cache, config *config.Config) Cache {
 	return c
 }
 
-func (c *asyncCache) Put(target string, key string, duration int, files []string) error {
+func (c *asyncCache) Put(root fs.AbsolutePath, key string, duration int, files []fs.AbsolutePath) error {
 	c.requests <- cacheRequest{
-		target:   target,
+		root:     root,
 		key:      key,
 		files:    files,
 		duration: duration,
@@ -50,8 +51,8 @@ func (c *asyncCache) Put(target string, key string, duration int, files []string
 	return nil
 }
 
-func (c *asyncCache) Fetch(target string, key string, files []string) (bool, []string, int, error) {
-	return c.realCache.Fetch(target, key, files)
+func (c *asyncCache) Fetch(root fs.AbsolutePath, key string) (bool, []fs.AbsolutePath, int, error) {
+	return c.realCache.Fetch(root, key)
 }
 
 func (c *asyncCache) Clean(target string) {
@@ -72,7 +73,7 @@ func (c *asyncCache) Shutdown() {
 // run implements the actual async logic.
 func (c *asyncCache) run() {
 	for r := range c.requests {
-		c.realCache.Put(r.target, r.key, r.duration, r.files)
+		c.realCache.Put(r.root, r.key, r.duration, r.files)
 	}
 	c.wg.Done()
 }

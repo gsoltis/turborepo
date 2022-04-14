@@ -1,13 +1,12 @@
 {
   "pipeline": {
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "outputs": [
-        "dist/**",
-        ".next/**"
-      ]
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**"]
+    },
+    "tsconfig#build": {
+      "dependsOn": ["^build"],
+      "outputs": ["../build/config/**"]
     },
     "lint": {
       "outputs": []

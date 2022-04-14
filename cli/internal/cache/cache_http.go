@@ -14,7 +14,6 @@ import (
 	log "log"
 	"net/http"
 	"os"
-	"path"
 	"path/filepath"
 	"strconv"
 	"time"
@@ -48,13 +47,13 @@ var mtime = time.Date(2000, time.January, 1, 0, 0, 0, 0, time.UTC)
 // nobody is the usual uid / gid of the 'nobody' user.
 const nobody = 65534
 
-func (cache *httpCache) Put(target, hash string, duration int, files []string) error {
+func (cache *httpCache) Put(root fs.AbsolutePath, hash string, duration int, files []fs.AbsolutePath) error {
 	// if cache.writable {
 	cache.requestLimiter.acquire()
 	defer cache.requestLimiter.release()
 
 	r, w := io.Pipe()
-	go cache.write(w, hash, files)
+	go cache.write(w, root, hash, files)
 
 	// Read the entire aritfact tar into memory so we can easily compute the signature.
 	// Note: retryablehttp.NewRequest reads the files into memory anyways so there's no
@@ -74,7 +73,7 @@ func (cache *httpCache) Put(target, hash string, duration int, files []string) e
 }
 
 // write writes a series of files into the given Writer.
-func (cache *httpCache) write(w io.WriteCloser, hash string, files []string) {
+func (cache *httpCache) write(w io.WriteCloser, root fs.AbsolutePath, hash string, files []fs.AbsolutePath) {
 	defer w.Close()
 	gzw := gzip.NewWriter(w)
 	defer gzw.Close()
@@ -82,28 +81,40 @@ func (cache *httpCache) write(w io.WriteCloser, hash string, files []string) {
 	defer tw.Close()
 	for _, file := range files {
 		// log.Printf("caching file %v", file)
-		if err := cache.storeFile(tw, file); err != nil {
+		if err := cache.storeFile(tw, root, file); err != nil {
 			log.Printf("[ERROR] Error uploading artifacts to HTTP cache: %s", err)
 			// TODO(jaredpalmer): How can we cancel the request at this point?
 		}
 	}
 }
 
-func (cache *httpCache) storeFile(tw *tar.Writer, name string) error {
-	info, err := os.Lstat(name)
+func (cache *httpCache) storeFile(tw *tar.Writer, root fs.AbsolutePath, name fs.AbsolutePath) error {
+	info, err := name.Lstat()
 	if err != nil {
 		return err
 	}
 	target := ""
 	if info.Mode()&os.ModeSymlink != 0 {
-		target, _ = os.Readlink(name)
+		absLinkTarget, err := name.Readlink()
+		if err != nil {
+			return err
+		}
+		relLinkTarget, err := root.RelativePathString(absLinkTarget)
+		if err != nil {
+			return err
+		}
+		target = relLinkTarget
 	}
 	hdr, err := tar.FileInfoHeader(info, filepath.ToSlash(target))
 	if err != nil {
 		return err
 	}
+	repoRelativePath, err := root.RelativePathString(name)
+	if err != nil {
+		return err
+	}
 	// Ensure posix path for filename written in header.
-	hdr.Name = filepath.ToSlash(name)
+	hdr.Name = filepath.ToSlash(repoRelativePath)
 	// Zero out all timestamps.
 	hdr.ModTime = mtime
 	hdr.AccessTime = mtime
@@ -118,7 +129,7 @@ func (cache *httpCache) storeFile(tw *tar.Writer, name string) error {
 	} else if info.IsDir() || target != "" {
 		return nil // nothing to write
 	}
-	f, err := os.Open(name)
+	f, err := name.Open()
 	if err != nil {
 		return err
 	}
@@ -127,15 +138,15 @@ func (cache *httpCache) storeFile(tw *tar.Writer, name string) error {
 	return err
 }
 
-func (cache *httpCache) Fetch(target, key string, _unusedOutputGlobs []string) (bool, []string, int, error) {
+func (cache *httpCache) Fetch(root fs.AbsolutePath, hash string) (bool, []fs.AbsolutePath, int, error) {
 	cache.requestLimiter.acquire()
 	defer cache.requestLimiter.release()
-	hit, files, duration, err := cache.retrieve(key)
+	hit, files, duration, err := cache.retrieve(root, hash)
 	if err != nil {
 		// TODO: analytics event?
 		return false, files, duration, fmt.Errorf("failed to retrieve files from HTTP cache: %w", err)
 	}
-	cache.logFetch(hit, key, duration)
+	cache.logFetch(hit, hash, duration)
 	return hit, files, duration, err
 }
 
@@ -155,14 +166,12 @@ func (cache *httpCache) logFetch(hit bool, hash string, duration int) {
 	cache.recorder.LogEvent(payload)
 }
 
-func (cache *httpCache) retrieve(hash string) (bool, []string, int, error) {
+func (cache *httpCache) retrieve(root fs.AbsolutePath, hash string) (bool, []fs.AbsolutePath, int, error) {
 	resp, err := cache.config.ApiClient.FetchArtifact(hash, nil)
 	if err != nil {
 		return false, nil, 0, err
 	}
 	defer resp.Body.Close()
-	files := []string{}
-	missingLinks := []*tar.Header{}
 	duration := 0
 	// If present, extract the duration from the response.
 	if resp.Header.Get("x-artifact-duration") != "" {
@@ -173,10 +182,13 @@ func (cache *httpCache) retrieve(hash string) (bool, []string, int, error) {
 		duration = intVar
 	}
 	if resp.StatusCode == http.StatusNotFound {
-		return false, files, duration, nil // doesn't exist - not an error
+		return false, nil, 0, nil // doesn't exist - not an error
 	} else if resp.StatusCode != http.StatusOK {
-		b, _ := ioutil.ReadAll(resp.Body)
-		return false, files, duration, fmt.Errorf("%s", string(b))
+		b, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return false, nil, 0, fmt.Errorf("failed to read remote cache %v response body: %v", resp.StatusCode, err)
+		}
+		return false, nil, 0, fmt.Errorf("%s", string(b))
 	}
 	artifactReader := resp.Body
 	if cache.signerVerifier.isEnabled() {
@@ -202,60 +214,66 @@ func (cache *httpCache) retrieve(hash string) (bool, []string, int, error) {
 	}
 	gzr, err := gzip.NewReader(artifactReader)
 	if err != nil {
-		return false, files, duration, err
+		return false, nil, 0, err
 	}
 	defer gzr.Close()
+	files := []fs.AbsolutePath{}
+	missingLinks := []*tar.Header{}
 	tr := tar.NewReader(gzr)
 	for {
 		hdr, err := tr.Next()
 		if err != nil {
 			if err == io.EOF {
 				for _, link := range missingLinks {
-					if err := os.Symlink(link.Linkname, link.Name); err != nil {
-						return false, files, duration, err
+					linkTarget := root.JoinPOSIXPath(link.Name)
+					linkName := root.JoinPOSIXPath(link.Linkname)
+					if err := linkTarget.Symlink(linkName); err != nil {
+						return false, nil, 0, err
 					}
 				}
 
 				return true, files, duration, nil
 			}
-			return false, files, duration, err
+			return false, nil, 0, err
 		}
-		files = append(files, hdr.Name)
+		localPath := root.JoinPOSIXPath(hdr.Name)
+		// Note that hdr.Name should not be used below here. It is
+		// a repo-relative posix path. localPath is a platform-dependent
+		// absolute path for the file / directory / link we're creating
+		files = append(files, localPath)
 		switch hdr.Typeflag {
 		case tar.TypeDir:
-			if err := os.MkdirAll(hdr.Name, fs.DirPermissions); err != nil {
-				return false, files, duration, err
+			if err := localPath.MkdirAll(); err != nil {
+				return false, nil, 0, err
 			}
 		case tar.TypeReg:
-			if dir := path.Dir(hdr.Name); dir != "." {
-				if err := os.MkdirAll(dir, fs.DirPermissions); err != nil {
-					return false, files, duration, err
-				}
+			err := localPath.EnsureDir()
+			if err != nil {
+				return false, nil, 0, err
 			}
-			if f, err := os.OpenFile(hdr.Name, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, os.FileMode(hdr.Mode)); err != nil {
-				return false, files, duration, err
+			if f, err := localPath.OpenFile(os.O_WRONLY|os.O_TRUNC|os.O_CREATE, os.FileMode(hdr.Mode)); err != nil {
+				return false, nil, 0, err
 			} else if _, err := io.Copy(f, tr); err != nil {
-				return false, files, duration, err
+				return false, nil, 0, err
 			} else if err := f.Close(); err != nil {
-				return false, files, duration, err
+				return false, nil, 0, err
 			}
 		case tar.TypeSymlink:
-			if dir := path.Dir(hdr.Name); dir != "." {
-				if err := os.MkdirAll(dir, fs.DirPermissions); err != nil {
-					return false, files, duration, err
-				}
+			err := localPath.EnsureDir()
+			if err != nil {
+				return false, nil, 0, err
 			}
-			if _, err := os.Lstat(hdr.Name); err == nil {
-				if err := os.Remove(hdr.Name); err != nil {
-					return false, files, duration, err
+			if _, err := localPath.Lstat(); err == nil {
+				if err := localPath.Remove(); err != nil {
+					return false, nil, 0, err
 				}
 			} else if os.IsNotExist(err) {
 				missingLinks = append(missingLinks, hdr)
 				continue
 			}
-
-			if err := os.Symlink(hdr.Linkname, hdr.Name); err != nil {
-				return false, files, duration, err
+			localLinkName := root.JoinPOSIXPath(hdr.Linkname)
+			if err := localPath.Symlink(localLinkName); err != nil {
+				return false, nil, 0, err
 			}
 		default:
 			log.Printf("Unhandled file type %d for %s", hdr.Typeflag, hdr.Name)

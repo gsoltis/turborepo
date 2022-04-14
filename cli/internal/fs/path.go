@@ -42,6 +42,13 @@ func (ap AbsolutePath) ToStringDuringMigration() string {
 func (ap AbsolutePath) Join(args ...string) AbsolutePath {
 	return AbsolutePath(filepath.Join(ap.asString(), filepath.Join(args...)))
 }
+
+// JoinPOSIXPath appends a relative path in posix format ('/' seperator) to
+// this absolute path, by first converting the input to a platform-dependent path
+func (ap AbsolutePath) JoinPOSIXPath(posixPath string) AbsolutePath {
+	return ap.Join(filepath.FromSlash(posixPath))
+}
+
 func (ap AbsolutePath) asString() string {
 	return string(ap)
 }
@@ -57,6 +64,12 @@ func (ap AbsolutePath) Remove() error {
 func (ap AbsolutePath) Open() (*os.File, error) {
 	return os.Open(ap.asString())
 }
+
+// OpenFile is the AbsolutePath implementation of os.OpenFile
+func (ap AbsolutePath) OpenFile(flag int, mode fs.FileMode) (*os.File, error) {
+	return os.OpenFile(ap.asString(), flag, mode)
+}
+
 func (ap AbsolutePath) ReadFile() ([]byte, error) {
 	return ioutil.ReadFile(ap.asString())
 }
@@ -95,11 +108,23 @@ func (ap AbsolutePath) Readlink() (AbsolutePath, error) {
 }
 
 // Symlink is the AbsolutePath implementation of os.Symlink
-func (ap AbsolutePath) Symlink(to AbsolutePath) error {
-	return os.Symlink(ap.asString(), to.asString())
+func (ap AbsolutePath) Symlink(linkName AbsolutePath) error {
+	return os.Symlink(ap.asString(), linkName.asString())
 }
 
 // Link is the AbsolutePath implementation of os.Link
 func (ap AbsolutePath) Link(to AbsolutePath) error {
 	return os.Link(ap.asString(), to.asString())
+}
+
+// IsDirectory is the AbsolutePath implementation of fs.IsDirectory
+func (ap AbsolutePath) IsDirectory() bool {
+	return IsDirectory(ap.asString())
+}
+
+// RelativePathString returns the relative path from this AbsolutePath to another
+// AbsolutePath as a string.
+// TODO(gsoltis): should this be RelativePathStringDuringMigration?
+func (ap AbsolutePath) RelativePathString(to AbsolutePath) (string, error) {
+	return filepath.Rel(ap.asString(), to.asString())
 }

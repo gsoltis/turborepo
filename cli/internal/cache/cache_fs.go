@@ -6,12 +6,6 @@ package cache
 import (
 	"encoding/json"
 	"fmt"
-<<<<<<< HEAD
-	"io/ioutil"
-	"os"
-=======
->>>>>>> de02073 (WIP porting over some pieces of fs)
-	"path/filepath"
 	"runtime"
 
 	"github.com/vercel/turborepo/cli/internal/analytics"
@@ -32,9 +26,7 @@ func newFsCache(config *config.Config, recorder analytics.Recorder) Cache {
 }
 
 // Fetch returns true if items are cached. It moves them into position as a side effect.
-func (f *fsCache) Fetch(target, hash string, _unusedOutputGlobs []string) (bool, []string, int, error) {
-	// TODO(gsoltis): Cache interface needs to be updated for this to be an absolute path
-	absTarget := fs.UnsafeToAbsolutePath(target)
+func (f *fsCache) Fetch(root fs.AbsolutePath, hash string) (bool, []fs.AbsolutePath, int, error) {
 	cachedFolder := f.cacheDirectory.Join(hash)
 
 	// If it's not in the cache bail now
@@ -44,10 +36,10 @@ func (f *fsCache) Fetch(target, hash string, _unusedOutputGlobs []string) (bool,
 	}
 
 	// Otherwise, copy it into position
-	err := fs.RecursiveCopyOrLinkFile(cachedFolder, absTarget, fs.DirPermissions, true, true)
+	err := fs.RecursiveCopyOrLinkFile(cachedFolder, root, fs.DirPermissions, true, true)
 	if err != nil {
 		// TODO: what event to log here?
-		return false, nil, 0, fmt.Errorf("error moving artifact from cache into %v: %w", target, err)
+		return false, nil, 0, fmt.Errorf("error moving artifact from cache into %v: %w", root, err)
 	}
 
 	meta, err := readCacheMetaFile(f.cacheDirectory.Join(hash + "-meta.json"))
@@ -74,21 +66,26 @@ func (f *fsCache) logFetch(hit bool, hash string, duration int) {
 	f.recorder.LogEvent(payload)
 }
 
-func (f *fsCache) Put(target, hash string, duration int, files []string) error {
+func (f *fsCache) Put(root fs.AbsolutePath, hash string, duration int, files []fs.AbsolutePath) error {
 	g := new(errgroup.Group)
 
 	numDigesters := runtime.NumCPU()
-	fileQueue := make(chan string, numDigesters)
+	fileQueue := make(chan fs.AbsolutePath, numDigesters)
 
 	for i := 0; i < numDigesters; i++ {
 		g.Go(func() error {
 			for file := range fileQueue {
-				if !fs.IsDirectory(file) {
-					if err := f.cacheDirectory.Join(hash, file).EnsureDir(); err != nil {
+				if !file.IsDirectory() {
+					relativePath, err := root.RelativePathString(file)
+					if err != nil {
+						return fmt.Errorf("error getting relative path from %v to cache artifact %v: %v", root, file, err)
+					}
+					artifactPath := f.cacheDirectory.Join(hash, relativePath)
+					if err := artifactPath.EnsureDir(); err != nil {
 						return fmt.Errorf("error ensuring directory file from cache: %w", err)
 					}
 
-					if err := fs.CopyOrLinkFile(file, filepath.Join(f.cacheDirectory, hash, file), fromInfo.Mode(), fs.DirPermissions, true, true); err != nil {
+					if err := fs.CopyOrLinkFile(file, artifactPath, fs.DirPermissions, fs.DirPermissions, true, true); err != nil {
 						return fmt.Errorf("error copying file from cache: %w", err)
 					}
 				}
