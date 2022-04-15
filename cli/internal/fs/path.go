@@ -93,28 +93,20 @@ func (ap AbsolutePath) Lstat() (fs.FileInfo, error) {
 	return os.Lstat(ap.asString())
 }
 
-// Readlink reads a link at this path, and returns the AbsolutePath for the target
-func (ap AbsolutePath) Readlink() (AbsolutePath, error) {
-	dest, err := os.Readlink(ap.asString())
-	if err != nil {
-		return "", err
-	}
-	if filepath.IsAbs(dest) {
-		return AbsolutePath(dest), nil
-	}
-	// We know the starting point, so if it's a relative path
-	// we can join
-	return ap.Dir().Join(dest), nil
+// Readlink reads a link at this path, and returns the arbitrary string for the target
+func (ap AbsolutePath) Readlink() (string, error) {
+	return os.Readlink(ap.asString())
 }
 
-// Symlink is the AbsolutePath implementation of os.Symlink
-func (ap AbsolutePath) Symlink(linkName AbsolutePath) error {
-	return os.Symlink(ap.asString(), linkName.asString())
+// SymlinkTo creates a symlink at this AbsolutePath to the
+// given target. The target is an arbitrary POSIX path
+func (ap AbsolutePath) SymlinkTo(target string) error {
+	return os.Symlink(filepath.FromSlash(target), ap.asString())
 }
 
 // Link is the AbsolutePath implementation of os.Link
-func (ap AbsolutePath) Link(to AbsolutePath) error {
-	return os.Link(ap.asString(), to.asString())
+func (ap AbsolutePath) Link(linkName AbsolutePath) error {
+	return os.Link(ap.asString(), linkName.asString())
 }
 
 // IsDirectory is the AbsolutePath implementation of fs.IsDirectory

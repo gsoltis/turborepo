@@ -99,7 +99,7 @@ func (cache *httpCache) storeFile(tw *tar.Writer, root fs.AbsolutePath, name fs.
 		if err != nil {
 			return err
 		}
-		relLinkTarget, err := root.RelativePathString(absLinkTarget)
+		relLinkTarget, err := name.RelativePathString(absLinkTarget)
 		if err != nil {
 			return err
 		}
@@ -259,20 +259,30 @@ func (cache *httpCache) retrieve(root fs.AbsolutePath, hash string) (bool, []fs.
 				return false, nil, 0, err
 			}
 		case tar.TypeSymlink:
-			err := localPath.EnsureDir()
+			// Note that hdr.Linkname is really the link target
+			linkTarget := hdr.Linkname
+			localLinkTarget := root.JoinPOSIXPath(hdr.Linkname)
+			localLinkFilename := localPath
+			err := localLinkFilename.EnsureDir()
 			if err != nil {
 				return false, nil, 0, err
 			}
-			if _, err := localPath.Lstat(); err == nil {
-				if err := localPath.Remove(); err != nil {
+			if _, err := localLinkTarget.Lstat(); err != nil {
+				if os.IsNotExist(err) {
+					// The target we're linking to doesn't exist. It might exist later
+					// so try again once we've read the whole tar
+					missingLinks = append(missingLinks, hdr)
+					continue
+				}
+				return false, nil, 0, err
+			}
+			// Ensure that the link we're about to create doesn't already exist
+			if localLinkFilename.FileExists() {
+				if err := localLinkFilename.Remove(); err != nil {
 					return false, nil, 0, err
 				}
-			} else if os.IsNotExist(err) {
-				missingLinks = append(missingLinks, hdr)
-				continue
 			}
-			localLinkName := root.JoinPOSIXPath(hdr.Linkname)
-			if err := localPath.Symlink(localLinkName); err != nil {
+			if err := localLinkFilename.SymlinkTo(linkTarget); err != nil {
 				return false, nil, 0, err
 			}
 		default:
