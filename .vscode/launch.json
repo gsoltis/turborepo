@@ -10,9 +10,7 @@
       "cwd": "${workspaceFolder}/cli",
       "program": "${workspaceFolder}/cli/scripts/e2e/e2e.ts",
       "request": "launch",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "type": "node",
       "preLaunchTask": "prepare e2e"
     },
@@ -22,8 +20,8 @@
       "request": "launch",
       "mode": "debug",
       "program": "${workspaceRoot}/cli/cmd/turbo",
-      "cwd": "${workspaceRoot}/examples/basic",
-      "args": ["run", "build"]
+      "cwd": "${workspaceRoot}/examples/with-pnpm",
+      "args": ["run", "build", "--filter=tsconfig"]
     },
     {
       "name": "Kitchen Sink Build",

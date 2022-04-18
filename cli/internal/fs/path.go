@@ -1,7 +1,9 @@
 package fs
 
 import (
+	"errors"
 	"fmt"
+	"io/fs"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -41,6 +43,13 @@ func (ap AbsolutePath) ToStringDuringMigration() string {
 func (ap AbsolutePath) Join(args ...string) AbsolutePath {
 	return AbsolutePath(filepath.Join(ap.asString(), filepath.Join(args...)))
 }
+
+// JoinPOSIXPath appends a relative path in posix format ('/' seperator) to
+// this absolute path, by first converting the input to a platform-dependent path
+func (ap AbsolutePath) JoinPOSIXPath(posixPath string) AbsolutePath {
+	return ap.Join(filepath.FromSlash(posixPath))
+}
+
 func (ap AbsolutePath) asString() string {
 	return string(ap)
 }
@@ -56,9 +65,59 @@ func (ap AbsolutePath) Remove() error {
 func (ap AbsolutePath) Open() (*os.File, error) {
 	return os.Open(ap.asString())
 }
+
+// OpenFile is the AbsolutePath implementation of os.OpenFile
+func (ap AbsolutePath) OpenFile(flag int, mode fs.FileMode) (*os.File, error) {
+	return os.OpenFile(ap.asString(), flag, mode)
+}
+
 func (ap AbsolutePath) ReadFile() ([]byte, error) {
 	return ioutil.ReadFile(ap.asString())
 }
+
+// WriteFile is the AbsolutePath implementation of ioutil.WriteFile
+func (ap AbsolutePath) WriteFile(bytes []byte, mode fs.FileMode) error {
+	return ioutil.WriteFile(ap.asString(), bytes, mode)
+}
 func (ap AbsolutePath) FileExists() bool {
 	return FileExists(ap.asString())
+}
+func (ap AbsolutePath) PathExists() bool {
+	return PathExists(ap.asString())
+}
+func (ap AbsolutePath) EnsureDir() error {
+	return EnsureDir(ap.asString())
+}
+
+// Lstat is the AbsolutePath implementation of os.Lstat
+func (ap AbsolutePath) Lstat() (fs.FileInfo, error) {
+	return os.Lstat(ap.asString())
+}
+
+// Readlink reads a link at this path, and returns the arbitrary string for the target
+func (ap AbsolutePath) Readlink() (string, error) {
+	return os.Readlink(ap.asString())
+}
+
+// SymlinkTo creates a symlink at this AbsolutePath to the
+// given target. The target is an arbitrary POSIX path. Attempts
+// to remove any existing file at this path first.
+func (ap AbsolutePath) SymlinkTo(target string) error {
+	// Ensure that the link we're about to create doesn't already exist
+	if err := ap.Remove(); err != nil && !errors.Is(err, os.ErrNotExist) {
+		return err
+	}
+	return os.Symlink(filepath.FromSlash(target), ap.asString())
+}
+
+// Link is the AbsolutePath implementation of os.Link
+func (ap AbsolutePath) Link(linkName AbsolutePath) error {
+	return os.Link(ap.asString(), linkName.asString())
+}
+
+// RelativePathString returns the relative path from this AbsolutePath to another
+// AbsolutePath as a string.
+// TODO(gsoltis): should this be RelativePathStringDuringMigration?
+func (ap AbsolutePath) RelativePathString(to AbsolutePath) (string, error) {
+	return filepath.Rel(ap.asString(), to.asString())
 }

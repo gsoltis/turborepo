@@ -6,9 +6,6 @@ package cache
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"os"
-	"path/filepath"
 	"runtime"
 
 	"github.com/vercel/turborepo/cli/internal/analytics"
@@ -19,7 +16,7 @@ import (
 
 // fsCache is a local filesystem cache
 type fsCache struct {
-	cacheDirectory string
+	cacheDirectory fs.AbsolutePath
 	recorder       analytics.Recorder
 }
 
@@ -29,23 +26,23 @@ func newFsCache(config *config.Config, recorder analytics.Recorder) Cache {
 }
 
 // Fetch returns true if items are cached. It moves them into position as a side effect.
-func (f *fsCache) Fetch(target, hash string, _unusedOutputGlobs []string) (bool, []string, int, error) {
-	cachedFolder := filepath.Join(f.cacheDirectory, hash)
+func (f *fsCache) Fetch(root fs.AbsolutePath, hash string) (bool, []fs.AbsolutePath, int, error) {
+	cachedFolder := f.cacheDirectory.Join(hash)
 
 	// If it's not in the cache bail now
-	if !fs.PathExists(cachedFolder) {
+	if !cachedFolder.PathExists() {
 		f.logFetch(false, hash, 0)
 		return false, nil, 0, nil
 	}
 
 	// Otherwise, copy it into position
-	err := fs.RecursiveCopyOrLinkFile(cachedFolder, target, fs.DirPermissions, true, true)
+	err := fs.RecursiveCopyOrLinkFile(cachedFolder, root, fs.DirPermissions, true, true)
 	if err != nil {
 		// TODO: what event to log here?
-		return false, nil, 0, fmt.Errorf("error moving artifact from cache into %v: %w", target, err)
+		return false, nil, 0, fmt.Errorf("error moving artifact from cache into %v: %w", root, err)
 	}
 
-	meta, err := ReadCacheMetaFile(filepath.Join(f.cacheDirectory, hash+"-meta.json"))
+	meta, err := readCacheMetaFile(f.cacheDirectory.Join(hash + "-meta.json"))
 	if err != nil {
 		return false, nil, 0, fmt.Errorf("error reading cache metadata: %w", err)
 	}
@@ -69,25 +66,30 @@ func (f *fsCache) logFetch(hit bool, hash string, duration int) {
 	f.recorder.LogEvent(payload)
 }
 
-func (f *fsCache) Put(target, hash string, duration int, files []string) error {
+func (f *fsCache) Put(root fs.AbsolutePath, hash string, duration int, files []fs.AbsolutePath) error {
 	g := new(errgroup.Group)
 
 	numDigesters := runtime.NumCPU()
-	fileQueue := make(chan string, numDigesters)
+	fileQueue := make(chan fs.AbsolutePath, numDigesters)
 
 	for i := 0; i < numDigesters; i++ {
 		g.Go(func() error {
 			for file := range fileQueue {
-				fromInfo, err := os.Lstat(file)
+				fromInfo, err := file.Lstat()
 				if err != nil {
 					return fmt.Errorf("error stat'ing cache source %v: %v", file, err)
 				}
 				if !fromInfo.IsDir() {
-					if err := fs.EnsureDir(filepath.Join(f.cacheDirectory, hash, file)); err != nil {
+					relativePath, err := root.RelativePathString(file)
+					if err != nil {
+						return fmt.Errorf("error getting relative path from %v to cache artifact %v: %v", root, file, err)
+					}
+					artifactPath := f.cacheDirectory.Join(hash, relativePath)
+					if err := artifactPath.EnsureDir(); err != nil {
 						return fmt.Errorf("error ensuring directory file from cache: %w", err)
 					}
 
-					if err := fs.CopyOrLinkFile(file, filepath.Join(f.cacheDirectory, hash, file), fromInfo.Mode(), fs.DirPermissions, true, true); err != nil {
+					if err := fs.CopyOrLinkFile(file, artifactPath, fromInfo.Mode(), fs.DirPermissions, true, true); err != nil {
 						return fmt.Errorf("error copying file from cache: %w", err)
 					}
 				}
@@ -105,7 +107,7 @@ func (f *fsCache) Put(target, hash string, duration int, files []string) error {
 		return err
 	}
 
-	WriteCacheMetaFile(filepath.Join(f.cacheDirectory, hash+"-meta.json"), &CacheMetadata{
+	writeCacheMetaFile(f.cacheDirectory.Join(hash+"-meta.json"), &CacheMetadata{
 		Duration: duration,
 		Hash:     hash,
 	})
@@ -130,22 +132,22 @@ type CacheMetadata struct {
 	Duration int    `json:"duration"`
 }
 
-// WriteCacheMetaFile writes cache metadata file at a path
-func WriteCacheMetaFile(path string, config *CacheMetadata) error {
+// writeCacheMetaFile writes cache metadata file at a path
+func writeCacheMetaFile(path fs.AbsolutePath, config *CacheMetadata) error {
 	jsonBytes, marshalErr := json.Marshal(config)
 	if marshalErr != nil {
 		return marshalErr
 	}
-	writeFilErr := ioutil.WriteFile(path, jsonBytes, 0644)
+	writeFilErr := path.WriteFile(jsonBytes, 0644)
 	if writeFilErr != nil {
 		return writeFilErr
 	}
 	return nil
 }
 
-// ReadCacheMetaFile reads cache metadata file at a path
-func ReadCacheMetaFile(path string) (*CacheMetadata, error) {
-	jsonBytes, readFileErr := ioutil.ReadFile(path)
+// readCacheMetaFile reads cache metadata file at a path
+func readCacheMetaFile(path fs.AbsolutePath) (*CacheMetadata, error) {
+	jsonBytes, readFileErr := path.ReadFile()
 	if readFileErr != nil {
 		return nil, readFileErr
 	}

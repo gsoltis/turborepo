@@ -66,7 +66,7 @@ type CacheConfig struct {
 	// Number of async workers
 	Workers int
 	// Cache directory
-	Dir string
+	Dir fs.AbsolutePath
 }
 
 // ParseAndValidate parses the cmd line flags / env vars, and verifies that all required
@@ -206,7 +206,7 @@ func ParseAndValidate(args []string, ui cli.Ui, turboVersion string) (c *Config,
 		TurboVersion: turboVersion,
 		Cache: &CacheConfig{
 			Workers: runtime.NumCPU() + 2,
-			Dir:     filepath.Join("node_modules", ".cache", "turbo"),
+			Dir:     cwd.Join("node_modules", ".cache", "turbo"),
 		},
 		RootPackageJSON: rootPackageJSON,
 		TurboConfigJSON: turboConfigJson,

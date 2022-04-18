@@ -40,7 +40,7 @@ func TestParseConfig(t *testing.T) {
 				forceExecution:      false,
 				profile:             "",
 				cwd:                 defaultCwd.ToStringDuringMigration(),
-				cacheFolder:         defaultCacheFolder.ToStringDuringMigration(),
+				cacheFolder:         defaultCacheFolder,
 				cacheHitLogsMode:    FullLogs,
 				cacheMissLogsMode:   FullLogs,
 			},
@@ -60,7 +60,7 @@ func TestParseConfig(t *testing.T) {
 				profile:             "",
 				scope:               []string{"foo", "blah"},
 				cwd:                 defaultCwd.ToStringDuringMigration(),
-				cacheFolder:         defaultCacheFolder.ToStringDuringMigration(),
+				cacheFolder:         defaultCacheFolder,
 				cacheHitLogsMode:    FullLogs,
 				cacheMissLogsMode:   FullLogs,
 			},
@@ -79,7 +79,7 @@ func TestParseConfig(t *testing.T) {
 				forceExecution:      false,
 				profile:             "",
 				cwd:                 defaultCwd.ToStringDuringMigration(),
-				cacheFolder:         defaultCacheFolder.ToStringDuringMigration(),
+				cacheFolder:         defaultCacheFolder,
 				cacheHitLogsMode:    FullLogs,
 				cacheMissLogsMode:   FullLogs,
 			},
@@ -98,7 +98,7 @@ func TestParseConfig(t *testing.T) {
 				forceExecution:      false,
 				profile:             "",
 				cwd:                 defaultCwd.ToStringDuringMigration(),
-				cacheFolder:         defaultCacheFolder.ToStringDuringMigration(),
+				cacheFolder:         defaultCacheFolder,
 				cacheHitLogsMode:    FullLogs,
 				cacheMissLogsMode:   FullLogs,
 			},
@@ -117,7 +117,7 @@ func TestParseConfig(t *testing.T) {
 				forceExecution:      false,
 				profile:             "",
 				cwd:                 defaultCwd.ToStringDuringMigration(),
-				cacheFolder:         defaultCacheFolder.ToStringDuringMigration(),
+				cacheFolder:         defaultCacheFolder,
 				passThroughArgs:     []string{"--boop", "zoop"},
 				cacheHitLogsMode:    FullLogs,
 				cacheMissLogsMode:   FullLogs,
@@ -137,7 +137,7 @@ func TestParseConfig(t *testing.T) {
 				forceExecution:      false,
 				profile:             "",
 				cwd:                 defaultCwd.ToStringDuringMigration(),
-				cacheFolder:         defaultCacheFolder.ToStringDuringMigration(),
+				cacheFolder:         defaultCacheFolder,
 				passThroughArgs:     []string{},
 				cacheHitLogsMode:    FullLogs,
 				cacheMissLogsMode:   FullLogs,
@@ -154,7 +154,7 @@ func TestParseConfig(t *testing.T) {
 				concurrency:       10,
 				cache:             true,
 				cwd:               defaultCwd.ToStringDuringMigration(),
-				cacheFolder:       defaultCacheFolder.ToStringDuringMigration(),
+				cacheFolder:       defaultCacheFolder,
 				cacheHitLogsMode:  FullLogs,
 				cacheMissLogsMode: FullLogs,
 			},
@@ -180,6 +180,10 @@ func TestParseConfig(t *testing.T) {
 }
 
 func TestParseRunOptionsUsesCWDFlag(t *testing.T) {
+	cwd, err := fs.GetCwd()
+	if err != nil {
+		t.Fatalf("failed to get cwd: %v", err)
+	}
 	expected := &RunOptions{
 		includeDependents:   true,
 		stream:              true,
@@ -190,8 +194,8 @@ func TestParseRunOptionsUsesCWDFlag(t *testing.T) {
 		cache:               true,
 		forceExecution:      false,
 		profile:             "",
-		cwd:                 "zop",
-		cacheFolder:         filepath.FromSlash("zop/node_modules/.cache/turbo"),
+		cwd:                 cwd.Join("zop").ToStringDuringMigration(),
+		cacheFolder:         cwd.JoinPOSIXPath("zop/node_modules/.cache/turbo"),
 		cacheHitLogsMode:    FullLogs,
 		cacheMissLogsMode:   FullLogs,
 	}
@@ -207,7 +211,7 @@ func TestParseRunOptionsUsesCWDFlag(t *testing.T) {
 		// the `--cwd=` is parsed when setting up the global Config. This value is
 		// passed directly as an argument to the parser.
 		// We still need to ensure run accepts cwd flag and doesn't error.
-		actual, err := parseRunArgs([]string{"foo", "--cwd=zop"}, "zop", ui)
+		actual, err := parseRunArgs([]string{"foo", "--cwd=zop"}, cwd.Join("zop"), ui)
 		if err != nil {
 			t.Fatalf("invalid parse: %#v", err)
 		}
@@ -312,14 +316,14 @@ func Test_dontSquashTasks(t *testing.T) {
 
 	pipeline := map[string]fs.TaskDefinition{
 		"build": {
-			Outputs:   []string{},
+			Outputs:          []string{},
 			TaskDependencies: []string{"generate"},
 		},
 		"generate": {
-			Outputs:   []string{},
+			Outputs: []string{},
 		},
 		"b#build": {
-			Outputs:   []string{},
+			Outputs: []string{},
 		},
 	}
 	filteredPkgs := make(util.Set)
