@@ -225,13 +225,7 @@ func (cache *httpCache) retrieve(root fs.AbsolutePath, hash string) (bool, []fs.
 					if err != nil {
 						return false, nil, 0, err
 					}
-					// linkTarget := root.JoinPOSIXPath(link.Name)
-					// linkName := root.JoinPOSIXPath(link.Linkname)
-					// if err := linkTarget.Symlink(linkName); err != nil {
-					// 	return false, nil, 0, err
-					// }
 				}
-
 				return true, files, duration, nil
 			}
 			return false, nil, 0, err
