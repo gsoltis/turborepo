@@ -109,11 +109,6 @@ func (ap AbsolutePath) Link(linkName AbsolutePath) error {
 	return os.Link(ap.asString(), linkName.asString())
 }
 
-// IsDirectory is the AbsolutePath implementation of fs.IsDirectory
-func (ap AbsolutePath) IsDirectory() bool {
-	return IsDirectory(ap.asString())
-}
-
 // RelativePathString returns the relative path from this AbsolutePath to another
 // AbsolutePath as a string.
 // TODO(gsoltis): should this be RelativePathStringDuringMigration?

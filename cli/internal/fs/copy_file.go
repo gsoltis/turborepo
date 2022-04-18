@@ -1,4 +1,4 @@
-// Adapted from https://github.com/thought-machine/please
+// Package fs is adapted from https://github.com/thought-machine/please
 // Copyright Thought Machine, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 package fs
@@ -21,7 +21,13 @@ func CopyOrLinkFile(from, to AbsolutePath, fromMode, toMode os.FileMode, link, f
 			if err != nil {
 				return err
 			}
-			return dest.Symlink(to)
+			// Ensure that the link we're about to create doesn't already exist
+			if err = to.Remove(); err != nil && !errors.Is(err, os.ErrNotExist) {
+				return err
+			}
+			// set 'to', the cache artifact we are writing, as a symlink to the same place
+			// 'from' links to. When we restore, we'll also restore the link target verbatim
+			return to.SymlinkTo(dest)
 		}
 		if err := from.Link(to); err == nil || !fallback {
 			return err

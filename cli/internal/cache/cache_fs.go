@@ -75,7 +75,11 @@ func (f *fsCache) Put(root fs.AbsolutePath, hash string, duration int, files []f
 	for i := 0; i < numDigesters; i++ {
 		g.Go(func() error {
 			for file := range fileQueue {
-				if !file.IsDirectory() {
+				fromInfo, err := file.Lstat()
+				if err != nil {
+					return fmt.Errorf("error stat'ing cache source %v: %v", file, err)
+				}
+				if !fromInfo.IsDir() {
 					relativePath, err := root.RelativePathString(file)
 					if err != nil {
 						return fmt.Errorf("error getting relative path from %v to cache artifact %v: %v", root, file, err)
@@ -85,7 +89,7 @@ func (f *fsCache) Put(root fs.AbsolutePath, hash string, duration int, files []f
 						return fmt.Errorf("error ensuring directory file from cache: %w", err)
 					}
 
-					if err := fs.CopyOrLinkFile(file, artifactPath, fs.DirPermissions, fs.DirPermissions, true, true); err != nil {
+					if err := fs.CopyOrLinkFile(file, artifactPath, fromInfo.Mode(), fs.DirPermissions, true, true); err != nil {
 						return fmt.Errorf("error copying file from cache: %w", err)
 					}
 				}
