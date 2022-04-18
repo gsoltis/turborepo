@@ -221,7 +221,7 @@ func (cache *httpCache) retrieve(root fs.AbsolutePath, hash string) (bool, []fs.
 		if err != nil {
 			if err == io.EOF {
 				for _, link := range missingLinks {
-					err := restoreSymlink(root, link, false)
+					err := restoreSymlink(root, link, true)
 					if err != nil {
 						return false, nil, 0, err
 					}
@@ -259,7 +259,7 @@ func (cache *httpCache) retrieve(root fs.AbsolutePath, hash string) (bool, []fs.
 				return false, nil, 0, err
 			}
 		case tar.TypeSymlink:
-			if err := restoreSymlink(root, hdr, true); errors.Is(err, errNonexistentLinkTarget) {
+			if err := restoreSymlink(root, hdr, false); errors.Is(err, errNonexistentLinkTarget) {
 				// The target we're linking to doesn't exist. It might exist later
 				// so try again once we've read the whole tar
 				missingLinks = append(missingLinks, hdr)
@@ -278,7 +278,7 @@ func restoreSymlink(root fs.AbsolutePath, hdr *tar.Header, allowNonexistentTarge
 	// Note that hdr.Linkname is really the link target
 	linkTarget := filepath.FromSlash(hdr.Linkname)
 	localLinkFilename := root.JoinPOSIXPath(hdr.Name)
-	localLinkTarget := root.JoinPOSIXPath(hdr.Linkname)
+	localLinkTarget := localLinkFilename.Dir().JoinPOSIXPath(hdr.Linkname)
 	err := localLinkFilename.EnsureDir()
 	if err != nil {
 		return err
@@ -297,11 +297,6 @@ func restoreSymlink(root fs.AbsolutePath, hdr *tar.Header, allowNonexistentTarge
 		}
 	}
 	// Ensure that the link we're about to create doesn't already exist
-	if localLinkFilename.FileExists() {
-		if err := localLinkFilename.Remove(); err != nil {
-			return err
-		}
-	}
 	if err := localLinkFilename.SymlinkTo(linkTarget); err != nil {
 		return err
 	}

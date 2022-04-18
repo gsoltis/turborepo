@@ -1,6 +1,7 @@
 package fs
 
 import (
+	"errors"
 	"fmt"
 	"io/fs"
 	"io/ioutil"
@@ -99,8 +100,13 @@ func (ap AbsolutePath) Readlink() (string, error) {
 }
 
 // SymlinkTo creates a symlink at this AbsolutePath to the
-// given target. The target is an arbitrary POSIX path
+// given target. The target is an arbitrary POSIX path. Attempts
+// to remove any existing file at this path first.
 func (ap AbsolutePath) SymlinkTo(target string) error {
+	// Ensure that the link we're about to create doesn't already exist
+	if err := ap.Remove(); err != nil && !errors.Is(err, os.ErrNotExist) {
+		return err
+	}
 	return os.Symlink(filepath.FromSlash(target), ap.asString())
 }
 
