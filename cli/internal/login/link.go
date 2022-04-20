@@ -246,6 +246,25 @@ func (l *link) logError(err error) {
 	l.ui.Error(fmt.Sprintf("%s%s", ui.ERROR_PREFIX, color.RedString(" %v", err)))
 }
 
+func promptEnableCaching() (bool, error) {
+	shouldEnable := false
+	err := survey.AskOne(
+		&survey.Confirm{
+			Default: true,
+			Message: util.Sprintf("Remote Caching was previously disabled for this team. Would you like to enable it now?"),
+		},
+		&shouldEnable,
+		survey.WithValidator(survey.Required),
+		survey.WithIcons(func(icons *survey.IconSet) {
+			icons.Question.Format = "gray+hb"
+		}),
+	)
+	if err != nil {
+		return false, err
+	}
+	return shouldEnable, nil
+}
+
 func promptSetup(location string) (bool, error) {
 	shouldSetup := true
 	err := survey.AskOne(
