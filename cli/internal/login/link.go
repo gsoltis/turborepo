@@ -8,6 +8,7 @@ import (
 
 	"github.com/hashicorp/go-hclog"
 	"github.com/pkg/errors"
+	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"github.com/vercel/turborepo/cli/internal/client"
 	"github.com/vercel/turborepo/cli/internal/config"
@@ -31,6 +32,8 @@ type LinkCommand struct {
 type link struct {
 	ui                  cli.Ui
 	logger              hclog.Logger
+	fsys                afero.Fs
+	cwd                 fs.AbsolutePath
 	modifyGitIgnore     bool
 	apiURL              string
 	apiClient           linkAPIClient
@@ -57,6 +60,8 @@ func getCmd(config *config.Config, ui cli.Ui) *cobra.Command {
 			link := &link{
 				ui:                  ui,
 				logger:              config.Logger,
+				fsys:                config.Fs,
+				cwd:                 config.Cwd,
 				modifyGitIgnore:     !dontModifyGitIgnore,
 				apiURL:              config.ApiUrl,
 				apiClient:           config.ApiClient,
@@ -216,7 +221,7 @@ func (l *link) run() error {
 	}
 
 	fs.EnsureDir(filepath.Join(".turbo", "config.json"))
-	err = config.WriteRepoConfigFile(&config.TurborepoConfig{
+	err = config.WriteRepoConfigFile(l.fsys, l.cwd, &config.TurborepoConfig{
 		TeamId: chosenTeam.ID,
 		ApiUrl: l.apiURL,
 	})
@@ -244,25 +249,6 @@ func (l *link) run() error {
 func (l *link) logError(err error) {
 	l.logger.Error("error", err)
 	l.ui.Error(fmt.Sprintf("%s%s", ui.ERROR_PREFIX, color.RedString(" %v", err)))
-}
-
-func promptEnableCaching() (bool, error) {
-	shouldEnable := false
-	err := survey.AskOne(
-		&survey.Confirm{
-			Default: true,
-			Message: util.Sprintf("Remote Caching was previously disabled for this team. Would you like to enable it now?"),
-		},
-		&shouldEnable,
-		survey.WithValidator(survey.Required),
-		survey.WithIcons(func(icons *survey.IconSet) {
-			icons.Question.Format = "gray+hb"
-		}),
-	)
-	if err != nil {
-		return false, err
-	}
-	return shouldEnable, nil
 }
 
 func promptSetup(location string) (bool, error) {

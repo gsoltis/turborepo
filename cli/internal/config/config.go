@@ -11,6 +11,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/spf13/afero"
 	"github.com/vercel/turborepo/cli/internal/client"
 	"github.com/vercel/turborepo/cli/internal/fs"
 
@@ -54,6 +55,8 @@ type Config struct {
 	RootPackageJSON *fs.PackageJSON
 	// Current Working Directory
 	Cwd fs.AbsolutePath
+	// The filesystem to use for any filesystem interactions
+	Fs afero.Fs
 }
 
 // IsLoggedIn returns true if we have a token and either a team id or team slug
@@ -211,6 +214,7 @@ func ParseAndValidate(args []string, ui cli.Ui, turboVersion string) (c *Config,
 		RootPackageJSON: rootPackageJSON,
 		TurboConfigJSON: turboConfigJson,
 		Cwd:             cwd,
+		Fs:              afero.NewOsFs(),
 	}
 
 	c.ApiClient.SetToken(partialConfig.Token)

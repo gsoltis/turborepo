@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/adrg/xdg"
+	"github.com/spf13/afero"
 	"github.com/vercel/turborepo/cli/internal/fs"
 )
 
@@ -24,34 +25,57 @@ type TurborepoConfig struct {
 }
 
 // writeConfigFile writes config file at a path
-func writeConfigFile(path string, config *TurborepoConfig) error {
+func writeConfigFile(fsys afero.Fs, path fs.AbsolutePath, config *TurborepoConfig) error {
 	jsonBytes, marshallError := json.Marshal(config)
 	if marshallError != nil {
 		return marshallError
 	}
-	writeFilErr := ioutil.WriteFile(path, jsonBytes, 0644)
+	writeFilErr := fs.WriteFile(fsys, path, jsonBytes, 0644)
 	if writeFilErr != nil {
 		return writeFilErr
 	}
 	return nil
 }
 
-// WriteRepoConfigFile is used to write the portion of the config file that is saved
+// WriteRepoConfigFileToMigrate is used to write the portion of the config file that is saved
 // within the repository itself.
-func WriteRepoConfigFile(config *TurborepoConfig) error {
+func WriteRepoConfigFileToMigrate(config *TurborepoConfig) error {
 	fs.EnsureDir(filepath.Join(".turbo", "config.json"))
 	path := filepath.Join(".turbo", "config.json")
 	return writeConfigFile(path, config)
 }
 
-// WriteUserConfigFile writes a user config file. This may contain a token and so should
+// WriteRepoConfigFile is used to write the portion of the config file that is saved
+// within the repository itself.
+func WriteRepoConfigFile(fsys afero.Fs, repoRoot fs.AbsolutePath, toWrite *TurborepoConfig) error {
+	path := repoRoot.Join(".turbo", "config.json")
+	err := fs.EnsureDirFS(fsys, path)
+	if err != nil {
+		return err
+	}
+	return writeConfigFile(fsys, path, toWrite)
+}
+
+// WriteUserConfigFileToMigrate writes a user config file. This may contain a token and so should
 // not be saved within the repository to avoid committing sensitive data
-func WriteUserConfigFile(config *TurborepoConfig) error {
+func WriteUserConfigFileToMigrate(config *TurborepoConfig) error {
 	path, err := xdg.ConfigFile(filepath.Join("turborepo", "config.json"))
 	if err != nil {
 		return err
 	}
 	return writeConfigFile(path, config)
+}
+
+func WriteUserConfigFile(fsys afero.Fs, config *TurborepoConfig) error {
+	path, err := xdg.ConfigFile(filepath.Join("turborepo", "config.json"))
+	if err != nil {
+		return err
+	}
+	absPath, err := fs.CheckedToAbsolutePath(path)
+	if err != nil {
+		return err
+	}
+	return writeConfigFile(fsys, absPath, config)
 }
 
 // ReadConfigFile reads a config file at a path
@@ -92,7 +116,11 @@ func ReadUserConfigFile() (*TurborepoConfig, error) {
 	return ReadConfigFile(path)
 }
 
-// DeleteUserConfigFile deletes a user config file
-func DeleteUserConfigFile() error {
-	return WriteUserConfigFile(&TurborepoConfig{})
+// DeleteUserConfigFileToMigrate deletes a user config file
+func DeleteUserConfigFileToMigrate() error {
+	return WriteUserConfigFileToMigrate(&TurborepoConfig{})
+}
+
+func DeleteUserConfigFile(fsys afero.Fs) error {
+	return WriteUserConfigFileToMigrate(&TurborepoConfig{})
 }
