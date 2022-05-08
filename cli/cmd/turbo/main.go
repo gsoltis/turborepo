@@ -31,6 +31,7 @@ func main() {
 	cpuprofileFile := ""
 	argsEnd := 0
 	colorMode := uiPkg.GetColorModeFromEnv()
+	isDaemon := false
 	for _, arg := range args {
 		switch {
 		case strings.HasPrefix(arg, "--heap="):
@@ -43,6 +44,8 @@ func main() {
 			colorMode = ui.ColorModeForced
 		case arg == "--no-color":
 			colorMode = ui.ColorModeSuppressed
+		case arg == "--daemon":
+			isDaemon = true
 		default:
 			// Strip any arguments that were handled above
 			args[argsEnd] = arg
@@ -50,6 +53,16 @@ func main() {
 		}
 	}
 	args = args[:argsEnd]
+	if isDaemon {
+		os.Exit(daemon.Run())
+	}
+	err := daemon.RunClient()
+	if err != nil {
+		fmt.Printf("err: %v\n", err)
+		os.Exit(1)
+	} else {
+		os.Exit(0)
+	}
 
 	ui := ui.BuildColoredUi(colorMode)
 	c := cli.NewCLI("turbo", turboVersion)

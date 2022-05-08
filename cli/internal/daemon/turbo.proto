@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option go_package = "github.com/vercel/turborepo/cli/internal/daemon/daemon";
+
+package daemon;
+
+service Turbo {
+  rpc GetGlobalHash (GlobalHashRequest) returns (GlobalHashReply) {}
+}
+
+message GlobalHashRequest {
+
+}
+
+message GlobalHashReply {
+  bytes hash = 1;
+}

@@ -13,7 +13,7 @@ import (
 
 func HashObject(i interface{}) (string, error) {
 	hash := xxhash.New()
-
+	fmt.Printf("hashing |%v|\n", fmt.Sprintf("%v", i))
 	_, err := hash.Write([]byte(fmt.Sprintf("%v", i)))
 
 	return hex.EncodeToString(hash.Sum(nil)), err
