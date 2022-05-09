@@ -1,14 +1,22 @@
 package daemon
 
 import (
-	context "context"
+	"context"
 	"fmt"
 	"net"
 	"time"
+	"unsafe"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
+
+/*
+#cgo LDFLAGS: ../../turbo-tooling/target/release/libgit_hash_globs.a -ldl -framework Foundation -framework CoreServices
+#include "../../lib/turbo.h"
+#include "stdlib.h"
+*/
+import "C"
 
 func Run() int {
 	err := runTurboServer()
@@ -21,11 +29,15 @@ func Run() int {
 
 type turboServer struct {
 	UnimplementedTurboServer
+	gh unsafe.Pointer
 }
 
 func (ts *turboServer) GetGlobalHash(ctx context.Context, req *GlobalHashRequest) (*GlobalHashReply, error) {
-	return &GlobalHashReply{Hash: []byte("florp")}, nil
-	//return nil, errors.New("unimplemented")
+	fmt.Printf("Calling get hash w/ %v", ts.gh)
+	chash := C.get_global_hash(ts.gh)
+	hash := C.GoString(chash)
+	C.deallocate_global_hash(chash)
+	return &GlobalHashReply{Hash: []byte(hash)}, nil
 }
 
 func runTurboServer() error {
@@ -34,7 +46,9 @@ func runTurboServer() error {
 		return err
 	}
 	s := grpc.NewServer()
-	server := &turboServer{}
+	ptr := C.alloc_hasher()
+	fmt.Printf("allocating a hasher %v\n", ptr)
+	server := &turboServer{gh: ptr}
 	RegisterTurboServer(s, server)
 	if err := s.Serve(lis); err != nil {
 		return err
@@ -61,3 +75,9 @@ func RunClient() error {
 	fmt.Printf("Got Hash: %v\n", string(r.Hash))
 	return nil
 }
+
+/**
+// // cg/o LDFLAGS: ./lib/turbo/target/release/libturbo.a -ldl
+// #cgo LDFLAGS: ../../../../turbo-tooling/target/release/libgit_hash_globs.a -ldl
+
+*/

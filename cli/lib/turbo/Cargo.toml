@@ -1,0 +1,15 @@
+[package]
+name = "turbo"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# If you only wanted shared lib, you'd use only "cdylib".
+# If you only wanted static lib, you'd use only "staticlib".
+# This demo shows both.
+crate-type = ["staticlib"]
+
+[dependencies]
+"git-hash-globs" = { path = "../../../../turbo-tooling/crates/git-hash-globs" }
