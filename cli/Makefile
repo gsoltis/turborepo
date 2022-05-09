@@ -11,7 +11,7 @@ GO_FLAGS += -trimpath
 SRC_FILES = $(shell find . -name "*.go" | grep -v "_test.go")
 
 turbo: $(SRC_FILES) go.mod
-	CGO_ENABLED=0 go build $(GO_FLAGS) ./cmd/turbo
+	CGO_ENABLED=1 go build $(GO_FLAGS) ./cmd/turbo
 
 # These tests are for development
 test: test-go vet-go
