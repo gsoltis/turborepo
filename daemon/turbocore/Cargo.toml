@@ -1,0 +1,22 @@
+[package]
+name = "turbocore"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# If you only wanted shared lib, you'd use only "cdylib".
+# If you only wanted static lib, you'd use only "staticlib".
+# This demo shows both.
+crate-type = ["staticlib"]
+
+[dependencies]
+anyhow = "1.0.57"
+prost = "0.10.3"
+tokio = "1.18.2"
+tonic = "0.7.2"
+
+[build-dependencies]
+tonic-build = "0.7.2"
+
