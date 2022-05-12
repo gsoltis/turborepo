@@ -10,9 +10,7 @@
       "cwd": "${workspaceFolder}/cli",
       "program": "${workspaceFolder}/cli/scripts/e2e/e2e.ts",
       "request": "launch",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "type": "node",
       "preLaunchTask": "prepare e2e"
     },
@@ -23,7 +21,7 @@
       "mode": "debug",
       "program": "${workspaceRoot}/cli/cmd/turbo",
       "cwd": "${workspaceRoot}/examples/basic",
-      "args": ["--daemon"]
+      "args": ["daemon"]
     },
     {
       "name": "Client",
@@ -87,6 +85,6 @@
       "program": "${workspaceRoot}/cli/cmd/turbo",
       "cwd": "${workspaceRoot}",
       "args": ["run", "build", "--force"]
-    },
+    }
   ]
 }
