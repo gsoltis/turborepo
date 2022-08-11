@@ -6,7 +6,7 @@ import path from "path";
 const REPO_ROOT = "large-monorepo";
 const REPO_ORIGIN = "https://github.com/gsoltis/large-monorepo.git";
 const REPO_PATH = path.join(process.cwd(), REPO_ROOT);
-const REPETITIONS = 1;
+const REPETITIONS = 5;
 
 const DEFAULT_EXEC_OPTS = { stdio: "ignore" as const, cwd: REPO_PATH };
 const TURBO_BIN = path.resolve(path.join("..", "cli", "turbo"));
