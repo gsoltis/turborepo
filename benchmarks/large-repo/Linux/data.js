@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1660240287762,
+  "lastUpdate": 1660250505043,
   "repoUrl": "https://github.com/gsoltis/turborepo",
   "entries": {
     "Linux Benchmark": [
@@ -836,6 +836,52 @@ window.BENCHMARK_DATA = {
             "value": 37052.6,
             "unit": "ms",
             "range": "11119"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Greg Soltis",
+            "username": "gsoltis",
+            "email": "greg.soltis@vercel.com"
+          },
+          "committer": {
+            "name": "Greg Soltis",
+            "username": "gsoltis",
+            "email": "greg.soltis@vercel.com"
+          },
+          "id": "d898eb0e3d1706ed2647c36526d96367d1dad62c",
+          "message": "Run full benchmark",
+          "timestamp": "2022-08-11T20:18:28Z",
+          "url": "https://github.com/gsoltis/turborepo/commit/d898eb0e3d1706ed2647c36526d96367d1dad62c"
+        },
+        "date": 1660250504136,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Clean Build",
+            "value": 132520.8,
+            "unit": "ms",
+            "range": "0"
+          },
+          {
+            "name": "Cached Build - no changes",
+            "value": 9215.6,
+            "unit": "ms",
+            "range": "1162"
+          },
+          {
+            "name": "Cached Build - source code change",
+            "value": 9072.4,
+            "unit": "ms",
+            "range": "429"
+          },
+          {
+            "name": "Cached Build - dependency change",
+            "value": 33171.4,
+            "unit": "ms",
+            "range": "9905"
           }
         ]
       }
