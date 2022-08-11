@@ -1,6 +1,6 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1646181225647,
-  "repoUrl": "https://github.com/vercel/turborepo",
+  "lastUpdate": 1660240287762,
+  "repoUrl": "https://github.com/gsoltis/turborepo",
   "entries": {
     "Linux Benchmark": [
       {
@@ -790,6 +790,52 @@ window.BENCHMARK_DATA = {
             "value": 36665.4,
             "unit": "ms",
             "range": "8079"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Greg Soltis",
+            "username": "gsoltis",
+            "email": "greg.soltis@vercel.com"
+          },
+          "committer": {
+            "name": "Greg Soltis",
+            "username": "gsoltis",
+            "email": "greg.soltis@vercel.com"
+          },
+          "id": "6b5792815dd878d238a6b61111fba9984ac31093",
+          "message": "Add protoc setup",
+          "timestamp": "2022-08-11T17:28:59Z",
+          "url": "https://github.com/gsoltis/turborepo/commit/6b5792815dd878d238a6b61111fba9984ac31093"
+        },
+        "date": 1660240287237,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Clean Build",
+            "value": 150394,
+            "unit": "ms",
+            "range": "0"
+          },
+          {
+            "name": "Cached Build - no changes",
+            "value": 9546,
+            "unit": "ms",
+            "range": "1438"
+          },
+          {
+            "name": "Cached Build - source code change",
+            "value": 9319.4,
+            "unit": "ms",
+            "range": "207"
+          },
+          {
+            "name": "Cached Build - dependency change",
+            "value": 37052.6,
+            "unit": "ms",
+            "range": "11119"
           }
         ]
       }
