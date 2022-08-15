@@ -6,5 +6,12 @@
       <li><a href="benchmarks/large-repo/Linux">Linux</a></li>
       <li><a href="benchmarks/large-repo/macOS">MacOS</a></li>
     </ul>
+    <script>
+      $.getJSON(
+        "https://raw.githubusercontent.com/Linux/benchmark-data.json"
+      ).done(function (data) {
+        console.log(data);
+      });
+    </script>
   </body>
 </html>
