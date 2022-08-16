@@ -1,5 +1,5 @@
 {
-  "lastUpdate": 1660665667510,
+  "lastUpdate": 1660682833698,
   "repoUrl": "https://github.com/gsoltis/turborepo",
   "entries": {
     "Linux Benchmark": [
@@ -56,6 +56,34 @@
             "value": 453.2,
             "unit": "ms",
             "range": "881"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Greg Soltis",
+            "username": "gsoltis",
+            "email": "greg.soltis@vercel.com"
+          },
+          "committer": {
+            "name": "Greg Soltis",
+            "username": "gsoltis",
+            "email": "greg.soltis@vercel.com"
+          },
+          "id": "6ef9be73011b4a9762a6a2666b2964a04f05b8fd",
+          "message": "More lock file",
+          "timestamp": "2022-08-16T20:45:27Z",
+          "url": "https://github.com/gsoltis/turborepo/commit/6ef9be73011b4a9762a6a2666b2964a04f05b8fd"
+        },
+        "date": 1660682833696,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "dummy",
+            "value": 498.4,
+            "unit": "ms",
+            "range": "931"
           }
         ]
       }
