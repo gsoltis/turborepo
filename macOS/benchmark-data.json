@@ -1,5 +1,5 @@
 {
-  "lastUpdate": 1660608733352,
+  "lastUpdate": 1660666132716,
   "repoUrl": "https://github.com/gsoltis/turborepo",
   "entries": {
     "macOS Benchmark": [
@@ -28,6 +28,34 @@
             "value": 363.4,
             "unit": "ms",
             "range": "626"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Greg Soltis",
+            "username": "gsoltis",
+            "email": "greg.soltis@vercel.com"
+          },
+          "committer": {
+            "name": "Greg Soltis",
+            "username": "gsoltis",
+            "email": "greg.soltis@vercel.com"
+          },
+          "id": "3b71b9da4ec17a704b6e8a7c9ba1c1c00640c687",
+          "message": "Dont fail on debugging",
+          "timestamp": "2022-08-16T00:09:06Z",
+          "url": "https://github.com/gsoltis/turborepo/commit/3b71b9da4ec17a704b6e8a7c9ba1c1c00640c687"
+        },
+        "date": 1660666132715,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Dummy Build",
+            "value": 417,
+            "unit": "ms",
+            "range": "808"
           }
         ]
       }
