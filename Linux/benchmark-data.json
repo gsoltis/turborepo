@@ -1,0 +1,36 @@
+{
+  "lastUpdate": 1660608640089,
+  "repoUrl": "https://github.com/gsoltis/turborepo",
+  "entries": {
+    "Linux Benchmark": [
+      {
+        "commit": {
+          "author": {
+            "name": "Greg Soltis",
+            "username": "gsoltis",
+            "email": "greg.soltis@vercel.com"
+          },
+          "committer": {
+            "name": "Greg Soltis",
+            "username": "gsoltis",
+            "email": "greg.soltis@vercel.com"
+          },
+          "id": "812572d64b8886fbbc3b70bbf626c80db580df93",
+          "message": "Dont fail on debugging",
+          "timestamp": "2022-08-16T00:09:06Z",
+          "url": "https://github.com/gsoltis/turborepo/commit/812572d64b8886fbbc3b70bbf626c80db580df93"
+        },
+        "date": 1660608640086,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Dummy Build",
+            "value": 365,
+            "unit": "ms",
+            "range": "747"
+          }
+        ]
+      }
+    ]
+  }
+}
