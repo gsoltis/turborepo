@@ -1,5 +1,5 @@
 {
-  "lastUpdate": 1660683147627,
+  "lastUpdate": 1660686203561,
   "repoUrl": "https://github.com/gsoltis/turborepo",
   "entries": {
     "macOS Benchmark": [
@@ -84,6 +84,52 @@
             "value": 502.8,
             "unit": "ms",
             "range": "622"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Greg Soltis",
+            "username": "gsoltis",
+            "email": "greg.soltis@vercel.com"
+          },
+          "committer": {
+            "name": "Greg Soltis",
+            "username": "gsoltis",
+            "email": "greg.soltis@vercel.com"
+          },
+          "id": "fa002ef5d73a7efc9946ee08206ff3e31a9670ca",
+          "message": "Add platform",
+          "timestamp": "2022-08-16T21:13:46Z",
+          "url": "https://github.com/gsoltis/turborepo/commit/fa002ef5d73a7efc9946ee08206ff3e31a9670ca"
+        },
+        "date": 1660686203558,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Clean Build",
+            "value": 1096986,
+            "unit": "ms",
+            "range": "0"
+          },
+          {
+            "name": "Cached Build - No Change",
+            "value": 9299.6,
+            "unit": "ms",
+            "range": "2023"
+          },
+          {
+            "name": "Cached Build - Code Change",
+            "value": 9215.6,
+            "unit": "ms",
+            "range": "1875"
+          },
+          {
+            "name": "Cached Build - Dependency Change",
+            "value": 71908.8,
+            "unit": "ms",
+            "range": "26376"
           }
         ]
       }
