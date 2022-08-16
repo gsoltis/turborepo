@@ -1,5 +1,5 @@
 {
-  "lastUpdate": 1660666132716,
+  "lastUpdate": 1660683147627,
   "repoUrl": "https://github.com/gsoltis/turborepo",
   "entries": {
     "macOS Benchmark": [
@@ -56,6 +56,34 @@
             "value": 417,
             "unit": "ms",
             "range": "808"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Greg Soltis",
+            "username": "gsoltis",
+            "email": "greg.soltis@vercel.com"
+          },
+          "committer": {
+            "name": "Greg Soltis",
+            "username": "gsoltis",
+            "email": "greg.soltis@vercel.com"
+          },
+          "id": "6ef9be73011b4a9762a6a2666b2964a04f05b8fd",
+          "message": "More lock file",
+          "timestamp": "2022-08-16T20:45:27Z",
+          "url": "https://github.com/gsoltis/turborepo/commit/6ef9be73011b4a9762a6a2666b2964a04f05b8fd"
+        },
+        "date": 1660683147625,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "dummy",
+            "value": 502.8,
+            "unit": "ms",
+            "range": "622"
           }
         ]
       }
