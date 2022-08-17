@@ -1,5 +1,5 @@
 {
-  "lastUpdate": 1660686203561,
+  "lastUpdate": 1660762522487,
   "repoUrl": "https://github.com/gsoltis/turborepo",
   "entries": {
     "macOS Benchmark": [
@@ -130,6 +130,52 @@
             "value": 71908.8,
             "unit": "ms",
             "range": "26376"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Greg Soltis",
+            "username": "gsoltis",
+            "email": "greg.soltis@vercel.com"
+          },
+          "committer": {
+            "name": "Greg Soltis",
+            "username": "gsoltis",
+            "email": "greg.soltis@vercel.com"
+          },
+          "id": "cad17befbc62c5ecb65cd8222c1264db69d970e2",
+          "message": "Run benchmarks, push data to tinybird and gh-pages",
+          "timestamp": "2022-08-17T18:15:22Z",
+          "url": "https://github.com/gsoltis/turborepo/commit/cad17befbc62c5ecb65cd8222c1264db69d970e2"
+        },
+        "date": 1660762522484,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Clean Build",
+            "value": 1220374,
+            "unit": "ms",
+            "range": "0"
+          },
+          {
+            "name": "Cached Build - No Change",
+            "value": 8860.8,
+            "unit": "ms",
+            "range": "1628"
+          },
+          {
+            "name": "Cached Build - Code Change",
+            "value": 8849.6,
+            "unit": "ms",
+            "range": "1524"
+          },
+          {
+            "name": "Cached Build - Dependency Change",
+            "value": 69023.4,
+            "unit": "ms",
+            "range": "29157"
           }
         ]
       }
