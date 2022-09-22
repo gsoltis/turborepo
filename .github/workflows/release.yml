@@ -144,7 +144,9 @@ jobs:
       #     GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
       - name: Load Base Ref
         run: |
-          echo base_ref=$(git rev-parse $(git rev-list gs/main..HEAD | head -n 1)^1) >> $GITHUB_ENV
+          base_ref=$(git rev-parse $(git rev-list origin/main..HEAD | head -n 1)^1)
+          echo $base_ref
+          echo base_ref=${base_ref} >> $GITHUB_ENV
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
