@@ -142,6 +142,9 @@ jobs:
       #   run: cd cli && make publish
       #   env:
       #     GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
+      - name: Load Base Ref
+        run: |
+          echo base_ref=$(git rev-parse $(git rev-list gs/main..HEAD | head -n 1)^1) >> $GITHUB_ENV
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
@@ -149,7 +152,9 @@ jobs:
           token: ${{ secrets.TURBOBOT }}
           commit-message: Merge release commit
           author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          base: main
+          base: ${{ env.base_ref }}
+          branch: merge-${{ inputs.release_branch }}
+          delete-branch: true
           title: "Merge release commit"
           body: |
             Merge release commit for ${{ inputs.release_branch }}
