@@ -144,6 +144,7 @@ jobs:
       #     GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
       - name: Load Base Ref
         run: |
+          git fetch --no-tags --progress --no-recurse-submodules --unshallow --force origin
           base_ref=$(git rev-parse $(git rev-list origin/main..HEAD | head -n 1)^1)
           echo $base_ref
           echo base_ref=${base_ref} >> $GITHUB_ENV
