@@ -150,8 +150,6 @@ jobs:
           commit-message: Merge release commit
           author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           base: main
-          branch: merge-${{ inputs.release_branch }}
-          delete-branch: true
           title: "Merge release commit"
           body: |
             Merge release commit for ${{ inputs.release_branch }}
