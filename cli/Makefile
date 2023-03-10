@@ -95,7 +95,7 @@ turborepo-ffi-linux-arm64:
 
 .PHONY: turborepo-ffi-linux-amd64
 turborepo-ffi-linux-amd64:
-	cd ../crates/turborepo-ffi && cargo build --release --target-dir ./target --target x86_64-unknown-linux-musl
+	cd ../crates/turborepo-ffi && LD_LIBRARY_PATH=/musl/amd64/lib cargo build --release --target-dir ./target --target x86_64-unknown-linux-musl
 
 #
 # end
