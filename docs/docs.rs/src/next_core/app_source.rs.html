@@ -698,18 +698,68 @@
 <span id="698">698</span>
 <span id="699">699</span>
 <span id="700">700</span>
+<span id="701">701</span>
+<span id="702">702</span>
+<span id="703">703</span>
+<span id="704">704</span>
+<span id="705">705</span>
+<span id="706">706</span>
+<span id="707">707</span>
+<span id="708">708</span>
+<span id="709">709</span>
+<span id="710">710</span>
+<span id="711">711</span>
+<span id="712">712</span>
+<span id="713">713</span>
+<span id="714">714</span>
+<span id="715">715</span>
+<span id="716">716</span>
+<span id="717">717</span>
+<span id="718">718</span>
+<span id="719">719</span>
+<span id="720">720</span>
+<span id="721">721</span>
+<span id="722">722</span>
+<span id="723">723</span>
+<span id="724">724</span>
+<span id="725">725</span>
+<span id="726">726</span>
+<span id="727">727</span>
+<span id="728">728</span>
+<span id="729">729</span>
+<span id="730">730</span>
+<span id="731">731</span>
+<span id="732">732</span>
+<span id="733">733</span>
+<span id="734">734</span>
+<span id="735">735</span>
+<span id="736">736</span>
+<span id="737">737</span>
+<span id="738">738</span>
+<span id="739">739</span>
+<span id="740">740</span>
+<span id="741">741</span>
+<span id="742">742</span>
+<span id="743">743</span>
+<span id="744">744</span>
+<span id="745">745</span>
+<span id="746">746</span>
+<span id="747">747</span>
+<span id="748">748</span>
+<span id="749">749</span>
+<span id="750">750</span>
+<span id="751">751</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::{
     collections::{BTreeMap, HashMap},
     io::Write,
+    iter::once,
 };
 
 <span class="kw">use </span>anyhow::{anyhow, <span class="prelude-ty">Result</span>};
-<span class="kw">use </span>turbo_tasks::{primitives::StringVc, TryJoinIterExt, Value, ValueToString};
-<span class="kw">use </span>turbo_tasks_env::ProcessEnvVc;
-<span class="kw">use </span>turbo_tasks_fs::{
-    rope::RopeBuilder, DirectoryContent, DirectoryEntry, File, FileContent, FileContentVc,
-    FileSystemEntryType, FileSystemPathVc,
-};
+<span class="kw">use </span>indexmap::indexmap;
+<span class="kw">use </span>turbo_tasks::{TryJoinIterExt, Value, ValueToString};
+<span class="kw">use </span>turbo_tasks_env::{CustomProcessEnvVc, EnvMapVc, ProcessEnvVc};
+<span class="kw">use </span>turbo_tasks_fs::{rope::RopeBuilder, File, FileContent, FileSystemPathVc};
 <span class="kw">use </span>turbopack::{
     ecmascript::EcmascriptInputTransform,
     transition::{TransitionVc, TransitionsByNameVc},
@@ -717,26 +767,29 @@
 };
 <span class="kw">use </span>turbopack_core::{
     chunk::dev::DevChunkingContextVc,
-    context::AssetContextVc,
-    environment::ServerAddrVc,
-    issue::{Issue, IssueSeverity, IssueSeverityVc, IssueVc},
+    compile_time_info::CompileTimeInfoVc,
+    context::{AssetContext, AssetContextVc},
+    environment::{EnvironmentIntention, ServerAddrVc},
+    reference_type::{EntryReferenceSubType, ReferenceType},
+    source_asset::SourceAssetVc,
     virtual_asset::VirtualAssetVc,
 };
 <span class="kw">use </span>turbopack_dev_server::{
     html::DevHtmlAssetVc,
     source::{
-        combined::{CombinedContentSource, CombinedContentSourceVc},
-        specificity::SpecificityVc,
-        ContentSourceData, ContentSourceVc, NoContentSourceVc,
+        combined::CombinedContentSource, ContentSourceData, ContentSourceVc, NoContentSourceVc,
     },
 };
 <span class="kw">use </span>turbopack_ecmascript::{
-    chunk::EcmascriptChunkPlaceablesVc, magic_identifier, utils::stringify_str,
-    EcmascriptInputTransformsVc, EcmascriptModuleAssetType, EcmascriptModuleAssetVc,
+    chunk::EcmascriptChunkPlaceablesVc, magic_identifier, utils::stringify_js,
+    EcmascriptInputTransformsVc, EcmascriptModuleAssetType, EcmascriptModuleAssetVc, InnerAssetsVc,
 };
 <span class="kw">use </span>turbopack_env::ProcessEnvAssetVc;
 <span class="kw">use </span>turbopack_node::{
-    execution_context::ExecutionContextVc, render::rendered_source::create_node_rendered_source,
+    execution_context::ExecutionContextVc,
+    render::{
+        node_api_source::create_node_api_source, rendered_source::create_node_rendered_source,
+    },
     NodeEntry, NodeEntryVc, NodeRenderingEntry, NodeRenderingEntryVc,
 };
 
@@ -744,53 +797,35 @@
     app_render::{
         next_layout_entry_transition::NextLayoutEntryTransition, LayoutSegment, LayoutSegmentsVc,
     },
-    embed_js::{next_js_file, wrap_with_next_js_fs},
+    app_structure::{AppStructure, AppStructureItem, AppStructureVc, OptionAppStructureVc},
+    embed_js::next_js_file,
     env::env_for_js,
     fallback::get_fallback_page,
     next_client::{
         context::{
-            get_client_chunking_context, get_client_environment, get_client_module_options_context,
-            get_client_resolve_options_context, get_client_runtime_entries, ClientContextType,
+            get_client_assets_path, get_client_chunking_context, get_client_compile_time_info,
+            get_client_module_options_context, get_client_resolve_options_context,
+            get_client_runtime_entries, ClientContextType,
         },
         transition::NextClientTransition,
     },
+    next_client_chunks::client_chunks_transition::NextClientChunksTransitionVc,
     next_client_component::{
-        client_chunks_transition::NextClientChunksTransition,
         server_to_client_transition::NextServerToClientTransition,
         ssr_client_module_transition::NextSSRClientModuleTransition,
     },
     next_config::NextConfigVc,
+    next_edge::{
+        context::{get_edge_compile_time_info, get_edge_resolve_options_context},
+        transition::NextEdgeTransition,
+    },
+    next_route_matcher::NextParamsMatcherVc,
     next_server::context::{
-        get_server_environment, get_server_module_options_context,
+        get_server_compile_time_info, get_server_module_options_context,
         get_server_resolve_options_context, ServerContextType,
     },
-    util::{pathname_for_path, regular_expression_for_path},
+    util::pathname_for_path,
 };
-
-<span class="attr">#[turbo_tasks::function]
-</span><span class="kw">fn </span>next_client_chunks_transition(
-    project_path: FileSystemPathVc,
-    execution_context: ExecutionContextVc,
-    app_dir: FileSystemPathVc,
-    server_root: FileSystemPathVc,
-    browserslist_query: <span class="kw-2">&amp;</span>str,
-) -&gt; TransitionVc {
-    <span class="kw">let </span>ty = Value::new(ClientContextType::App { app_dir });
-    <span class="kw">let </span>client_chunking_context = get_client_chunking_context(project_path, server_root, ty);
-    <span class="kw">let </span>client_environment = get_client_environment(browserslist_query);
-
-    <span class="kw">let </span>client_module_options_context =
-        get_client_module_options_context(project_path, execution_context, client_environment, ty);
-    NextClientChunksTransition {
-        client_chunking_context,
-        client_module_options_context,
-        client_resolve_options_context: get_client_resolve_options_context(project_path, ty),
-        client_environment,
-        server_root,
-    }
-    .cell()
-    .into()
-}
 
 <span class="attr">#[turbo_tasks::function]
 </span><span class="kw">async fn </span>next_client_transition(
@@ -799,16 +834,27 @@
     server_root: FileSystemPathVc,
     app_dir: FileSystemPathVc,
     env: ProcessEnvVc,
-    browserslist_query: <span class="kw-2">&amp;</span>str,
+    client_compile_time_info: CompileTimeInfoVc,
     next_config: NextConfigVc,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;TransitionVc&gt; {
     <span class="kw">let </span>ty = Value::new(ClientContextType::App { app_dir });
-    <span class="kw">let </span>client_chunking_context = get_client_chunking_context(project_path, server_root, ty);
-    <span class="kw">let </span>client_environment = get_client_environment(browserslist_query);
-    <span class="kw">let </span>client_module_options_context =
-        get_client_module_options_context(project_path, execution_context, client_environment, ty);
-    <span class="kw">let </span>client_runtime_entries = get_client_runtime_entries(project_path, env, ty, next_config);
-    <span class="kw">let </span>client_resolve_options_context = get_client_resolve_options_context(project_path, ty);
+    <span class="kw">let </span>client_chunking_context = get_client_chunking_context(
+        project_path,
+        server_root,
+        client_compile_time_info.environment(),
+        ty,
+    );
+    <span class="kw">let </span>client_module_options_context = get_client_module_options_context(
+        project_path,
+        execution_context,
+        client_compile_time_info.environment(),
+        ty,
+        next_config,
+    );
+    <span class="kw">let </span>client_runtime_entries =
+        get_client_runtime_entries(project_path, env, ty, next_config, execution_context);
+    <span class="kw">let </span>client_resolve_options_context =
+        get_client_resolve_options_context(project_path, ty, next_config, execution_context);
 
     <span class="prelude-val">Ok</span>(NextClientTransition {
         is_app: <span class="bool-val">true</span>,
@@ -816,7 +862,7 @@
         client_chunking_context,
         client_module_options_context,
         client_resolve_options_context,
-        client_environment,
+        client_compile_time_info,
         runtime_entries: client_runtime_entries,
     }
     .cell()
@@ -838,13 +884,15 @@
             project_path,
             execution_context,
             ty,
+            next_config,
         ),
         ssr_resolve_options_context: get_server_resolve_options_context(
             project_path,
             ty,
             next_config,
+            execution_context,
         ),
-        ssr_environment: get_server_environment(ty, process_env, server_addr),
+        ssr_environment: get_server_compile_time_info(ty, process_env, server_addr),
     }
     .cell()
     .into()
@@ -861,17 +909,57 @@
     server_addr: ServerAddrVc,
 ) -&gt; TransitionVc {
     <span class="kw">let </span>ty = Value::new(ServerContextType::AppRSC { app_dir });
-    <span class="kw">let </span>rsc_environment = get_server_environment(ty, process_env, server_addr);
+    <span class="kw">let </span>rsc_compile_time_info = get_server_compile_time_info(ty, process_env, server_addr);
     <span class="kw">let </span>rsc_resolve_options_context =
-        get_server_resolve_options_context(project_path, ty, next_config);
+        get_server_resolve_options_context(project_path, ty, next_config, execution_context);
     <span class="kw">let </span>rsc_module_options_context =
-        get_server_module_options_context(project_path, execution_context, ty);
+        get_server_module_options_context(project_path, execution_context, ty, next_config);
 
     NextLayoutEntryTransition {
-        rsc_environment,
+        rsc_compile_time_info,
         rsc_module_options_context,
         rsc_resolve_options_context,
         server_root,
+    }
+    .cell()
+    .into()
+}
+
+<span class="attr">#[turbo_tasks::function]
+</span><span class="kw">fn </span>next_route_transition(
+    project_path: FileSystemPathVc,
+    app_dir: FileSystemPathVc,
+    server_root: FileSystemPathVc,
+    next_config: NextConfigVc,
+    server_addr: ServerAddrVc,
+    output_path: FileSystemPathVc,
+    execution_context: ExecutionContextVc,
+) -&gt; TransitionVc {
+    <span class="kw">let </span>server_ty = Value::new(ServerContextType::AppRoute { app_dir });
+
+    <span class="kw">let </span>edge_compile_time_info =
+        get_edge_compile_time_info(server_addr, Value::new(EnvironmentIntention::Api));
+
+    <span class="kw">let </span>edge_chunking_context = DevChunkingContextVc::builder(
+        project_path,
+        output_path.join(<span class="string">&quot;edge&quot;</span>),
+        output_path.join(<span class="string">&quot;edge/chunks&quot;</span>),
+        get_client_assets_path(server_root, Value::new(ClientContextType::App { app_dir })),
+        edge_compile_time_info.environment(),
+    )
+    .build();
+    <span class="kw">let </span>edge_resolve_options_context =
+        get_edge_resolve_options_context(project_path, server_ty, next_config, execution_context);
+
+    NextEdgeTransition {
+        edge_compile_time_info,
+        edge_chunking_context,
+        edge_module_options_context: <span class="prelude-val">None</span>,
+        edge_resolve_options_context,
+        output_path,
+        base_path: app_dir,
+        bootstrap_file: next_js_file(<span class="string">&quot;entry/app/route-bootstrap.ts&quot;</span>),
+        entry_name: <span class="string">&quot;edge&quot;</span>.to_string(),
     }
     .cell()
     .into()
@@ -885,14 +973,27 @@
     server_root: FileSystemPathVc,
     app_dir: FileSystemPathVc,
     env: ProcessEnvVc,
-    browserslist_query: <span class="kw-2">&amp;</span>str,
+    client_compile_time_info: CompileTimeInfoVc,
     ssr: bool,
     next_config: NextConfigVc,
     server_addr: ServerAddrVc,
+    output_path: FileSystemPathVc,
 ) -&gt; AssetContextVc {
     <span class="kw">let </span>next_server_to_client_transition = NextServerToClientTransition { ssr }.cell().into();
 
     <span class="kw">let </span><span class="kw-2">mut </span>transitions = HashMap::new();
+    transitions.insert(
+        <span class="string">&quot;next-route&quot;</span>.to_string(),
+        next_route_transition(
+            project_path,
+            app_dir,
+            server_root,
+            next_config,
+            server_addr,
+            output_path,
+            execution_context,
+        ),
+    );
     transitions.insert(
         <span class="string">&quot;next-layout-entry&quot;</span>.to_string(),
         next_layout_entry_transition(
@@ -917,19 +1018,22 @@
             server_root,
             app_dir,
             env,
-            browserslist_query,
+            client_compile_time_info,
             next_config,
         ),
     );
+    <span class="kw">let </span>client_ty = Value::new(ClientContextType::App { app_dir });
     transitions.insert(
         <span class="string">&quot;next-client-chunks&quot;</span>.to_string(),
-        next_client_chunks_transition(
+        NextClientChunksTransitionVc::new(
             project_path,
             execution_context,
-            app_dir,
+            client_ty,
             server_root,
-            browserslist_query,
-        ),
+            client_compile_time_info,
+            next_config,
+        )
+        .into(),
     );
     transitions.insert(
         <span class="string">&quot;next-ssr-client-module&quot;</span>.to_string(),
@@ -946,9 +1050,9 @@
     <span class="kw">let </span>ssr_ty = Value::new(ServerContextType::AppSSR { app_dir });
     ModuleAssetContextVc::new(
         TransitionsByNameVc::cell(transitions),
-        get_server_environment(ssr_ty, env, server_addr),
-        get_server_module_options_context(project_path, execution_context, ssr_ty),
-        get_server_resolve_options_context(project_path, ssr_ty, next_config),
+        get_server_compile_time_info(ssr_ty, env, server_addr),
+        get_server_module_options_context(project_path, execution_context, ssr_ty, next_config),
+        get_server_resolve_options_context(project_path, ssr_ty, next_config, execution_context),
     )
     .into()
 }
@@ -957,6 +1061,7 @@
 /// Next.js app folder.
 </span><span class="attr">#[turbo_tasks::function]
 </span><span class="kw">pub async fn </span>create_app_source(
+    app_structure: OptionAppStructureVc,
     project_path: FileSystemPathVc,
     execution_context: ExecutionContextVc,
     output_path: FileSystemPathVc,
@@ -966,21 +1071,12 @@
     next_config: NextConfigVc,
     server_addr: ServerAddrVc,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ContentSourceVc&gt; {
-    <span class="kw">let </span>project_path = wrap_with_next_js_fs(project_path);
-
-    <span class="kw">if </span>!<span class="kw-2">*</span>next_config.app_dir().<span class="kw">await</span><span class="question-mark">? </span>{
-        <span class="kw">return </span><span class="prelude-val">Ok</span>(NoContentSourceVc::new().into());
-    }
-
-    <span class="kw">let </span>app = project_path.join(<span class="string">&quot;app&quot;</span>);
-    <span class="kw">let </span>src_app = project_path.join(<span class="string">&quot;src/app&quot;</span>);
-    <span class="kw">let </span>app_dir = <span class="kw">if </span><span class="kw-2">*</span>app.get_type().<span class="kw">await</span><span class="question-mark">? </span>== FileSystemEntryType::Directory {
-        app
-    } <span class="kw">else if </span><span class="kw-2">*</span>src_app.get_type().<span class="kw">await</span><span class="question-mark">? </span>== FileSystemEntryType::Directory {
-        src_app
-    } <span class="kw">else </span>{
+    <span class="kw">let </span><span class="prelude-val">Some</span>(app_structure) = <span class="kw-2">*</span>app_structure.<span class="kw">await</span><span class="question-mark">? </span><span class="kw">else </span>{
         <span class="kw">return </span><span class="prelude-val">Ok</span>(NoContentSourceVc::new().into());
     };
+    <span class="kw">let </span>app_dir = app_structure.directory();
+
+    <span class="kw">let </span>client_compile_time_info = get_client_compile_time_info(browserslist_query);
 
     <span class="kw">let </span>context_ssr = app_context(
         project_path,
@@ -988,10 +1084,11 @@
         server_root,
         app_dir,
         env,
-        browserslist_query,
+        client_compile_time_info,
         <span class="bool-val">true</span>,
         next_config,
         server_addr,
+        output_path,
     );
     <span class="kw">let </span>context = app_context(
         project_path,
@@ -999,193 +1096,166 @@
         server_root,
         app_dir,
         env,
-        browserslist_query,
+        client_compile_time_info,
         <span class="bool-val">false</span>,
         next_config,
         server_addr,
+        output_path,
     );
 
+    <span class="kw">let </span>injected_env = env_for_js(EnvMapVc::empty().into(), <span class="bool-val">false</span>, next_config);
+    <span class="kw">let </span>env = CustomProcessEnvVc::new(env, next_config.env()).as_process_env();
+
     <span class="kw">let </span>server_runtime_entries =
-        <span class="macro">vec!</span>[
-            ProcessEnvAssetVc::new(project_path, env_for_js(env, <span class="bool-val">false</span>, next_config))
-                .as_ecmascript_chunk_placeable(),
-        ];
+        <span class="macro">vec!</span>[ProcessEnvAssetVc::new(project_path, injected_env).as_ecmascript_chunk_placeable()];
 
     <span class="kw">let </span>fallback_page = get_fallback_page(
         project_path,
         execution_context,
         server_root,
         env,
-        browserslist_query,
+        client_compile_time_info,
         next_config,
     );
 
-    <span class="prelude-val">Ok</span>(create_app_source_for_directory(
+    <span class="kw">let </span>source = create_app_source_for_directory(
+        app_structure,
         context_ssr,
         context,
         project_path,
-        SpecificityVc::exact(),
-        <span class="number">0</span>,
-        app_dir,
+        env,
         server_root,
         EcmascriptChunkPlaceablesVc::cell(server_runtime_entries),
         fallback_page,
-        server_root,
-        LayoutSegmentsVc::cell(Vec::new()),
         output_path,
-    )
-    .into())
+    );
+    <span class="prelude-val">Ok</span>(source)
 }
 
 <span class="attr">#[allow(clippy::too_many_arguments)]
 #[turbo_tasks::function]
 </span><span class="kw">async fn </span>create_app_source_for_directory(
+    app_structure: AppStructureVc,
     context_ssr: AssetContextVc,
     context: AssetContextVc,
     project_path: FileSystemPathVc,
-    specificity: SpecificityVc,
-    position: u32,
-    input_dir: FileSystemPathVc,
+    env: ProcessEnvVc,
     server_root: FileSystemPathVc,
     runtime_entries: EcmascriptChunkPlaceablesVc,
     fallback_page: DevHtmlAssetVc,
-    target: FileSystemPathVc,
-    layouts: LayoutSegmentsVc,
-    intermediate_output_path: FileSystemPathVc,
-) -&gt; <span class="prelude-ty">Result</span>&lt;CombinedContentSourceVc&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>layouts = layouts;
+    intermediate_output_path_root: FileSystemPathVc,
+) -&gt; <span class="prelude-ty">Result</span>&lt;ContentSourceVc&gt; {
+    <span class="kw">let </span>AppStructure {
+        item,
+        <span class="kw-2">ref </span>children,
+        directory,
+    } = <span class="kw-2">*</span>app_structure.<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="kw">let </span><span class="kw-2">mut </span>sources = Vec::new();
-    <span class="kw">let </span><span class="kw-2">mut </span>page = <span class="prelude-val">None</span>;
-    <span class="kw">let </span><span class="kw-2">mut </span>files = HashMap::new();
-    <span class="kw">if let </span>DirectoryContent::Entries(entries) = <span class="kw-2">&amp;*</span>input_dir.read_dir().<span class="kw">await</span><span class="question-mark">? </span>{
-        <span class="kw">for </span>(name, entry) <span class="kw">in </span>entries.iter() {
-            <span class="kw">if let </span><span class="kw-2">&amp;</span>DirectoryEntry::File(file) = entry {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>((name, <span class="kw">_</span>)) = name.rsplit_once(<span class="string">&#39;.&#39;</span>) {
-                    <span class="kw">match </span>name {
-                        <span class="string">&quot;page&quot; </span>=&gt; {
-                            page = <span class="prelude-val">Some</span>(file);
-                        }
-                        <span class="string">&quot;layout&quot; </span>| <span class="string">&quot;error&quot; </span>| <span class="string">&quot;loading&quot; </span>| <span class="string">&quot;template&quot; </span>| <span class="string">&quot;not-found&quot; </span>| <span class="string">&quot;head&quot; </span>=&gt; {
-                            files.insert(name.to_string(), file);
-                        }
-                        <span class="kw">_ </span>=&gt; {
-                            <span class="comment">// Any other file is ignored
-                        </span>}
-                    }
-                }
-            }
-        }
 
-        <span class="kw">let </span>layout = files.get(<span class="string">&quot;layout&quot;</span>);
-
-        <span class="comment">// If a page exists but no layout exists, create a basic root layout
-        // in `app/layout.js` or `app/layout.tsx`.
-        //
-        // TODO: Use let Some(page_file) = page in expression below when
-        // https://rust-lang.github.io/rfcs/2497-if-let-chains.html lands
-        </span><span class="kw">if let </span>(<span class="prelude-val">Some</span>(page_file), <span class="prelude-val">None</span>, <span class="bool-val">true</span>) = (page, layout, target == server_root) {
-            <span class="comment">// Use the extension to determine if the page file is TypeScript.
-            // TODO: Use the presence of a tsconfig.json instead, like Next.js
-            // stable does.
-            </span><span class="kw">let </span>is_tsx = <span class="kw-2">*</span>page_file.extension().<span class="kw">await</span><span class="question-mark">? </span>== <span class="string">&quot;tsx&quot;</span>;
-
-            <span class="kw">let </span>layout = <span class="kw">if </span>is_tsx {
-                input_dir.join(<span class="string">&quot;layout.tsx&quot;</span>)
-            } <span class="kw">else </span>{
-                input_dir.join(<span class="string">&quot;layout.js&quot;</span>)
-            };
-            files.insert(<span class="string">&quot;layout&quot;</span>.to_string(), layout);
-            <span class="kw">let </span>content = <span class="kw">if </span>is_tsx {
-                <span class="macro">include_str!</span>(<span class="string">&quot;assets/layout.tsx&quot;</span>)
-            } <span class="kw">else </span>{
-                <span class="macro">include_str!</span>(<span class="string">&quot;assets/layout.js&quot;</span>)
-            };
-
-            layout.write(FileContentVc::from(File::from(content)));
-
-            AppSourceIssue {
-                severity: IssueSeverity::Warning.into(),
-                path: page_file,
-                message: StringVc::cell(<span class="macro">format!</span>(
-                    <span class="string">&quot;Your page {} did not have a root layout, we created {} for you.&quot;</span>,
-                    page_file.<span class="kw">await</span><span class="question-mark">?</span>.path,
-                    layout.<span class="kw">await</span><span class="question-mark">?</span>.path,
-                )),
-            }
-            .cell()
-            .as_issue()
-            .emit();
-        }
-
-        <span class="kw">let </span><span class="kw-2">mut </span>list = layouts.<span class="kw">await</span><span class="question-mark">?</span>.clone_value();
-        list.push(LayoutSegment { files, target }.cell());
-        layouts = LayoutSegmentsVc::cell(list);
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(page_path) = page {
-            <span class="kw">let </span>pathname = pathname_for_path(server_root, target, <span class="bool-val">false</span>);
-            <span class="kw">let </span>path_regex = regular_expression_for_path(pathname);
-
-            sources.push(create_node_rendered_source(
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(item) = item {
+        <span class="kw">match </span><span class="kw-2">*</span>item.<span class="kw">await</span><span class="question-mark">? </span>{
+            AppStructureItem::Page {
+                segment,
+                url,
                 specificity,
-                server_root,
-                pathname,
-                path_regex,
-                AppRenderer {
-                    context_ssr,
-                    context,
-                    server_root,
-                    layout_path: layouts,
-                    page_path,
-                    target,
+                page,
+                segments: layouts,
+            } =&gt; {
+                <span class="kw">let </span>LayoutSegment { target, .. } = <span class="kw-2">*</span>segment.<span class="kw">await</span><span class="question-mark">?</span>;
+                <span class="kw">let </span>pathname = pathname_for_path(server_root, url, <span class="bool-val">false</span>);
+                <span class="kw">let </span>params_matcher = NextParamsMatcherVc::new(pathname);
+
+                sources.push(create_node_rendered_source(
                     project_path,
-                    intermediate_output_path,
-                }
-                .cell()
-                .into(),
-                runtime_entries,
-                fallback_page,
-            ));
-        }
-        <span class="kw">for </span>(name, entry) <span class="kw">in </span>entries.iter() {
-            <span class="kw">if let </span>DirectoryEntry::Directory(dir) = entry {
-                <span class="kw">let </span>intermediate_output_path = intermediate_output_path.join(name);
-                <span class="kw">let </span>specificity = <span class="kw">if </span>name.starts_with(<span class="string">&quot;[[&quot;</span>) || name.starts_with(<span class="string">&quot;[...&quot;</span>) {
-                    specificity.with_catch_all(position)
-                } <span class="kw">else if </span>name.starts_with(<span class="string">&#39;[&#39;</span>) {
-                    specificity.with_dynamic_segment(position)
-                } <span class="kw">else </span>{
-                    specificity
-                };
-                <span class="kw">let </span>(new_target, position) = <span class="kw">if </span>name.starts_with(<span class="string">&#39;(&#39;</span>) &amp;&amp; name.ends_with(<span class="string">&#39;)&#39;</span>) {
-                    <span class="comment">// This doesn&#39;t affect the url
-                    </span>(target, position)
-                } <span class="kw">else </span>{
-                    <span class="comment">// This adds to the url
-                    </span>(target.join(name), position + <span class="number">1</span>)
-                };
-                sources.push(
-                    create_app_source_for_directory(
+                    env,
+                    specificity,
+                    server_root,
+                    params_matcher.into(),
+                    pathname,
+                    AppRenderer {
                         context_ssr,
                         context,
-                        project_path,
-                        specificity,
-                        position,
-                        <span class="kw-2">*</span>dir,
                         server_root,
-                        runtime_entries,
-                        fallback_page,
-                        new_target,
-                        layouts,
-                        intermediate_output_path,
-                    )
+                        layout_path: layouts,
+                        page_path: page,
+                        target,
+                        project_path,
+                        intermediate_output_path: intermediate_output_path_root,
+                    }
+                    .cell()
                     .into(),
-                );
+                    runtime_entries,
+                    fallback_page,
+                ));
+            }
+            AppStructureItem::Route {
+                url,
+                specificity,
+                route,
+                ..
+            } =&gt; {
+                <span class="kw">let </span>pathname = pathname_for_path(server_root, url, <span class="bool-val">false</span>);
+                <span class="kw">let </span>params_matcher = NextParamsMatcherVc::new(pathname);
+
+                sources.push(create_node_api_source(
+                    project_path,
+                    env,
+                    specificity,
+                    server_root,
+                    params_matcher.into(),
+                    pathname,
+                    AppRoute {
+                        context: context_ssr,
+                        server_root,
+                        entry_path: route,
+                        project_path,
+                        intermediate_output_path: intermediate_output_path_root,
+                        output_root: intermediate_output_path_root,
+                    }
+                    .cell()
+                    .into(),
+                    runtime_entries,
+                ));
             }
         }
     }
-    <span class="prelude-val">Ok</span>(CombinedContentSource { sources }.cell())
+
+    <span class="kw">if </span>children.is_empty() {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(source) = sources.into_iter().next() {
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(source);
+        } <span class="kw">else </span>{
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(NoContentSourceVc::new().into());
+        }
+    }
+
+    <span class="kw">let </span>source = CombinedContentSource { sources }
+        .cell()
+        .as_content_source()
+        .issue_context(directory, <span class="string">&quot;Next.js App Router&quot;</span>);
+
+    <span class="prelude-val">Ok</span>(CombinedContentSource {
+        sources: once(source)
+            .chain(children.iter().map(|child| {
+                create_app_source_for_directory(
+                    <span class="kw-2">*</span>child,
+                    context_ssr,
+                    context,
+                    project_path,
+                    env,
+                    server_root,
+                    runtime_entries,
+                    fallback_page,
+                    intermediate_output_path_root,
+                )
+            }))
+            .collect(),
+    }
+    .cell()
+    .into())
 }
 
-<span class="attr">#[turbo_tasks::value]
+<span class="doccomment">/// The renderer for pages in app directory
+</span><span class="attr">#[turbo_tasks::value]
 </span><span class="kw">struct </span>AppRenderer {
     context_ssr: AssetContextVc,
     context: AssetContextVc,
@@ -1206,6 +1276,7 @@
         <span class="kw">let </span>page = this.page_path;
         <span class="kw">let </span>path = page.parent();
         <span class="kw">let </span>path_value = <span class="kw-2">&amp;*</span>path.<span class="kw">await</span><span class="question-mark">?</span>;
+
         <span class="kw">let </span>layout_and_page = layout_path
             .iter()
             .copied()
@@ -1218,6 +1289,7 @@
             ))
             .try_join()
             .<span class="kw">await</span><span class="question-mark">?</span>;
+
         <span class="kw">let </span>segments: Vec&lt;<span class="kw">_</span>&gt; = layout_and_page
             .into_iter()
             .fold(
@@ -1254,7 +1326,7 @@
                                     </span>));
                                 }
                             }
-                            <span class="prelude-val">Ok</span>((stringify_str(segment_path), imports))
+                            <span class="prelude-val">Ok</span>((stringify_js(segment_path), imports))
                         });
                         futures
                     })
@@ -1264,6 +1336,7 @@
             </span>.into_iter()
             .try_join()
             .<span class="kw">await</span><span class="question-mark">?</span>;
+
         <span class="comment">// IPC need to be the first import to allow it to catch errors happening during
         // the other imports
         </span><span class="kw">let </span><span class="kw-2">mut </span>result =
@@ -1278,7 +1351,7 @@
                     <span class="string">&quot;import {}, {{ chunks as {} }} from {};\n&quot;</span>,
                     identifier,
                     chunks_identifier,
-                    stringify_str(p)
+                    stringify_js(p)
                 )<span class="question-mark">?
             </span>}
         }
@@ -1288,7 +1361,7 @@
                 <span class="string">r#&quot;(&quot;TURBOPACK {{ transition: next-client }}&quot;);
 import BOOTSTRAP from {};
 &quot;#</span>,
-                stringify_str(<span class="kw-2">&amp;</span>page)
+                stringify_js(<span class="kw-2">&amp;</span>page)
             )<span class="question-mark">?</span>;
         }
 
@@ -1299,7 +1372,7 @@ import BOOTSTRAP from {};
                 <span class="macro">writeln!</span>(
                     result,
                     <span class="string">&quot;    {key}: {{ module: {identifier}, chunks: {chunks_identifier} }},&quot;</span>,
-                    key = stringify_str(key),
+                    key = stringify_js(key),
                 )<span class="question-mark">?</span>;
             }
             result += <span class="string">&quot;  },&quot;</span>;
@@ -1324,6 +1397,7 @@ import BOOTSTRAP from {};
             intermediate_output_path,
             intermediate_output_path.join(<span class="string">&quot;chunks&quot;</span>),
             this.server_root.join(<span class="string">&quot;_next/static/assets&quot;</span>),
+            context.compile_time_info().environment(),
         )
         .layer(<span class="string">&quot;ssr&quot;</span>)
         .css_chunk_root_path(this.server_root.join(<span class="string">&quot;_next/static/chunks&quot;</span>))
@@ -1338,10 +1412,11 @@ import BOOTSTRAP from {};
                     EcmascriptInputTransform::React { refresh: <span class="bool-val">false </span>},
                     EcmascriptInputTransform::TypeScript,
                 ]),
-                context.environment(),
+                context.compile_time_info(),
             ),
             chunking_context,
             intermediate_output_path,
+            output_root: intermediate_output_path.root(),
         }
         .cell())
     }
@@ -1362,40 +1437,67 @@ import BOOTSTRAP from {};
     }
 }
 
-<span class="attr">#[turbo_tasks::value(shared)]
-</span><span class="kw">struct </span>AppSourceIssue {
-    <span class="kw">pub </span>severity: IssueSeverityVc,
-    <span class="kw">pub </span>path: FileSystemPathVc,
-    <span class="kw">pub </span>message: StringVc,
+<span class="doccomment">/// The node.js renderer api routes in the app directory
+</span><span class="attr">#[turbo_tasks::value]
+</span><span class="kw">struct </span>AppRoute {
+    context: AssetContextVc,
+    entry_path: FileSystemPathVc,
+    intermediate_output_path: FileSystemPathVc,
+    project_path: FileSystemPathVc,
+    server_root: FileSystemPathVc,
+    output_root: FileSystemPathVc,
 }
 
 <span class="attr">#[turbo_tasks::value_impl]
-</span><span class="kw">impl </span>Issue <span class="kw">for </span>AppSourceIssue {
+</span><span class="kw">impl </span>AppRouteVc {
     <span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">fn </span>severity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; IssueSeverityVc {
-        <span class="self">self</span>.severity
-    }
+    </span><span class="kw">async fn </span>entry(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;NodeRenderingEntryVc&gt; {
+        <span class="kw">let </span>this = <span class="self">self</span>.<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>virtual_asset = VirtualAssetVc::new(
+            this.entry_path.join(<span class="string">&quot;route.ts&quot;</span>),
+            next_js_file(<span class="string">&quot;entry/app/route.ts&quot;</span>).into(),
+        );
 
-    <span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">async fn </span>title(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;StringVc&gt; {
-        <span class="prelude-val">Ok</span>(StringVc::cell(
-            <span class="string">&quot;An issue occurred while preparing your Next.js app&quot;</span>.to_string(),
-        ))
-    }
+        <span class="kw">let </span>chunking_context = DevChunkingContextVc::builder(
+            this.project_path,
+            this.intermediate_output_path,
+            this.intermediate_output_path.join(<span class="string">&quot;chunks&quot;</span>),
+            this.server_root.join(<span class="string">&quot;_next/static/assets&quot;</span>),
+            this.context.compile_time_info().environment(),
+        )
+        .layer(<span class="string">&quot;ssr&quot;</span>)
+        .css_chunk_root_path(this.server_root.join(<span class="string">&quot;_next/static/chunks&quot;</span>))
+        .build();
 
-    <span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">fn </span>category(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StringVc {
-        StringVc::cell(<span class="string">&quot;next app&quot;</span>.to_string())
+        <span class="kw">let </span>entry = this.context.with_transition(<span class="string">&quot;next-route&quot;</span>).process(
+            SourceAssetVc::new(this.entry_path).into(),
+            Value::new(ReferenceType::Entry(EntryReferenceSubType::AppRoute)),
+        );
+        <span class="prelude-val">Ok</span>(NodeRenderingEntry {
+            module: EcmascriptModuleAssetVc::new_with_inner_assets(
+                virtual_asset.into(),
+                this.context,
+                Value::new(EcmascriptModuleAssetType::Typescript),
+                EcmascriptInputTransformsVc::cell(<span class="macro">vec!</span>[EcmascriptInputTransform::TypeScript]),
+                this.context.compile_time_info(),
+                InnerAssetsVc::cell(<span class="macro">indexmap! </span>{
+                    <span class="string">&quot;ROUTE_CHUNK_GROUP&quot;</span>.to_string() =&gt; entry
+                }),
+            ),
+            chunking_context,
+            intermediate_output_path: this.intermediate_output_path,
+            output_root: this.output_root,
+        }
+        .cell())
     }
+}
 
+<span class="attr">#[turbo_tasks::value_impl]
+</span><span class="kw">impl </span>NodeEntry <span class="kw">for </span>AppRoute {
     <span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">fn </span>context(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; FileSystemPathVc {
-        <span class="self">self</span>.path
-    }
-
-    <span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">fn </span>description(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StringVc {
-        <span class="self">self</span>.message
+    </span><span class="kw">fn </span>entry(self_vc: AppRouteVc, _data: Value&lt;ContentSourceData&gt;) -&gt; NodeRenderingEntryVc {
+        <span class="comment">// Call without being keyed by data
+        </span>self_vc.entry()
     }
 }
 </code></pre></div>

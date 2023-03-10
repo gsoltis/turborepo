@@ -120,6 +120,17 @@
 <span id="120">120</span>
 <span id="121">121</span>
 <span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
 </pre><pre class="rust"><code><span class="kw">use </span>anyhow::Result;
 <span class="kw">use </span>swc_core::{
     common::DUMMY_SP,
@@ -127,18 +138,23 @@
 };
 <span class="kw">use </span>turbo_tasks::{primitives::StringVc, Value, ValueToString, ValueToStringVc};
 <span class="kw">use </span>turbopack_core::{
-    asset::AssetVc,
-    chunk::ChunkingContextVc,
+    asset::{Asset, AssetVc},
+    chunk::{ChunkingContext, ChunkingContextVc},
+    ident::AssetIdentVc,
     reference::{AssetReference, AssetReferenceVc},
     reference_type::UrlReferenceSubType,
-    resolve::{origin::ResolveOriginVc, parse::RequestVc, ResolveResultVc},
+    resolve::{
+        origin::{ResolveOrigin, ResolveOriginVc},
+        parse::RequestVc,
+        PrimaryResolveResult, ResolveResultVc,
+    },
 };
 <span class="kw">use </span>turbopack_ecmascript::resolve::url_resolve;
 
 <span class="kw">use crate</span>::{
     code_gen::{CodeGenerateable, CodeGenerateableVc, CodeGeneration, CodeGenerationVc},
     create_visitor,
-    embed::CssEmbeddableVc,
+    embed::{CssEmbed, CssEmbeddable, CssEmbeddableVc},
     references::AstPathVc,
 };
 
@@ -169,13 +185,14 @@
 
     <span class="attr">#[turbo_tasks::function]
     </span><span class="kw">async fn </span>get_referenced_asset(<span class="self">self</span>, context: ChunkingContextVc) -&gt; <span class="prelude-ty">Result</span>&lt;ReferencedAssetVc&gt; {
-        <span class="kw">let </span>assets = <span class="self">self</span>.resolve_reference().primary_assets();
-        <span class="kw">for </span>asset <span class="kw">in </span>assets.<span class="kw">await</span><span class="question-mark">?</span>.iter() {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(embeddable) = CssEmbeddableVc::resolve_from(asset).<span class="kw">await</span><span class="question-mark">? </span>{
-                <span class="kw">return </span><span class="prelude-val">Ok</span>(ReferencedAsset::Some(
-                    embeddable.as_css_embed(context).embeddable_asset(),
-                )
-                .into());
+        <span class="kw">for </span>result <span class="kw">in </span><span class="self">self</span>.resolve_reference().<span class="kw">await</span><span class="question-mark">?</span>.primary.iter() {
+            <span class="kw">if let </span>PrimaryResolveResult::Asset(asset) = result {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(embeddable) = CssEmbeddableVc::resolve_from(asset).<span class="kw">await</span><span class="question-mark">? </span>{
+                    <span class="kw">return </span><span class="prelude-val">Ok</span>(ReferencedAsset::Some(
+                        embeddable.as_css_embed(context).embeddable_asset(),
+                    )
+                    .into());
+                }
             }
         }
         <span class="prelude-val">Ok</span>(ReferencedAssetVc::cell(ReferencedAsset::None))
@@ -213,13 +230,18 @@
         context: ChunkingContextVc,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;CodeGenerationVc&gt; {
         <span class="kw">let </span>this = self_vc.<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span>chunk_path = context.chunk_path(this.origin.origin_path(), <span class="string">&quot;.css&quot;</span>);
+        <span class="comment">// TODO(WEB-662) This is not the correct way to get the current chunk path. It
+        // currently works as all chunks are in the same directory.
+        </span><span class="kw">let </span>chunk_path =
+            context.chunk_path(AssetIdentVc::from_path(this.origin.origin_path()), <span class="string">&quot;.css&quot;</span>);
         <span class="kw">let </span>context_path = chunk_path.parent().<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="kw">let </span><span class="kw-2">mut </span>visitors = Vec::new();
 
         <span class="kw">if let </span>ReferencedAsset::Some(asset) = <span class="kw-2">&amp;*</span>self_vc.get_referenced_asset(context).<span class="kw">await</span><span class="question-mark">? </span>{
-            <span class="kw">let </span>path = asset.path().<span class="kw">await</span><span class="question-mark">?</span>;
+            <span class="comment">// TODO(WEB-662) This is not the correct way to get the path of the asset.
+            // `asset` is on module-level, but we need the output-level asset instead.
+            </span><span class="kw">let </span>path = asset.ident().path().<span class="kw">await</span><span class="question-mark">?</span>;
             <span class="kw">let </span>relative_path = context_path
                 .get_relative_path_to(<span class="kw-2">&amp;</span>path)
                 .unwrap_or_else(|| <span class="macro">format!</span>(<span class="string">&quot;/{}&quot;</span>, path.path));

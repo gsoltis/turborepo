@@ -196,70 +196,24 @@
 <span id="196">196</span>
 <span id="197">197</span>
 <span id="198">198</span>
-<span id="199">199</span>
-<span id="200">200</span>
-<span id="201">201</span>
-<span id="202">202</span>
-<span id="203">203</span>
-<span id="204">204</span>
-<span id="205">205</span>
-<span id="206">206</span>
-<span id="207">207</span>
-<span id="208">208</span>
-<span id="209">209</span>
-<span id="210">210</span>
-<span id="211">211</span>
-<span id="212">212</span>
-<span id="213">213</span>
-<span id="214">214</span>
-<span id="215">215</span>
-<span id="216">216</span>
-<span id="217">217</span>
-<span id="218">218</span>
-<span id="219">219</span>
-<span id="220">220</span>
-<span id="221">221</span>
-<span id="222">222</span>
-<span id="223">223</span>
-<span id="224">224</span>
-<span id="225">225</span>
-<span id="226">226</span>
-<span id="227">227</span>
-<span id="228">228</span>
-<span id="229">229</span>
-<span id="230">230</span>
-<span id="231">231</span>
-<span id="232">232</span>
-<span id="233">233</span>
-<span id="234">234</span>
-<span id="235">235</span>
-<span id="236">236</span>
-<span id="237">237</span>
-<span id="238">238</span>
-<span id="239">239</span>
-<span id="240">240</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::pin::Pin;
 
 <span class="kw">use </span>anyhow::{bail, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>futures::{prelude::<span class="kw-2">*</span>, Stream};
 <span class="kw">use </span>tokio::sync::mpsc::Sender;
 <span class="kw">use </span>tokio_stream::wrappers::ReceiverStream;
-<span class="kw">use </span>turbo_tasks::{CollectiblesSource, State, TransientInstance, Value};
+<span class="kw">use </span>turbo_tasks::{CollectiblesSource, IntoTraitRef, State, TraitRef, TransientInstance};
 <span class="kw">use </span>turbopack_core::{
     issue::{IssueVc, PlainIssueReadRef},
     version::{
         NotFoundVersionVc, PartialUpdate, TotalUpdate, Update, UpdateReadRef, VersionVc,
-        VersionedContentVc,
+        VersionedContent,
     },
 };
 
-<span class="kw">use </span><span class="kw">super</span>::protocol::ResourceIdentifier;
-<span class="kw">use crate</span>::{
-    resource_to_data,
-    source::{ContentSourceContent, ContentSourceResultVc},
-};
+<span class="kw">use </span><span class="kw">crate</span>::source::resolve::{ResolveSourceRequestResult, ResolveSourceRequestResultVc};
 
-<span class="kw">type </span>GetContentFn = Box&lt;<span class="kw">dyn </span>Fn() -&gt; ContentSourceResultVc + Send + Sync&gt;;
+<span class="kw">type </span>GetContentFn = Box&lt;<span class="kw">dyn </span>Fn() -&gt; ResolveSourceRequestResultVc + Send + Sync&gt;;
 
 <span class="kw">async fn </span>peek_issues&lt;T: CollectiblesSource + Copy&gt;(source: T) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;PlainIssueReadRef&gt;&gt; {
     <span class="kw">let </span>captured = IssueVc::peek_issues_with_path(source).<span class="kw">await</span><span class="question-mark">?</span>.<span class="kw">await</span><span class="question-mark">?</span>;
@@ -278,45 +232,28 @@
 }
 
 <span class="attr">#[turbo_tasks::function]
-</span><span class="kw">async fn </span>get_content_wrapper(
-    resource: Value&lt;ResourceIdentifier&gt;,
-    get_content: TransientInstance&lt;GetContentFn&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;ContentSourceResultVc&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>content = get_content();
-    <span class="kw">while let </span>ContentSourceContent::NeedData(data) = <span class="kw-2">&amp;*</span>content.<span class="kw">await</span><span class="question-mark">?</span>.content.<span class="kw">await</span><span class="question-mark">? </span>{
-        content = data.source.get(
-            <span class="kw-2">&amp;</span>data.path,
-            Value::new(resource_to_data(resource.clone().into_value(), <span class="kw-2">&amp;</span>data.vary)),
-        );
-    }
-    <span class="prelude-val">Ok</span>(content)
-}
-
-<span class="kw">async fn </span>resolve_static_content(
-    content_source_result: ContentSourceResultVc,
-) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;VersionedContentVc&gt;&gt; {
-    <span class="prelude-val">Ok</span>(<span class="kw">match </span><span class="kw-2">*</span>content_source_result.<span class="kw">await</span><span class="question-mark">?</span>.content.<span class="kw">await</span><span class="question-mark">? </span>{
-        ContentSourceContent::NotFound =&gt; <span class="prelude-val">None</span>,
-        ContentSourceContent::HttpProxy(<span class="kw">_</span>) =&gt; {
-            <span class="macro">panic!</span>(<span class="string">&quot;HTTP proxying is not supported in UpdateStream&quot;</span>)
-        }
-        ContentSourceContent::Static(content) =&gt; <span class="prelude-val">Some</span>(content),
-        ContentSourceContent::NeedData(<span class="kw">_</span>) =&gt; {
-            <span class="macro">bail!</span>(<span class="string">&quot;this might only happen temporary as get_content_wrapper resolves the data&quot;</span>)
-        }
-    })
-}
-
-<span class="attr">#[turbo_tasks::function]
 </span><span class="kw">async fn </span>get_update_stream_item(
     from: VersionStateVc,
-    resource: Value&lt;ResourceIdentifier&gt;,
     get_content: TransientInstance&lt;GetContentFn&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;UpdateStreamItemVc&gt; {
-    <span class="kw">let </span>content = get_content_wrapper(resource, get_content);
+    <span class="kw">let </span>content = get_content();
 
-    <span class="kw">match </span>resolve_static_content(content).<span class="kw">await</span><span class="question-mark">? </span>{
-        <span class="prelude-val">None </span>=&gt; {
+    <span class="kw">match </span><span class="kw-2">&amp;*</span>content.<span class="kw">await</span><span class="question-mark">? </span>{
+        ResolveSourceRequestResult::Static(static_content, <span class="kw">_</span>) =&gt; {
+            <span class="kw">let </span>resolved_content = static_content.<span class="kw">await</span><span class="question-mark">?</span>.content;
+            <span class="kw">let </span>from = from.get();
+            <span class="kw">let </span>update = resolved_content.update(from);
+
+            <span class="kw">let </span><span class="kw-2">mut </span>plain_issues = peek_issues(update).<span class="kw">await</span><span class="question-mark">?</span>;
+            extend_issues(<span class="kw-2">&amp;mut </span>plain_issues, peek_issues(content).<span class="kw">await</span><span class="question-mark">?</span>);
+
+            <span class="prelude-val">Ok</span>(UpdateStreamItem {
+                update: update.<span class="kw">await</span><span class="question-mark">?</span>,
+                issues: plain_issues,
+            }
+            .cell())
+        }
+        <span class="kw">_ </span>=&gt; {
             <span class="kw">let </span>plain_issues = peek_issues(content).<span class="kw">await</span><span class="question-mark">?</span>;
 
             <span class="kw">let </span>update = <span class="kw">if </span>plain_issues.is_empty() {
@@ -338,30 +275,16 @@
             }
             .cell())
         }
-        <span class="prelude-val">Some</span>(resolved_content) =&gt; {
-            <span class="kw">let </span>from = from.get();
-            <span class="kw">let </span>update = resolved_content.update(from);
-
-            <span class="kw">let </span><span class="kw-2">mut </span>plain_issues = peek_issues(update).<span class="kw">await</span><span class="question-mark">?</span>;
-            extend_issues(<span class="kw-2">&amp;mut </span>plain_issues, peek_issues(content).<span class="kw">await</span><span class="question-mark">?</span>);
-
-            <span class="prelude-val">Ok</span>(UpdateStreamItem {
-                update: update.<span class="kw">await</span><span class="question-mark">?</span>,
-                issues: plain_issues,
-            }
-            .cell())
-        }
     }
 }
 
 <span class="attr">#[turbo_tasks::function]
 </span><span class="kw">async fn </span>compute_update_stream(
     from: VersionStateVc,
-    resource: Value&lt;ResourceIdentifier&gt;,
     get_content: TransientInstance&lt;GetContentFn&gt;,
     sender: TransientInstance&lt;Sender&lt;UpdateStreamItemReadRef&gt;&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    <span class="kw">let </span>item = get_update_stream_item(from, resource, get_content)
+    <span class="kw">let </span>item = get_update_stream_item(from, get_content)
         .strongly_consistent()
         .<span class="kw">await</span><span class="question-mark">?</span>;
 
@@ -374,7 +297,8 @@
 
 <span class="attr">#[turbo_tasks::value]
 </span><span class="kw">struct </span>VersionState {
-    inner: State&lt;VersionVc&gt;,
+    <span class="attr">#[turbo_tasks(trace_ignore)]
+    </span>version: State&lt;TraitRef&lt;VersionVc&gt;&gt;,
 }
 
 <span class="attr">#[turbo_tasks::value_impl]
@@ -382,23 +306,21 @@
     <span class="attr">#[turbo_tasks::function]
     </span><span class="kw">async fn </span>get(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;VersionVc&gt; {
         <span class="kw">let </span>this = <span class="self">self</span>.<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span>version = <span class="kw-2">*</span>this.inner.get();
+        <span class="kw">let </span>version = TraitRef::cell(this.version.get().clone());
         <span class="prelude-val">Ok</span>(version)
     }
 }
 
 <span class="kw">impl </span>VersionStateVc {
-    <span class="kw">async fn </span>new(inner: VersionVc) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>inner = inner.cell_local().<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">async fn </span>new(version: VersionVc) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="prelude-val">Ok</span>(<span class="self">Self</span>::cell(VersionState {
-            inner: State::new(inner),
+            version: State::new(version.into_trait_ref().<span class="kw">await</span><span class="question-mark">?</span>),
         }))
     }
 
-    <span class="kw">async fn </span>set(<span class="kw-2">&amp;</span><span class="self">self</span>, new_inner: VersionVc) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">async fn </span>set(<span class="kw-2">&amp;</span><span class="self">self</span>, new_version: VersionVc) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">let </span>this = <span class="self">self</span>.<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span>new_inner = new_inner.cell_local().<span class="kw">await</span><span class="question-mark">?</span>;
-        this.inner.set(new_inner);
+        this.version.set(new_version.into_trait_ref().<span class="kw">await</span><span class="question-mark">?</span>);
         <span class="prelude-val">Ok</span>(())
     }
 }
@@ -406,27 +328,21 @@
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">struct </span>UpdateStream(Pin&lt;Box&lt;<span class="kw">dyn </span>Stream&lt;Item = UpdateStreamItemReadRef&gt; + Send + Sync&gt;&gt;);
 
 <span class="kw">impl </span>UpdateStream {
-    <span class="kw">pub async fn </span>new(
-        resource: ResourceIdentifier,
-        get_content: TransientInstance&lt;GetContentFn&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;UpdateStream&gt; {
+    <span class="kw">pub async fn </span>new(get_content: TransientInstance&lt;GetContentFn&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;UpdateStream&gt; {
         <span class="kw">let </span>(sx, rx) = tokio::sync::mpsc::channel(<span class="number">32</span>);
 
-        <span class="kw">let </span>content = get_content_wrapper(Value::new(resource.clone()), get_content.clone());
+        <span class="kw">let </span>content = get_content();
         <span class="comment">// We can ignore issues reported in content here since [compute_update_stream]
         // will handle them
-        </span><span class="kw">let </span>version = <span class="kw">match </span>resolve_static_content(content).<span class="kw">await</span><span class="question-mark">? </span>{
-            <span class="prelude-val">Some</span>(content) =&gt; content.version(),
-            <span class="prelude-val">None </span>=&gt; NotFoundVersionVc::new().into(),
+        </span><span class="kw">let </span>version = <span class="kw">match </span><span class="kw-2">&amp;*</span>content.<span class="kw">await</span><span class="question-mark">? </span>{
+            ResolveSourceRequestResult::Static(static_content, <span class="kw">_</span>) =&gt; {
+                static_content.<span class="kw">await</span><span class="question-mark">?</span>.content.version()
+            }
+            <span class="kw">_ </span>=&gt; NotFoundVersionVc::new().into(),
         };
         <span class="kw">let </span>version_state = VersionStateVc::new(version).<span class="kw">await</span><span class="question-mark">?</span>;
 
-        compute_update_stream(
-            version_state,
-            Value::new(resource),
-            get_content,
-            TransientInstance::new(sx),
-        );
+        compute_update_stream(version_state, get_content, TransientInstance::new(sx));
 
         <span class="kw">let </span><span class="kw-2">mut </span>last_had_issues = <span class="bool-val">false</span>;
 

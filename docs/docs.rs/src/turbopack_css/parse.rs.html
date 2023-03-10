@@ -239,10 +239,20 @@
 <span id="239">239</span>
 <span id="240">240</span>
 <span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::sync::Arc;
 
-<span class="kw">use </span>anyhow::Result;
+<span class="kw">use </span>anyhow::{Context, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>indexmap::IndexMap;
+<span class="kw">use </span>once_cell::sync::Lazy;
+<span class="kw">use </span>regex::Regex;
 <span class="kw">use </span>swc_core::{
     common::{
         errors::Handler, source_map::SourceMapGenConfig, BytePos, FileName, LineCol, SourceMap,
@@ -257,7 +267,7 @@
 <span class="kw">use </span>turbo_tasks::{Value, ValueToString};
 <span class="kw">use </span>turbo_tasks_fs::{FileContent, FileSystemPath};
 <span class="kw">use </span>turbopack_core::{
-    asset::{AssetContent, AssetVc},
+    asset::{Asset, AssetContent, AssetVc},
     source_map::{GenerateSourceMap, GenerateSourceMapVc, SourceMapVc},
 };
 <span class="kw">use </span>turbopack_swc_utils::emitter::IssueEmitter;
@@ -266,6 +276,9 @@
     transform::{CssInputTransform, CssInputTransformsVc, TransformContext},
     CssModuleAssetType,
 };
+
+<span class="comment">// Capture up until the first &quot;.&quot;
+</span><span class="kw">static </span>BASENAME_RE: Lazy&lt;Regex&gt; = Lazy::new(|| Regex::new(<span class="string">r&quot;^[^.]*&quot;</span>).unwrap());
 
 <span class="attr">#[turbo_tasks::value(shared, serialization = <span class="string">&quot;none&quot;</span>, eq = <span class="string">&quot;manual&quot;</span>)]
 </span><span class="kw">pub enum </span>ParseResult {
@@ -357,8 +370,8 @@
     transforms: CssInputTransformsVc,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ParseResultVc&gt; {
     <span class="kw">let </span>content = source.content();
-    <span class="kw">let </span>fs_path = <span class="kw-2">&amp;*</span>source.path().<span class="kw">await</span><span class="question-mark">?</span>;
-    <span class="kw">let </span>fs_path_str = <span class="kw-2">&amp;*</span>source.path().to_string().<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>fs_path = <span class="kw-2">&amp;*</span>source.ident().path().<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>ident_str = <span class="kw-2">&amp;*</span>source.ident().to_string().<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="kw">let </span>ty = ty.into_value();
     <span class="prelude-val">Ok</span>(<span class="kw">match </span><span class="kw-2">&amp;*</span>content.<span class="kw">await</span><span class="question-mark">? </span>{
         AssetContent::Redirect { .. } =&gt; ParseResult::Unparseable.cell(),
@@ -371,7 +384,7 @@
                     parse_content(
                         string.into_owned(),
                         fs_path,
-                        fs_path_str,
+                        ident_str,
                         source,
                         ty,
                         transforms,
@@ -386,7 +399,7 @@
 <span class="kw">async fn </span>parse_content(
     string: String,
     fs_path: <span class="kw-2">&amp;</span>FileSystemPath,
-    fs_path_str: <span class="kw-2">&amp;</span>str,
+    ident_str: <span class="kw-2">&amp;</span>str,
     source: AssetVc,
     ty: CssModuleAssetType,
     transforms: <span class="kw-2">&amp;</span>[CssInputTransform],
@@ -432,7 +445,6 @@
 
     <span class="kw">let </span>context = TransformContext {
         source_map: <span class="kw-2">&amp;</span>source_map,
-        file_name_str: fs_path.file_name(),
     };
     <span class="kw">for </span>transform <span class="kw">in </span>transforms.iter() {
         transform.apply(<span class="kw-2">&amp;mut </span>parsed_stylesheet, <span class="kw-2">&amp;</span>context).<span class="kw">await</span><span class="question-mark">?</span>;
@@ -442,15 +454,19 @@
         CssModuleAssetType::Global =&gt; Default::default(),
         CssModuleAssetType::Module =&gt; {
             <span class="kw">let </span>imports = swc_core::css::modules::imports::analyze_imports(<span class="kw-2">&amp;</span>parsed_stylesheet);
+            <span class="kw">let </span>basename = BASENAME_RE
+                .captures(fs_path.file_name())
+                .context(<span class="string">&quot;Must include basename preceding .&quot;</span>)<span class="question-mark">?
+                </span>.get(<span class="number">0</span>)
+                .context(<span class="string">&quot;Must include basename preceding .&quot;</span>)<span class="question-mark">?
+                </span>.as_str();
+            <span class="comment">// Truncate this as u32 so it&#39;s formated as 8-character hex in the suffic below
+            </span><span class="kw">let </span>path_hash = turbo_tasks_hash::hash_xxh3_hash64(ident_str) <span class="kw">as </span>u32;
             <span class="kw">let </span>result = swc_core::css::modules::compile(
                 <span class="kw-2">&amp;mut </span>parsed_stylesheet,
                 <span class="comment">// TODO swc_css_modules should take `impl TransformConfig + &#39;_`
                 </span>ModuleTransformConfig {
-                    <span class="comment">// Note this uses an square emoji to join class name with module name
-                    // This emoji is usually not used in css class names so it&#39;s easy for the user
-                    // to see which class names are generated by css modules. Its also a pretty
-                    // small, so it&#39;s not too intense for the eyes.
-                    </span>suffix: <span class="macro">format!</span>(<span class="string">&quot;◽{}&quot;</span>, fs_path_str),
+                    suffix: <span class="macro">format!</span>(<span class="string">&quot;__{}__{:x}&quot;</span>, basename, path_hash),
                 },
             );
             <span class="kw">let </span><span class="kw-2">mut </span>exports = result.renamed.into_iter().collect::&lt;IndexMap&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;&gt;();

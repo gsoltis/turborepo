@@ -263,18 +263,36 @@
 <span id="263">263</span>
 <span id="264">264</span>
 <span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
 </pre><pre class="rust"><code><span class="kw">use </span>core::{default::Default, result::Result::Ok};
 <span class="kw">use </span>std::collections::HashMap;
 
 <span class="kw">use </span>anyhow::Result;
-<span class="kw">use </span>turbo_tasks::{primitives::StringsVc, Value};
+<span class="kw">use </span>turbo_tasks::{primitives::StringVc, Value};
 <span class="kw">use </span>turbo_tasks_env::ProcessEnvVc;
-<span class="kw">use </span>turbo_tasks_fs::FileSystemPathVc;
+<span class="kw">use </span>turbo_tasks_fs::{FileSystem, FileSystemPathVc};
 <span class="kw">use </span>turbopack::{
-    condition::ContextCondition,
     module_options::{
         module_options_context::{ModuleOptionsContext, ModuleOptionsContextVc},
-        ModuleRule, ModuleRuleCondition, ModuleRuleEffect, PostCssTransformOptions,
+        PostCssTransformOptions, WebpackLoadersOptions,
     },
     resolve_options_context::{ResolveOptionsContext, ResolveOptionsContextVc},
     transition::TransitionsByNameVc,
@@ -282,19 +300,21 @@
 };
 <span class="kw">use </span>turbopack_core::{
     chunk::{dev::DevChunkingContextVc, ChunkingContextVc},
+    compile_time_defines,
+    compile_time_info::{CompileTimeDefinesVc, CompileTimeInfo, CompileTimeInfoVc},
     context::AssetContextVc,
     environment::{BrowserEnvironment, EnvironmentIntention, EnvironmentVc, ExecutionEnvironment},
-    reference_type::{ReferenceType, UrlReferenceSubType},
     resolve::{parse::RequestVc, pattern::Pattern},
 };
-<span class="kw">use </span>turbopack_ecmascript::{EcmascriptInputTransform, EcmascriptInputTransformsVc};
 <span class="kw">use </span>turbopack_env::ProcessEnvAssetVc;
 <span class="kw">use </span>turbopack_node::execution_context::ExecutionContextVc;
 
+<span class="kw">use </span><span class="kw">super</span>::transforms::get_next_client_transforms_rules;
 <span class="kw">use crate</span>::{
-    embed_js::attached_next_js_package_path,
+    babel::maybe_add_babel_loader,
+    embed_js::next_js_fs,
     env::env_for_js,
-    next_build::get_postcss_package_mapping,
+    next_build::{get_external_next_compiled_package_mapping, get_postcss_package_mapping},
     next_client::runtime_entry::{RuntimeEntriesVc, RuntimeEntry},
     next_config::NextConfigVc,
     next_import_map::{
@@ -302,22 +322,36 @@
         get_next_client_resolved_map,
     },
     react_refresh::assert_can_resolve_react_refresh,
+    util::foreign_code_context_condition,
 };
 
+<span class="kw">pub fn </span>next_client_defines() -&gt; CompileTimeDefinesVc {
+    <span class="macro">compile_time_defines!</span>(
+        process.turbopack = <span class="bool-val">true</span>,
+        process.env.NODE_ENV = <span class="string">&quot;development&quot;</span>,
+        process.env.__NEXT_CLIENT_ROUTER_FILTER_ENABLED = <span class="bool-val">false
+    </span>)
+    .cell()
+}
+
 <span class="attr">#[turbo_tasks::function]
-</span><span class="kw">pub fn </span>get_client_environment(browserslist_query: <span class="kw-2">&amp;</span>str) -&gt; EnvironmentVc {
-    EnvironmentVc::new(
-        Value::new(ExecutionEnvironment::Browser(
-            BrowserEnvironment {
-                dom: <span class="bool-val">true</span>,
-                web_worker: <span class="bool-val">false</span>,
-                service_worker: <span class="bool-val">false</span>,
-                browserslist_query: browserslist_query.to_owned(),
-            }
-            .into(),
-        )),
-        Value::new(EnvironmentIntention::Client),
-    )
+</span><span class="kw">pub fn </span>get_client_compile_time_info(browserslist_query: <span class="kw-2">&amp;</span>str) -&gt; CompileTimeInfoVc {
+    CompileTimeInfo {
+        environment: EnvironmentVc::new(
+            Value::new(ExecutionEnvironment::Browser(
+                BrowserEnvironment {
+                    dom: <span class="bool-val">true</span>,
+                    web_worker: <span class="bool-val">false</span>,
+                    service_worker: <span class="bool-val">false</span>,
+                    browserslist_query: browserslist_query.to_owned(),
+                }
+                .into(),
+            )),
+            Value::new(EnvironmentIntention::Client),
+        ),
+        defines: next_client_defines(),
+    }
+    .cell()
 }
 
 <span class="attr">#[turbo_tasks::value(serialization = <span class="string">&quot;auto_for_input&quot;</span>)]
@@ -330,15 +364,18 @@
 }
 
 <span class="attr">#[turbo_tasks::function]
-</span><span class="kw">pub fn </span>get_client_resolve_options_context(
+</span><span class="kw">pub async fn </span>get_client_resolve_options_context(
     project_path: FileSystemPathVc,
     ty: Value&lt;ClientContextType&gt;,
-) -&gt; ResolveOptionsContextVc {
-    <span class="kw">let </span>next_client_import_map = get_next_client_import_map(project_path, ty);
+    next_config: NextConfigVc,
+    execution_context: ExecutionContextVc,
+) -&gt; <span class="prelude-ty">Result</span>&lt;ResolveOptionsContextVc&gt; {
+    <span class="kw">let </span>next_client_import_map =
+        get_next_client_import_map(project_path, ty, next_config, execution_context);
     <span class="kw">let </span>next_client_fallback_import_map = get_next_client_fallback_import_map(ty);
     <span class="kw">let </span>next_client_resolved_map = get_next_client_resolved_map(project_path, project_path);
     <span class="kw">let </span>module_options_context = ResolveOptionsContext {
-        enable_node_modules: <span class="bool-val">true</span>,
+        enable_node_modules: <span class="prelude-val">Some</span>(project_path.root().resolve().<span class="kw">await</span><span class="question-mark">?</span>),
         custom_conditions: <span class="macro">vec!</span>[<span class="string">&quot;development&quot;</span>.to_string()],
         import_map: <span class="prelude-val">Some</span>(next_client_import_map),
         fallback_import_map: <span class="prelude-val">Some</span>(next_client_fallback_import_map),
@@ -347,16 +384,16 @@
         module: <span class="bool-val">true</span>,
         ..Default::default()
     };
-    ResolveOptionsContext {
+    <span class="prelude-val">Ok</span>(ResolveOptionsContext {
         enable_typescript: <span class="bool-val">true</span>,
         enable_react: <span class="bool-val">true</span>,
         rules: <span class="macro">vec!</span>[(
-            ContextCondition::InDirectory(<span class="string">&quot;node_modules&quot;</span>.to_string()),
+            foreign_code_context_condition(next_config).<span class="kw">await</span><span class="question-mark">?</span>,
             module_options_context.clone().cell(),
         )],
         ..module_options_context
     }
-    .cell()
+    .cell())
 }
 
 <span class="attr">#[turbo_tasks::function]
@@ -365,18 +402,38 @@
     execution_context: ExecutionContextVc,
     env: EnvironmentVc,
     ty: Value&lt;ClientContextType&gt;,
+    next_config: NextConfigVc,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ModuleOptionsContextVc&gt; {
-    <span class="kw">let </span>resolve_options_context = get_client_resolve_options_context(project_path, ty);
+    <span class="kw">let </span>custom_rules = get_next_client_transforms_rules(ty.into_value()).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>resolve_options_context =
+        get_client_resolve_options_context(project_path, ty, next_config, execution_context);
     <span class="kw">let </span>enable_react_refresh =
         assert_can_resolve_react_refresh(project_path, resolve_options_context)
             .<span class="kw">await</span><span class="question-mark">?
             </span>.is_found();
+
+    <span class="kw">let </span>enable_webpack_loaders = {
+        <span class="kw">let </span>options = <span class="kw-2">&amp;*</span>next_config.webpack_loaders_options().<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>loaders_options = WebpackLoadersOptions {
+            extension_to_loaders: options.clone(),
+            loader_runner_package: <span class="prelude-val">Some</span>(get_external_next_compiled_package_mapping(
+                StringVc::cell(<span class="string">&quot;loader-runner&quot;</span>.to_owned()),
+            )),
+            placeholder_for_future_extensions: (),
+        }
+        .cell();
+
+        maybe_add_babel_loader(project_path, loaders_options)
+            .<span class="kw">await</span><span class="question-mark">?
+            </span>.clone_if()
+    };
 
     <span class="kw">let </span>module_options_context = ModuleOptionsContext {
         preset_env_versions: <span class="prelude-val">Some</span>(env),
         execution_context: <span class="prelude-val">Some</span>(execution_context),
         ..Default::default()
     };
+
     <span class="kw">let </span>module_options_context = ModuleOptionsContext {
         <span class="comment">// We don&#39;t need to resolve React Refresh for each module. Instead,
         // we try resolve it once at the root and pass down a context to all
@@ -390,64 +447,41 @@
             postcss_package: <span class="prelude-val">Some</span>(get_postcss_package_mapping(project_path)),
             ..Default::default()
         }),
+        enable_webpack_loaders,
         enable_typescript_transform: <span class="bool-val">true</span>,
         rules: <span class="macro">vec!</span>[(
-            ContextCondition::InDirectory(<span class="string">&quot;node_modules&quot;</span>.to_string()),
+            foreign_code_context_condition(next_config).<span class="kw">await</span><span class="question-mark">?</span>,
             module_options_context.clone().cell(),
         )],
+        custom_rules,
         ..module_options_context
-    };
+    }
+    .cell();
 
-    <span class="prelude-val">Ok</span>(add_next_font_transform(module_options_context.cell()))
-}
-
-<span class="attr">#[turbo_tasks::function]
-</span><span class="kw">pub async fn </span>add_next_font_transform(
-    module_options_context: ModuleOptionsContextVc,
-) -&gt; <span class="prelude-ty">Result</span>&lt;ModuleOptionsContextVc&gt; {
-    <span class="attr">#[allow(unused_mut)] </span><span class="comment">// This is mutated when next-font-local is enabled
-    </span><span class="kw">let </span><span class="kw-2">mut </span>font_loaders = <span class="macro">vec!</span>[<span class="string">&quot;@next/font/google&quot;</span>.to_owned()];
-    <span class="attr">#[cfg(feature = <span class="string">&quot;next-font-local&quot;</span>)]
-    </span>font_loaders.push(<span class="string">&quot;@next/font/local&quot;</span>.to_owned());
-
-    <span class="kw">let </span><span class="kw-2">mut </span>module_options_context = module_options_context.<span class="kw">await</span><span class="question-mark">?</span>.clone_value();
-    module_options_context.custom_rules.push(ModuleRule::new(
-        <span class="comment">// TODO: Only match in pages (not pages/api), app/, etc.
-        </span>ModuleRuleCondition::all(<span class="macro">vec!</span>[
-            ModuleRuleCondition::not(ModuleRuleCondition::ReferenceType(ReferenceType::Url(
-                UrlReferenceSubType::Undefined,
-            ))),
-            ModuleRuleCondition::any(<span class="macro">vec!</span>[
-                ModuleRuleCondition::ResourcePathEndsWith(<span class="string">&quot;.js&quot;</span>.to_string()),
-                ModuleRuleCondition::ResourcePathEndsWith(<span class="string">&quot;.jsx&quot;</span>.to_string()),
-                ModuleRuleCondition::ResourcePathEndsWith(<span class="string">&quot;.ts&quot;</span>.to_string()),
-                ModuleRuleCondition::ResourcePathEndsWith(<span class="string">&quot;.tsx&quot;</span>.to_string()),
-            ]),
-        ]),
-        <span class="macro">vec!</span>[ModuleRuleEffect::AddEcmascriptTransforms(
-            EcmascriptInputTransformsVc::cell(<span class="macro">vec!</span>[EcmascriptInputTransform::NextJsFont(
-                StringsVc::cell(font_loaders),
-            )]),
-        )],
-    ));
-    <span class="prelude-val">Ok</span>(module_options_context.cell())
+    <span class="prelude-val">Ok</span>(module_options_context)
 }
 
 <span class="attr">#[turbo_tasks::function]
 </span><span class="kw">pub fn </span>get_client_asset_context(
     project_path: FileSystemPathVc,
     execution_context: ExecutionContextVc,
-    browserslist_query: <span class="kw-2">&amp;</span>str,
+    compile_time_info: CompileTimeInfoVc,
     ty: Value&lt;ClientContextType&gt;,
+    next_config: NextConfigVc,
 ) -&gt; AssetContextVc {
-    <span class="kw">let </span>environment = get_client_environment(browserslist_query);
-    <span class="kw">let </span>resolve_options_context = get_client_resolve_options_context(project_path, ty);
-    <span class="kw">let </span>module_options_context =
-        get_client_module_options_context(project_path, execution_context, environment, ty);
+    <span class="kw">let </span>resolve_options_context =
+        get_client_resolve_options_context(project_path, ty, next_config, execution_context);
+    <span class="kw">let </span>module_options_context = get_client_module_options_context(
+        project_path,
+        execution_context,
+        compile_time_info.environment(),
+        ty,
+        next_config,
+    );
 
     <span class="kw">let </span>context: AssetContextVc = ModuleAssetContextVc::new(
         TransitionsByNameVc::cell(HashMap::new()),
-        environment,
+        compile_time_info,
         module_options_context,
         resolve_options_context,
     )
@@ -460,6 +494,7 @@
 </span><span class="kw">pub fn </span>get_client_chunking_context(
     project_path: FileSystemPathVc,
     server_root: FileSystemPathVc,
+    environment: EnvironmentVc,
     ty: Value&lt;ClientContextType&gt;,
 ) -&gt; ChunkingContextVc {
     DevChunkingContextVc::builder(
@@ -472,6 +507,7 @@
             ClientContextType::Fallback | ClientContextType::Other =&gt; server_root.join(<span class="string">&quot;/_chunks&quot;</span>),
         },
         get_client_assets_path(server_root, ty),
+        environment,
     )
     .hot_module_replacement()
     .build()
@@ -496,8 +532,10 @@
     env: ProcessEnvVc,
     ty: Value&lt;ClientContextType&gt;,
     next_config: NextConfigVc,
+    execution_context: ExecutionContextVc,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;RuntimeEntriesVc&gt; {
-    <span class="kw">let </span>resolve_options_context = get_client_resolve_options_context(project_root, ty);
+    <span class="kw">let </span>resolve_options_context =
+        get_client_resolve_options_context(project_root, ty, next_config, execution_context);
     <span class="kw">let </span>enable_react_refresh =
         assert_can_resolve_react_refresh(project_root, resolve_options_context)
             .<span class="kw">await</span><span class="question-mark">?
@@ -520,7 +558,7 @@
                 RequestVc::parse(Value::new(Pattern::Constant(
                     <span class="string">&quot;./dev/bootstrap.ts&quot;</span>.to_string(),
                 ))),
-                attached_next_js_package_path(project_root).join(<span class="string">&quot;_&quot;</span>),
+                next_js_fs().root().join(<span class="string">&quot;_&quot;</span>),
             )
             .cell(),
         );

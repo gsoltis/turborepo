@@ -822,6 +822,90 @@
 <span id="822">822</span>
 <span id="823">823</span>
 <span id="824">824</span>
+<span id="825">825</span>
+<span id="826">826</span>
+<span id="827">827</span>
+<span id="828">828</span>
+<span id="829">829</span>
+<span id="830">830</span>
+<span id="831">831</span>
+<span id="832">832</span>
+<span id="833">833</span>
+<span id="834">834</span>
+<span id="835">835</span>
+<span id="836">836</span>
+<span id="837">837</span>
+<span id="838">838</span>
+<span id="839">839</span>
+<span id="840">840</span>
+<span id="841">841</span>
+<span id="842">842</span>
+<span id="843">843</span>
+<span id="844">844</span>
+<span id="845">845</span>
+<span id="846">846</span>
+<span id="847">847</span>
+<span id="848">848</span>
+<span id="849">849</span>
+<span id="850">850</span>
+<span id="851">851</span>
+<span id="852">852</span>
+<span id="853">853</span>
+<span id="854">854</span>
+<span id="855">855</span>
+<span id="856">856</span>
+<span id="857">857</span>
+<span id="858">858</span>
+<span id="859">859</span>
+<span id="860">860</span>
+<span id="861">861</span>
+<span id="862">862</span>
+<span id="863">863</span>
+<span id="864">864</span>
+<span id="865">865</span>
+<span id="866">866</span>
+<span id="867">867</span>
+<span id="868">868</span>
+<span id="869">869</span>
+<span id="870">870</span>
+<span id="871">871</span>
+<span id="872">872</span>
+<span id="873">873</span>
+<span id="874">874</span>
+<span id="875">875</span>
+<span id="876">876</span>
+<span id="877">877</span>
+<span id="878">878</span>
+<span id="879">879</span>
+<span id="880">880</span>
+<span id="881">881</span>
+<span id="882">882</span>
+<span id="883">883</span>
+<span id="884">884</span>
+<span id="885">885</span>
+<span id="886">886</span>
+<span id="887">887</span>
+<span id="888">888</span>
+<span id="889">889</span>
+<span id="890">890</span>
+<span id="891">891</span>
+<span id="892">892</span>
+<span id="893">893</span>
+<span id="894">894</span>
+<span id="895">895</span>
+<span id="896">896</span>
+<span id="897">897</span>
+<span id="898">898</span>
+<span id="899">899</span>
+<span id="900">900</span>
+<span id="901">901</span>
+<span id="902">902</span>
+<span id="903">903</span>
+<span id="904">904</span>
+<span id="905">905</span>
+<span id="906">906</span>
+<span id="907">907</span>
+<span id="908">908</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::{
     any::{type_name, Any},
     borrow::Cow,
@@ -1154,6 +1238,8 @@
     String(String),
     Bool(bool),
     Usize(usize),
+    I16(i16),
+    U16(u16),
     I32(i32),
     U32(u32),
     U64(u64),
@@ -1337,6 +1423,8 @@
             TaskInput::String(s) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;string {:?}&quot;</span>, s),
             TaskInput::Bool(b) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;bool {:?}&quot;</span>, b),
             TaskInput::Usize(v) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;usize {}&quot;</span>, v),
+            TaskInput::I16(v) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;i16 {}&quot;</span>, v),
+            TaskInput::U16(v) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;u16 {}&quot;</span>, v),
             TaskInput::I32(v) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;i32 {}&quot;</span>, v),
             TaskInput::U32(v) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;u32 {}&quot;</span>, v),
             TaskInput::U64(v) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;u64 {}&quot;</span>, v),
@@ -1365,6 +1453,18 @@
 <span class="kw">impl </span>From&lt;bool&gt; <span class="kw">for </span>TaskInput {
     <span class="kw">fn </span>from(b: bool) -&gt; <span class="self">Self </span>{
         TaskInput::Bool(b)
+    }
+}
+
+<span class="kw">impl </span>From&lt;i16&gt; <span class="kw">for </span>TaskInput {
+    <span class="kw">fn </span>from(v: i16) -&gt; <span class="self">Self </span>{
+        TaskInput::I16(v)
+    }
+}
+
+<span class="kw">impl </span>From&lt;u16&gt; <span class="kw">for </span>TaskInput {
+    <span class="kw">fn </span>from(v: u16) -&gt; <span class="self">Self </span>{
+        TaskInput::U16(v)
     }
 }
 
@@ -1498,6 +1598,28 @@
                 .map(|i| FromTaskInput::try_from(i))
                 .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>),
             <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(<span class="macro">anyhow!</span>(<span class="string">&quot;invalid task input type, expected list&quot;</span>)),
+        }
+    }
+}
+
+<span class="kw">impl </span>FromTaskInput&lt;<span class="lifetime">&#39;_</span>&gt; <span class="kw">for </span>u16 {
+    <span class="kw">type </span>Error = anyhow::Error;
+
+    <span class="kw">fn </span>try_from(value: <span class="kw-2">&amp;</span>TaskInput) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+        <span class="kw">match </span>value {
+            TaskInput::U16(value) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span>value),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(<span class="macro">anyhow!</span>(<span class="string">&quot;invalid task input type, expected u16&quot;</span>)),
+        }
+    }
+}
+
+<span class="kw">impl </span>FromTaskInput&lt;<span class="lifetime">&#39;_</span>&gt; <span class="kw">for </span>i16 {
+    <span class="kw">type </span>Error = anyhow::Error;
+
+    <span class="kw">fn </span>try_from(value: <span class="kw-2">&amp;</span>TaskInput) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+        <span class="kw">match </span>value {
+            TaskInput::I16(value) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span>value),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(<span class="macro">anyhow!</span>(<span class="string">&quot;invalid task input type, expected i16&quot;</span>)),
         }
     }
 }
@@ -1646,5 +1768,51 @@
         }
     }
 }
+
+<span class="macro">macro_rules! </span>tuple_impls {
+    ( $( <span class="macro-nonterminal">$name</span>:ident )+ ) =&gt; {
+        <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$name</span>: Into&lt;TaskInput&gt;),+&gt; From&lt;($(<span class="macro-nonterminal">$name</span>,)+)&gt; <span class="kw">for </span>TaskInput {
+            <span class="attr">#[allow(non_snake_case)]
+            </span><span class="kw">fn </span>from(s: ($(<span class="macro-nonterminal">$name</span>,)+)) -&gt; <span class="self">Self </span>{
+                <span class="kw">let </span>($(<span class="macro-nonterminal">$name</span>,)+) = s;
+                <span class="kw">let </span>($(<span class="macro-nonterminal">$name</span>,)+) = ($(<span class="macro-nonterminal">$name</span>.into(),)+);
+                TaskInput::List(<span class="macro">vec!</span>[ $(<span class="macro-nonterminal">$name</span>,)+ ])
+            }
+        }
+
+        <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, $(<span class="macro-nonterminal">$name</span>: FromTaskInput&lt;<span class="lifetime">&#39;a</span>, Error = anyhow::Error&gt;,)+&gt; FromTaskInput&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>($(<span class="macro-nonterminal">$name</span>,)+) {
+            <span class="kw">type </span>Error = anyhow::Error;
+
+            <span class="attr">#[allow(non_snake_case)]
+            </span><span class="kw">fn </span>try_from(value: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>TaskInput) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+                <span class="kw">match </span>value {
+                    TaskInput::List(value) =&gt; {
+                        <span class="kw">let </span><span class="kw-2">mut </span>iter = value.iter();
+                        $(
+                            <span class="kw">let </span><span class="macro-nonterminal">$name </span>= iter.next().ok_or_else(|| <span class="macro">anyhow!</span>(<span class="string">&quot;missing tuple element&quot;</span>))<span class="question-mark">?</span>;
+                            <span class="kw">let </span><span class="macro-nonterminal">$name </span>= FromTaskInput::try_from(<span class="macro-nonterminal">$name</span>)<span class="question-mark">?</span>;
+                        )+
+                        <span class="prelude-val">Ok</span>(($(<span class="macro-nonterminal">$name</span>,)+))
+                    },
+                    <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(<span class="macro">anyhow!</span>(<span class="string">&quot;invalid task input type, expected list&quot;</span>)),
+                }
+            }
+        }
+    };
+
+}
+
+<span class="macro">tuple_impls! </span>{ A }
+<span class="macro">tuple_impls! </span>{ A B }
+<span class="macro">tuple_impls! </span>{ A B C }
+<span class="macro">tuple_impls! </span>{ A B C D }
+<span class="macro">tuple_impls! </span>{ A B C D E }
+<span class="macro">tuple_impls! </span>{ A B C D E F }
+<span class="macro">tuple_impls! </span>{ A B C D E F G }
+<span class="macro">tuple_impls! </span>{ A B C D E F G H }
+<span class="macro">tuple_impls! </span>{ A B C D E F G H I }
+<span class="macro">tuple_impls! </span>{ A B C D E F G H I J }
+<span class="macro">tuple_impls! </span>{ A B C D E F G H I J K }
+<span class="macro">tuple_impls! </span>{ A B C D E F G H I J K L }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="turbo_tasks" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.67.0-nightly (215e3cd21 2022-11-03)" ></div></body></html>

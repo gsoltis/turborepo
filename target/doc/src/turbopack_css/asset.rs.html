@@ -276,6 +276,24 @@
 <span id="276">276</span>
 <span id="277">277</span>
 <span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
 </pre><pre class="rust"><code><span class="kw">use </span>anyhow::Result;
 <span class="kw">use </span>swc_core::{
     common::{Globals, GLOBALS},
@@ -285,14 +303,18 @@
         visit::{VisitMutWith, VisitMutWithPath},
     },
 };
-<span class="kw">use </span>turbo_tasks::{primitives::StringVc, TryJoinIterExt, Value, ValueToString, ValueToStringVc};
+<span class="kw">use </span>turbo_tasks::{primitives::StringVc, TryJoinIterExt, Value, ValueToString};
 <span class="kw">use </span>turbo_tasks_fs::FileSystemPathVc;
 <span class="kw">use </span>turbopack_core::{
     asset::{Asset, AssetContentVc, AssetVc},
     chunk::{ChunkItem, ChunkItemVc, ChunkVc, ChunkableAsset, ChunkableAssetVc, ChunkingContextVc},
     context::AssetContextVc,
+    ident::AssetIdentVc,
     reference::{AssetReference, AssetReferencesVc},
-    resolve::origin::{ResolveOrigin, ResolveOriginVc},
+    resolve::{
+        origin::{ResolveOrigin, ResolveOriginVc},
+        PrimaryResolveResult,
+    },
 };
 
 <span class="kw">use crate</span>::{
@@ -300,13 +322,21 @@
         CssChunkItem, CssChunkItemContent, CssChunkItemContentVc, CssChunkItemVc,
         CssChunkPlaceable, CssChunkPlaceableVc, CssChunkVc, CssImport,
     },
-    code_gen::CodeGenerateableVc,
+    code_gen::{CodeGenerateable, CodeGenerateableVc},
     parse::{parse, ParseResult, ParseResultSourceMap, ParseResultVc},
     path_visitor::ApplyVisitors,
-    references::{analyze_css_stylesheet, import::ImportAssetReferenceVc},
+    references::{
+        analyze_css_stylesheet, compose::CssModuleComposeReferenceVc,
+        import::ImportAssetReferenceVc,
+    },
     transform::CssInputTransformsVc,
     CssModuleAssetType,
 };
+
+<span class="attr">#[turbo_tasks::function]
+</span><span class="kw">fn </span>modifier() -&gt; StringVc {
+    StringVc::cell(<span class="string">&quot;css&quot;</span>.to_string())
+}
 
 <span class="attr">#[turbo_tasks::value]
 #[derive(Clone)]
@@ -356,8 +386,8 @@
 <span class="attr">#[turbo_tasks::value_impl]
 </span><span class="kw">impl </span>Asset <span class="kw">for </span>CssModuleAsset {
     <span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">fn </span>path(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; FileSystemPathVc {
-        <span class="self">self</span>.source.path()
+    </span><span class="kw">fn </span>ident(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; AssetIdentVc {
+        <span class="self">self</span>.source.ident().with_modifier(modifier())
     }
 
     <span class="attr">#[turbo_tasks::function]
@@ -402,7 +432,7 @@
 </span><span class="kw">impl </span>ResolveOrigin <span class="kw">for </span>CssModuleAsset {
     <span class="attr">#[turbo_tasks::function]
     </span><span class="kw">fn </span>origin_path(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; FileSystemPathVc {
-        <span class="self">self</span>.source.path()
+        <span class="self">self</span>.source.ident().path()
     }
 
     <span class="attr">#[turbo_tasks::function]
@@ -418,18 +448,12 @@
 }
 
 <span class="attr">#[turbo_tasks::value_impl]
-</span><span class="kw">impl </span>ValueToString <span class="kw">for </span>ModuleChunkItem {
-    <span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">async fn </span>to_string(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;StringVc&gt; {
-        <span class="prelude-val">Ok</span>(StringVc::cell(<span class="macro">format!</span>(
-            <span class="string">&quot;{} (css)&quot;</span>,
-            <span class="self">self</span>.module.<span class="kw">await</span><span class="question-mark">?</span>.source.path().to_string().<span class="kw">await</span><span class="question-mark">?
-        </span>)))
-    }
-}
-
-<span class="attr">#[turbo_tasks::value_impl]
 </span><span class="kw">impl </span>ChunkItem <span class="kw">for </span>ModuleChunkItem {
+    <span class="attr">#[turbo_tasks::function]
+    </span><span class="kw">fn </span>asset_ident(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; AssetIdentVc {
+        <span class="self">self</span>.module.ident()
+    }
+
     <span class="attr">#[turbo_tasks::function]
     </span><span class="kw">fn </span>references(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; AssetReferencesVc {
         <span class="self">self</span>.module.references()
@@ -445,13 +469,25 @@
         <span class="kw">let </span>context = <span class="self">self</span>.context;
 
         <span class="kw">for </span>reference <span class="kw">in </span>references.iter() {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(import) = ImportAssetReferenceVc::resolve_from(reference).<span class="kw">await</span><span class="question-mark">? </span>{
-                <span class="kw">for </span>asset <span class="kw">in </span><span class="kw-2">&amp;*</span>import.resolve_reference().primary_assets().<span class="kw">await</span><span class="question-mark">? </span>{
-                    <span class="kw">if let </span><span class="prelude-val">Some</span>(placeable) = CssChunkPlaceableVc::resolve_from(asset).<span class="kw">await</span><span class="question-mark">? </span>{
-                        imports.push(CssImport::Internal(
-                            import,
-                            placeable.as_chunk_item(context),
-                        ));
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(import_ref) = ImportAssetReferenceVc::resolve_from(reference).<span class="kw">await</span><span class="question-mark">? </span>{
+                <span class="kw">for </span>result <span class="kw">in </span>import_ref.resolve_reference().<span class="kw">await</span><span class="question-mark">?</span>.primary.iter() {
+                    <span class="kw">if let </span>PrimaryResolveResult::Asset(asset) = result {
+                        <span class="kw">if let </span><span class="prelude-val">Some</span>(placeable) = CssChunkPlaceableVc::resolve_from(asset).<span class="kw">await</span><span class="question-mark">? </span>{
+                            imports.push(CssImport::Internal(
+                                import_ref,
+                                placeable.as_chunk_item(context),
+                            ));
+                        }
+                    }
+                }
+            } <span class="kw">else if let </span><span class="prelude-val">Some</span>(compose_ref) =
+                CssModuleComposeReferenceVc::resolve_from(reference).<span class="kw">await</span><span class="question-mark">?
+            </span>{
+                <span class="kw">for </span>result <span class="kw">in </span>compose_ref.resolve_reference().<span class="kw">await</span><span class="question-mark">?</span>.primary.iter() {
+                    <span class="kw">if let </span>PrimaryResolveResult::Asset(asset) = result {
+                        <span class="kw">if let </span><span class="prelude-val">Some</span>(placeable) = CssChunkPlaceableVc::resolve_from(asset).<span class="kw">await</span><span class="question-mark">? </span>{
+                            imports.push(CssImport::Composes(placeable.as_chunk_item(context)));
+                        }
                     }
                 }
             }
@@ -539,7 +575,7 @@
             <span class="prelude-val">Ok</span>(CssChunkItemContent {
                 inner_code: <span class="macro">format!</span>(
                     <span class="string">&quot;/* unparseable {} */&quot;</span>,
-                    <span class="self">self</span>.module.path().to_string().<span class="kw">await</span><span class="question-mark">?
+                    <span class="self">self</span>.module.ident().to_string().<span class="kw">await</span><span class="question-mark">?
                 </span>)
                 .into(),
                 imports: <span class="macro">vec!</span>[],

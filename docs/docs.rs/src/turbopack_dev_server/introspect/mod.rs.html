@@ -152,11 +152,21 @@
 <span id="152">152</span>
 <span id="153">153</span>
 <span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::{collections::HashSet, fmt::Display};
 
 <span class="kw">use </span>anyhow::Result;
-<span class="kw">use </span>turbo_tasks::{primitives::StringVc, TryJoinIterExt};
-<span class="kw">use </span>turbo_tasks_fs::{File, FileContent};
+<span class="kw">use </span>turbo_tasks::{primitives::StringVc, registry, CellId, RawVc, TryJoinIterExt};
+<span class="kw">use </span>turbo_tasks_fs::{json::parse_json_with_source_context, File, FileContent};
 <span class="kw">use </span>turbopack_core::{
     asset::AssetContent,
     introspect::{Introspectable, IntrospectableChildrenVc, IntrospectableVc},
@@ -164,7 +174,8 @@
 <span class="kw">use </span>turbopack_ecmascript::utils::FormatIter;
 
 <span class="kw">use </span><span class="kw">crate</span>::source::{
-    ContentSource, ContentSourceContent, ContentSourceData, ContentSourceResultVc, ContentSourceVc,
+    ContentSource, ContentSourceContentVc, ContentSourceData, ContentSourceResultVc,
+    ContentSourceVc,
 };
 
 <span class="attr">#[turbo_tasks::value(shared)]
@@ -240,14 +251,23 @@
                 self_vc.as_introspectable()
             }
         } <span class="kw">else </span>{
-            serde_json::from_str(path)<span class="question-mark">?
-        </span>};
+            parse_json_with_source_context(path)<span class="question-mark">?
+        </span>}
+        .resolve()
+        .<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>raw_vc: RawVc = introspectable.into();
+        <span class="kw">let </span>internal_ty = <span class="kw">if let </span>RawVc::TaskCell(<span class="kw">_</span>, CellId { type_id, index }) = raw_vc {
+            <span class="kw">let </span>value_ty = registry::get_value_type(type_id);
+            <span class="macro">format!</span>(<span class="string">&quot;{}#{}&quot;</span>, value_ty.name, index)
+        } <span class="kw">else </span>{
+            <span class="macro">unreachable!</span>()
+        };
         <span class="kw">let </span>ty = introspectable.ty().<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let </span>title = introspectable.title().<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let </span>details = introspectable.details().<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let </span>children = introspectable.children().<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let </span>has_children = !children.is_empty();
-        <span class="kw">let </span><span class="kw-2">mut </span>children = children
+        <span class="kw">let </span>children = children
             .iter()
             .map(|<span class="kw-2">&amp;</span>(name, child)| <span class="kw">async move </span>{
                 <span class="kw">let </span>name = name.<span class="kw">await</span><span class="question-mark">?</span>;
@@ -264,7 +284,6 @@
             })
             .try_join()
             .<span class="kw">await</span><span class="question-mark">?</span>;
-        children.sort();
         <span class="kw">let </span>details = <span class="kw">if </span>details.is_empty() {
             String::new()
         } <span class="kw">else if </span>has_children {
@@ -283,6 +302,7 @@
             <span class="string">&quot;&lt;!DOCTYPE html&gt;
 &lt;html&gt;&lt;head&gt;&lt;title&gt;{title}&lt;/title&gt;&lt;/head&gt;
 &lt;body&gt;
+  &lt;h3&gt;{internal_ty}&lt;/h3&gt;
   &lt;h2&gt;{ty}&lt;/h2&gt;
   &lt;h1&gt;{title}&lt;/h1&gt;
   {details}
@@ -294,7 +314,7 @@
             children = FormatIter(|| children.iter())
         );
         <span class="prelude-val">Ok</span>(ContentSourceResultVc::exact(
-            ContentSourceContent::Static(
+            ContentSourceContentVc::static_content(
                 AssetContent::File(
                     FileContent::Content(File::from(html).with_content_type(mime::TEXT_HTML_UTF_8))
                         .cell(),
@@ -302,7 +322,7 @@
                 .cell()
                 .into(),
             )
-            .cell(),
+            .into(),
         ))
     }
 }

@@ -292,16 +292,243 @@
 <span id="292">292</span>
 <span id="293">293</span>
 <span id="294">294</span>
-</pre><pre class="rust"><code><span class="kw">use </span>anyhow::Result;
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
+<span id="378">378</span>
+<span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
+<span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
+<span id="387">387</span>
+<span id="388">388</span>
+<span id="389">389</span>
+<span id="390">390</span>
+<span id="391">391</span>
+<span id="392">392</span>
+<span id="393">393</span>
+<span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
+<span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
+<span id="404">404</span>
+<span id="405">405</span>
+<span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+</pre><pre class="rust"><code><span class="kw">use </span>std::collections::{BTreeMap, HashMap};
+
+<span class="kw">use </span>anyhow::{Context, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>turbo_tasks::Value;
-<span class="kw">use </span>turbo_tasks_fs::{glob::GlobVc, FileSystemPathVc};
-<span class="kw">use </span>turbopack_core::resolve::{
-    options::{ImportMap, ImportMapVc, ImportMapping, ImportMappingVc, ResolvedMap, ResolvedMapVc},
-    AliasPattern,
+<span class="kw">use </span>turbo_tasks_fs::{glob::GlobVc, FileSystem, FileSystemPathVc};
+<span class="kw">use </span>turbopack::{resolve_options, resolve_options_context::ResolveOptionsContext};
+<span class="kw">use </span>turbopack_core::{
+    asset::Asset,
+    resolve::{
+        options::{
+            ConditionValue, ImportMap, ImportMapVc, ImportMapping, ImportMappingVc,
+            ResolveOptionsVc, ResolvedMap, ResolvedMapVc,
+        },
+        parse::RequestVc,
+        pattern::Pattern,
+        resolve, AliasPattern, ExportsValue, ResolveAliasMapVc,
+    },
 };
+<span class="kw">use </span>turbopack_node::execution_context::ExecutionContextVc;
 
 <span class="kw">use crate</span>::{
-    embed_js::{attached_next_js_package_path, VIRTUAL_PACKAGE_NAME},
+    embed_js::{next_js_fs, VIRTUAL_PACKAGE_NAME},
     next_client::context::ClientContextType,
     next_config::NextConfigVc,
     next_font_google::{NextFontGoogleCssModuleReplacerVc, NextFontGoogleReplacerVc},
@@ -310,13 +537,23 @@
 
 <span class="doccomment">/// Computes the Next-specific client import map.
 </span><span class="attr">#[turbo_tasks::function]
-</span><span class="kw">pub fn </span>get_next_client_import_map(
+</span><span class="kw">pub async fn </span>get_next_client_import_map(
     project_path: FileSystemPathVc,
     ty: Value&lt;ClientContextType&gt;,
-) -&gt; ImportMapVc {
+    next_config: NextConfigVc,
+    execution_context: ExecutionContextVc,
+) -&gt; <span class="prelude-ty">Result</span>&lt;ImportMapVc&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>import_map = ImportMap::empty();
 
-    insert_next_shared_aliases(<span class="kw-2">&amp;mut </span>import_map, project_path);
+    insert_next_shared_aliases(<span class="kw-2">&amp;mut </span>import_map, project_path, execution_context).<span class="kw">await</span><span class="question-mark">?</span>;
+
+    insert_alias_option(
+        <span class="kw-2">&amp;mut </span>import_map,
+        project_path,
+        next_config.resolve_alias_options(),
+        [<span class="string">&quot;browser&quot;</span>],
+    )
+    .<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">match </span>ty.into_value() {
         ClientContextType::Pages { pages_dir } =&gt; {
@@ -334,6 +571,14 @@
                 <span class="macro">vec!</span>[
                     request_to_import_mapping(pages_dir, <span class="string">&quot;./_document&quot;</span>),
                     request_to_import_mapping(pages_dir, <span class="string">&quot;next/document&quot;</span>),
+                ],
+            );
+            insert_alias_to_alternatives(
+                <span class="kw-2">&amp;mut </span>import_map,
+                <span class="macro">format!</span>(<span class="string">&quot;{VIRTUAL_PACKAGE_NAME}/internal/_error&quot;</span>),
+                <span class="macro">vec!</span>[
+                    request_to_import_mapping(pages_dir, <span class="string">&quot;./_error&quot;</span>),
+                    request_to_import_mapping(pages_dir, <span class="string">&quot;next/error&quot;</span>),
                 ],
             );
         }
@@ -358,24 +603,45 @@
         ClientContextType::Fallback =&gt; {}
         ClientContextType::Other =&gt; {}
     }
-    import_map.cell()
+
+    <span class="kw">match </span>ty.into_value() {
+        ClientContextType::Pages {
+            pages_dir: context_dir,
+        }
+        | ClientContextType::App {
+            app_dir: context_dir,
+        } =&gt; {
+            <span class="kw">for </span>(original, alias) <span class="kw">in </span>NEXT_ALIASES {
+                import_map.insert_exact_alias(
+                    <span class="macro">format!</span>(<span class="string">&quot;node:{original}&quot;</span>),
+                    request_to_import_mapping(context_dir, alias),
+                );
+            }
+        }
+        ClientContextType::Fallback =&gt; {}
+        ClientContextType::Other =&gt; {}
+    }
+
+    <span class="prelude-val">Ok</span>(import_map.cell())
 }
 
 <span class="doccomment">/// Computes the Next-specific client import map.
 </span><span class="attr">#[turbo_tasks::function]
-</span><span class="kw">pub fn </span>get_next_build_import_map(project_path: FileSystemPathVc) -&gt; ImportMapVc {
+</span><span class="kw">pub fn </span>get_next_build_import_map() -&gt; ImportMapVc {
     <span class="kw">let </span><span class="kw-2">mut </span>import_map = ImportMap::empty();
-
-    <span class="kw">let </span>package_root = attached_next_js_package_path(project_path);
 
     insert_package_alias(
         <span class="kw-2">&amp;mut </span>import_map,
         <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;{VIRTUAL_PACKAGE_NAME}/&quot;</span>),
-        package_root,
+        next_js_fs().root(),
     );
 
-    import_map.insert_exact_alias(<span class="string">&quot;next&quot;</span>, ImportMapping::External(<span class="prelude-val">None</span>).into());
-    import_map.insert_wildcard_alias(<span class="string">&quot;next/&quot;</span>, ImportMapping::External(<span class="prelude-val">None</span>).into());
+    <span class="kw">let </span>external = ImportMapping::External(<span class="prelude-val">None</span>).cell();
+
+    import_map.insert_exact_alias(<span class="string">&quot;next&quot;</span>, external);
+    import_map.insert_wildcard_alias(<span class="string">&quot;next/&quot;</span>, external);
+    import_map.insert_exact_alias(<span class="string">&quot;styled-jsx&quot;</span>, external);
+    import_map.insert_wildcard_alias(<span class="string">&quot;styled-jsx/&quot;</span>, external);
 
     import_map.cell()
 }
@@ -396,10 +662,6 @@
             <span class="kw">for </span>(original, alias) <span class="kw">in </span>NEXT_ALIASES {
                 import_map
                     .insert_exact_alias(original, request_to_import_mapping(context_dir, alias));
-                import_map.insert_exact_alias(
-                    <span class="macro">format!</span>(<span class="string">&quot;node:{original}&quot;</span>),
-                    request_to_import_mapping(context_dir, alias),
-                );
             }
         }
         ClientContextType::Fallback =&gt; {}
@@ -415,67 +677,81 @@
     project_path: FileSystemPathVc,
     ty: Value&lt;ServerContextType&gt;,
     next_config: NextConfigVc,
+    execution_context: ExecutionContextVc,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ImportMapVc&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>import_map = ImportMap::empty();
 
-    insert_next_shared_aliases(<span class="kw-2">&amp;mut </span>import_map, project_path);
+    insert_next_shared_aliases(<span class="kw-2">&amp;mut </span>import_map, project_path, execution_context).<span class="kw">await</span><span class="question-mark">?</span>;
 
-    <span class="kw">match </span>ty.into_value() {
-        ServerContextType::Pages { pages_dir } =&gt; {
-            insert_alias_to_alternatives(
-                <span class="kw-2">&amp;mut </span>import_map,
-                <span class="macro">format!</span>(<span class="string">&quot;{VIRTUAL_PACKAGE_NAME}/pages/_app&quot;</span>),
-                <span class="macro">vec!</span>[
-                    request_to_import_mapping(pages_dir, <span class="string">&quot;./_app&quot;</span>),
-                    external_request_to_import_mapping(<span class="string">&quot;next/app&quot;</span>),
-                ],
-            );
-            insert_alias_to_alternatives(
-                <span class="kw-2">&amp;mut </span>import_map,
-                <span class="macro">format!</span>(<span class="string">&quot;{VIRTUAL_PACKAGE_NAME}/pages/_document&quot;</span>),
-                <span class="macro">vec!</span>[
-                    request_to_import_mapping(pages_dir, <span class="string">&quot;./_document&quot;</span>),
-                    external_request_to_import_mapping(<span class="string">&quot;next/document&quot;</span>),
-                ],
-            );
+    insert_alias_option(
+        <span class="kw-2">&amp;mut </span>import_map,
+        project_path,
+        next_config.resolve_alias_options(),
+        [],
+    )
+    .<span class="kw">await</span><span class="question-mark">?</span>;
 
-            import_map.insert_exact_alias(<span class="string">&quot;next&quot;</span>, ImportMapping::External(<span class="prelude-val">None</span>).into());
-            import_map.insert_wildcard_alias(<span class="string">&quot;next/&quot;</span>, ImportMapping::External(<span class="prelude-val">None</span>).into());
-            import_map.insert_exact_alias(<span class="string">&quot;react&quot;</span>, ImportMapping::External(<span class="prelude-val">None</span>).into());
-            import_map.insert_wildcard_alias(<span class="string">&quot;react/&quot;</span>, ImportMapping::External(<span class="prelude-val">None</span>).into());
-            import_map.insert_exact_alias(<span class="string">&quot;react-dom&quot;</span>, ImportMapping::External(<span class="prelude-val">None</span>).into());
-            import_map.insert_wildcard_alias(<span class="string">&quot;react-dom/&quot;</span>, ImportMapping::External(<span class="prelude-val">None</span>).into());
+    import_map.insert_exact_alias(
+        <span class="string">&quot;@opentelemetry/api&quot;</span>,
+        <span class="comment">// TODO(WEB-625) this actually need to prefer the local version of @opentelemetry/api
+        </span>ImportMapping::External(<span class="prelude-val">Some</span>(<span class="string">&quot;next/dist/compiled/@opentelemetry/api&quot;</span>.to_string())).into(),
+    );
+
+    <span class="kw">let </span>ty = ty.into_value();
+
+    insert_next_server_special_aliases(<span class="kw-2">&amp;mut </span>import_map, ty).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>external = ImportMapping::External(<span class="prelude-val">None</span>).cell();
+
+    <span class="kw">match </span>ty {
+        ServerContextType::Pages { .. } | ServerContextType::PagesData { .. } =&gt; {
+            import_map.insert_exact_alias(<span class="string">&quot;next&quot;</span>, external);
+            import_map.insert_wildcard_alias(<span class="string">&quot;next/&quot;</span>, external);
+            import_map.insert_exact_alias(<span class="string">&quot;react&quot;</span>, external);
+            import_map.insert_wildcard_alias(<span class="string">&quot;react/&quot;</span>, external);
+            import_map.insert_exact_alias(<span class="string">&quot;react-dom&quot;</span>, external);
+            import_map.insert_wildcard_alias(<span class="string">&quot;react-dom/&quot;</span>, external);
+            import_map.insert_exact_alias(<span class="string">&quot;styled-jsx&quot;</span>, external);
+            import_map.insert_wildcard_alias(<span class="string">&quot;styled-jsx/&quot;</span>, external);
         }
-        ServerContextType::AppSSR { app_dir } | ServerContextType::AppRSC { app_dir } =&gt; {
-            import_map.insert_exact_alias(
-                <span class="string">&quot;react&quot;</span>,
-                request_to_import_mapping(app_dir, <span class="string">&quot;next/dist/compiled/react&quot;</span>),
-            );
-            import_map.insert_wildcard_alias(
-                <span class="string">&quot;react/&quot;</span>,
-                request_to_import_mapping(app_dir, <span class="string">&quot;next/dist/compiled/react/*&quot;</span>),
-            );
-            import_map.insert_exact_alias(
-                <span class="string">&quot;react-dom&quot;</span>,
-                request_to_import_mapping(
-                    app_dir,
-                    <span class="string">&quot;next/dist/compiled/react-dom/server-rendering-stub.js&quot;</span>,
-                ),
-            );
-            import_map.insert_wildcard_alias(
-                <span class="string">&quot;react-dom/&quot;</span>,
-                request_to_import_mapping(app_dir, <span class="string">&quot;next/dist/compiled/react-dom/*&quot;</span>),
-            );
-
-            <span class="kw">for </span>external <span class="kw">in </span>next_config.server_component_externals().<span class="kw">await</span><span class="question-mark">?</span>.iter() {
-                import_map.insert_exact_alias(external, ImportMapping::External(<span class="prelude-val">None</span>).into());
-                import_map.insert_wildcard_alias(
-                    <span class="macro">format!</span>(<span class="string">&quot;{external}/&quot;</span>),
-                    ImportMapping::External(<span class="prelude-val">None</span>).into(),
-                );
+        ServerContextType::AppSSR { .. }
+        | ServerContextType::AppRSC { .. }
+        | ServerContextType::AppRoute { .. } =&gt; {
+            <span class="kw">for </span>name <span class="kw">in </span>next_config.server_component_externals().<span class="kw">await</span><span class="question-mark">?</span>.iter() {
+                import_map.insert_exact_alias(name, external);
+                import_map.insert_wildcard_alias(<span class="macro">format!</span>(<span class="string">&quot;{name}/&quot;</span>), external);
             }
+            <span class="comment">// The sandbox can&#39;t be bundled and needs to be external
+            </span>import_map.insert_exact_alias(<span class="string">&quot;next/dist/server/web/sandbox&quot;</span>, external);
         }
+        ServerContextType::Middleware =&gt; {}
     }
+
+    <span class="prelude-val">Ok</span>(import_map.cell())
+}
+
+<span class="doccomment">/// Computes the Next-specific edge-side import map.
+</span><span class="attr">#[turbo_tasks::function]
+</span><span class="kw">pub async fn </span>get_next_edge_import_map(
+    project_path: FileSystemPathVc,
+    ty: Value&lt;ServerContextType&gt;,
+    next_config: NextConfigVc,
+    execution_context: ExecutionContextVc,
+) -&gt; <span class="prelude-ty">Result</span>&lt;ImportMapVc&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>import_map = ImportMap::empty();
+
+    insert_next_shared_aliases(<span class="kw-2">&amp;mut </span>import_map, project_path, execution_context).<span class="kw">await</span><span class="question-mark">?</span>;
+
+    insert_alias_option(
+        <span class="kw-2">&amp;mut </span>import_map,
+        project_path,
+        next_config.resolve_alias_options(),
+        [],
+    )
+    .<span class="kw">await</span><span class="question-mark">?</span>;
+
+    <span class="kw">let </span>ty = ty.into_value();
+
+    insert_next_server_special_aliases(<span class="kw-2">&amp;mut </span>import_map, ty).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(import_map.cell())
 }
@@ -488,9 +764,7 @@
         <span class="comment">// Temporary hack to replace the hot reloader until this is passable by props in next.js
         </span>(
             context,
-            GlobVc::new(
-                <span class="string">&quot;**/*/next/dist/client/components/react-dev-overlay/hot-reloader-client.js&quot;</span>,
-            ),
+            GlobVc::new(<span class="string">&quot;**/next/dist/client/components/react-dev-overlay/hot-reloader-client.js&quot;</span>),
             ImportMapping::PrimaryAlternative(
                 <span class="string">&quot;@vercel/turbopack-next/dev/hot-reloader.tsx&quot;</span>.to_string(),
                 <span class="prelude-val">Some</span>(root),
@@ -505,7 +779,7 @@
 }
 
 <span class="kw">static </span>NEXT_ALIASES: [(<span class="kw-2">&amp;</span>str, <span class="kw-2">&amp;</span>str); <span class="number">23</span>] = [
-    (<span class="string">&quot;asset&quot;</span>, <span class="string">&quot;next/dist/compiled/assert&quot;</span>),
+    (<span class="string">&quot;assert&quot;</span>, <span class="string">&quot;next/dist/compiled/assert&quot;</span>),
     (<span class="string">&quot;buffer&quot;</span>, <span class="string">&quot;next/dist/compiled/buffer&quot;</span>),
     (<span class="string">&quot;constants&quot;</span>, <span class="string">&quot;next/dist/compiled/constants-browserify&quot;</span>),
     (<span class="string">&quot;crypto&quot;</span>, <span class="string">&quot;next/dist/compiled/crypto-browserify&quot;</span>),
@@ -530,8 +804,72 @@
     (<span class="string">&quot;setImmediate&quot;</span>, <span class="string">&quot;next/dist/compiled/setimmediate&quot;</span>),
 ];
 
-<span class="kw">pub fn </span>insert_next_shared_aliases(import_map: <span class="kw-2">&amp;mut </span>ImportMap, project_path: FileSystemPathVc) {
-    <span class="kw">let </span>package_root = attached_next_js_package_path(project_path);
+<span class="kw">pub async fn </span>insert_next_server_special_aliases(
+    import_map: <span class="kw-2">&amp;mut </span>ImportMap,
+    ty: ServerContextType,
+) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">match </span>ty {
+        ServerContextType::Pages { pages_dir } =&gt; {
+            insert_alias_to_alternatives(
+                import_map,
+                <span class="macro">format!</span>(<span class="string">&quot;{VIRTUAL_PACKAGE_NAME}/pages/_app&quot;</span>),
+                <span class="macro">vec!</span>[
+                    request_to_import_mapping(pages_dir, <span class="string">&quot;./_app&quot;</span>),
+                    external_request_to_import_mapping(<span class="string">&quot;next/app&quot;</span>),
+                ],
+            );
+            insert_alias_to_alternatives(
+                import_map,
+                <span class="macro">format!</span>(<span class="string">&quot;{VIRTUAL_PACKAGE_NAME}/pages/_document&quot;</span>),
+                <span class="macro">vec!</span>[
+                    request_to_import_mapping(pages_dir, <span class="string">&quot;./_document&quot;</span>),
+                    external_request_to_import_mapping(<span class="string">&quot;next/document&quot;</span>),
+                ],
+            );
+            insert_alias_to_alternatives(
+                import_map,
+                <span class="macro">format!</span>(<span class="string">&quot;{VIRTUAL_PACKAGE_NAME}/internal/_error&quot;</span>),
+                <span class="macro">vec!</span>[
+                    request_to_import_mapping(pages_dir, <span class="string">&quot;./_error&quot;</span>),
+                    external_request_to_import_mapping(<span class="string">&quot;next/error&quot;</span>),
+                ],
+            );
+        }
+        ServerContextType::PagesData { .. } =&gt; {}
+        ServerContextType::AppSSR { app_dir }
+        | ServerContextType::AppRSC { app_dir }
+        | ServerContextType::AppRoute { app_dir } =&gt; {
+            import_map.insert_exact_alias(
+                <span class="string">&quot;react&quot;</span>,
+                request_to_import_mapping(app_dir, <span class="string">&quot;next/dist/compiled/react&quot;</span>),
+            );
+            import_map.insert_wildcard_alias(
+                <span class="string">&quot;react/&quot;</span>,
+                request_to_import_mapping(app_dir, <span class="string">&quot;next/dist/compiled/react/*&quot;</span>),
+            );
+            import_map.insert_exact_alias(
+                <span class="string">&quot;react-dom&quot;</span>,
+                request_to_import_mapping(
+                    app_dir,
+                    <span class="string">&quot;next/dist/compiled/react-dom/server-rendering-stub.js&quot;</span>,
+                ),
+            );
+            import_map.insert_wildcard_alias(
+                <span class="string">&quot;react-dom/&quot;</span>,
+                request_to_import_mapping(app_dir, <span class="string">&quot;next/dist/compiled/react-dom/*&quot;</span>),
+            );
+        }
+        ServerContextType::Middleware =&gt; {}
+    }
+    <span class="prelude-val">Ok</span>(())
+}
+
+<span class="kw">pub async fn </span>insert_next_shared_aliases(
+    import_map: <span class="kw-2">&amp;mut </span>ImportMap,
+    project_path: FileSystemPathVc,
+    execution_context: ExecutionContextVc,
+) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">let </span>package_root = next_js_fs().root();
 
     <span class="comment">// we use the next.js hydration code, so we replace the error overlay with our
     // own
@@ -548,14 +886,106 @@
 
     import_map.insert_alias(
         <span class="comment">// Request path from js via next-font swc transform
+        </span>AliasPattern::exact(<span class="string">&quot;next/font/google/target.css&quot;</span>),
+        ImportMapping::Dynamic(NextFontGoogleReplacerVc::new(project_path).into()).into(),
+    );
+
+    import_map.insert_alias(
+        <span class="comment">// Request path from js via next-font swc transform
         </span>AliasPattern::exact(<span class="string">&quot;@next/font/google/target.css&quot;</span>),
         ImportMapping::Dynamic(NextFontGoogleReplacerVc::new(project_path).into()).into(),
     );
 
     import_map.insert_alias(
         AliasPattern::exact(<span class="string">&quot;@vercel/turbopack-next/internal/font/google/cssmodule.module.css&quot;</span>),
-        ImportMapping::Dynamic(NextFontGoogleCssModuleReplacerVc::new(project_path).into()).into(),
+        ImportMapping::Dynamic(
+            NextFontGoogleCssModuleReplacerVc::new(project_path, execution_context).into(),
+        )
+        .into(),
     );
+
+    import_map.insert_singleton_alias(<span class="string">&quot;@swc/helpers&quot;</span>, get_next_package(project_path));
+    import_map.insert_singleton_alias(<span class="string">&quot;next&quot;</span>, project_path);
+    import_map.insert_singleton_alias(<span class="string">&quot;react&quot;</span>, project_path);
+    import_map.insert_singleton_alias(<span class="string">&quot;react-dom&quot;</span>, project_path);
+
+    <span class="prelude-val">Ok</span>(())
+}
+
+<span class="attr">#[turbo_tasks::function]
+</span><span class="kw">async fn </span>package_lookup_resolve_options(
+    project_path: FileSystemPathVc,
+) -&gt; <span class="prelude-ty">Result</span>&lt;ResolveOptionsVc&gt; {
+    <span class="prelude-val">Ok</span>(resolve_options(
+        project_path,
+        ResolveOptionsContext {
+            enable_node_modules: <span class="prelude-val">Some</span>(project_path.root().resolve().<span class="kw">await</span><span class="question-mark">?</span>),
+            enable_node_native_modules: <span class="bool-val">true</span>,
+            custom_conditions: <span class="macro">vec!</span>[<span class="string">&quot;development&quot;</span>.to_string()],
+            ..Default::default()
+        }
+        .cell(),
+    ))
+}
+
+<span class="attr">#[turbo_tasks::function]
+</span><span class="kw">pub async fn </span>get_next_package(project_path: FileSystemPathVc) -&gt; <span class="prelude-ty">Result</span>&lt;FileSystemPathVc&gt; {
+    <span class="kw">let </span>result = resolve(
+        project_path,
+        RequestVc::parse(Value::new(Pattern::Constant(
+            <span class="string">&quot;next/package.json&quot;</span>.to_string(),
+        ))),
+        package_lookup_resolve_options(project_path),
+    );
+    <span class="kw">let </span>assets = result.primary_assets().<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>asset = assets.first().context(<span class="string">&quot;Next.js package not found&quot;</span>)<span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(asset.ident().path().parent())
+}
+
+<span class="kw">pub async fn </span>insert_alias_option&lt;<span class="kw">const </span>N: usize&gt;(
+    import_map: <span class="kw-2">&amp;mut </span>ImportMap,
+    project_path: FileSystemPathVc,
+    alias_options: ResolveAliasMapVc,
+    conditions: [<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str; N],
+) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">let </span>conditions = BTreeMap::from(conditions.map(|c| (c.to_string(), ConditionValue::Set)));
+    <span class="kw">for </span>(alias, value) <span class="kw">in </span><span class="kw-2">&amp;</span>alias_options.<span class="kw">await</span><span class="question-mark">? </span>{
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(mapping) = export_value_to_import_mapping(value, <span class="kw-2">&amp;</span>conditions, project_path) {
+            import_map.insert_alias(alias, mapping);
+        }
+    }
+    <span class="prelude-val">Ok</span>(())
+}
+
+<span class="kw">fn </span>export_value_to_import_mapping(
+    value: <span class="kw-2">&amp;</span>ExportsValue,
+    conditions: <span class="kw-2">&amp;</span>BTreeMap&lt;String, ConditionValue&gt;,
+    project_path: FileSystemPathVc,
+) -&gt; <span class="prelude-ty">Option</span>&lt;ImportMappingVc&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>result = Vec::new();
+    value.add_results(
+        conditions,
+        <span class="kw-2">&amp;</span>ConditionValue::Unset,
+        <span class="kw-2">&amp;mut </span>HashMap::new(),
+        <span class="kw-2">&amp;mut </span>result,
+    );
+    <span class="kw">if </span>result.is_empty() {
+        <span class="prelude-val">None
+    </span>} <span class="kw">else </span>{
+        <span class="prelude-val">Some</span>(<span class="kw">if </span>result.len() == <span class="number">1 </span>{
+            ImportMapping::PrimaryAlternative(result[<span class="number">0</span>].to_string(), <span class="prelude-val">Some</span>(project_path)).cell()
+        } <span class="kw">else </span>{
+            ImportMapping::Alternatives(
+                result
+                    .iter()
+                    .map(|m| {
+                        ImportMapping::PrimaryAlternative(m.to_string(), <span class="prelude-val">Some</span>(project_path)).cell()
+                    })
+                    .collect(),
+            )
+            .cell()
+        })
+    }
 }
 
 <span class="doccomment">/// Inserts an alias to an alternative of import mappings into an import map.

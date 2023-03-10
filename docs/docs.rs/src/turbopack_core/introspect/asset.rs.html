@@ -89,16 +89,18 @@
 <span id="89">89</span>
 <span id="90">90</span>
 <span id="91">91</span>
-</pre><pre class="rust"><code><span class="kw">use </span>std::collections::HashSet;
-
-<span class="kw">use </span>anyhow::Result;
+<span id="92">92</span>
+<span id="93">93</span>
+</pre><pre class="rust"><code><span class="kw">use </span>anyhow::Result;
+<span class="kw">use </span>indexmap::IndexSet;
 <span class="kw">use </span>turbo_tasks::{primitives::StringVc, ValueToString};
 <span class="kw">use </span>turbo_tasks_fs::FileContent;
 
 <span class="kw">use super</span>::{Introspectable, IntrospectableChildrenVc, IntrospectableVc};
 <span class="kw">use crate</span>::{
-    asset::{AssetContent, AssetContentVc, AssetVc},
-    reference::AssetReferencesVc,
+    asset::{Asset, AssetContent, AssetContentVc, AssetVc},
+    reference::{AssetReference, AssetReferencesVc},
+    resolve::PrimaryResolveResult,
 };
 
 <span class="attr">#[turbo_tasks::value]
@@ -133,7 +135,7 @@
 
     <span class="attr">#[turbo_tasks::function]
     </span><span class="kw">fn </span>title(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StringVc {
-        <span class="self">self</span>.<span class="number">0</span>.path().to_string()
+        <span class="self">self</span>.<span class="number">0</span>.ident().to_string()
     }
 
     <span class="attr">#[turbo_tasks::function]
@@ -171,11 +173,13 @@
     references: AssetReferencesVc,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;IntrospectableChildrenVc&gt; {
     <span class="kw">let </span>key = reference_ty();
-    <span class="kw">let </span><span class="kw-2">mut </span>children = HashSet::new();
+    <span class="kw">let </span><span class="kw-2">mut </span>children = IndexSet::new();
     <span class="kw">let </span>references = references.<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="kw">for </span>reference <span class="kw">in </span><span class="kw-2">&amp;*</span>references {
-        <span class="kw">for </span>asset <span class="kw">in </span><span class="kw-2">&amp;*</span>reference.resolve_reference().primary_assets().<span class="kw">await</span><span class="question-mark">? </span>{
-            children.insert((key, IntrospectableAssetVc::new(<span class="kw-2">*</span>asset)));
+        <span class="kw">for </span>result <span class="kw">in </span>reference.resolve_reference().<span class="kw">await</span><span class="question-mark">?</span>.primary.iter() {
+            <span class="kw">if let </span>PrimaryResolveResult::Asset(asset) = result {
+                children.insert((key, IntrospectableAssetVc::new(<span class="kw-2">*</span>asset)));
+            }
         }
     }
     <span class="prelude-val">Ok</span>(IntrospectableChildrenVc::cell(children))

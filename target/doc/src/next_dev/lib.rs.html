@@ -545,6 +545,33 @@
 <span id="545">545</span>
 <span id="546">546</span>
 <span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
 </pre><pre class="rust"><code><span class="attr">#![feature(future_join)]
 #![feature(min_specialization)]
 
@@ -557,34 +584,37 @@
     future::{join, Future},
     io::{stdout, Write},
     net::{IpAddr, SocketAddr},
-    path::MAIN_SEPARATOR,
+    path::{PathBuf, MAIN_SEPARATOR},
     sync::Arc,
     time::{Duration, Instant},
 };
 
-<span class="kw">use </span>anyhow::{anyhow, Context, <span class="prelude-ty">Result</span>};
+<span class="kw">use </span>anyhow::{Context, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>devserver_options::DevServerOptions;
+<span class="kw">use </span>dunce::canonicalize;
 <span class="kw">use </span>next_core::{
-    create_app_source, create_page_source, create_web_entry_source, env::load_env,
-    manifest::DevManifestContentSource, next_config::load_next_config,
-    next_image::NextImageContentSourceVc, source_map::NextSourceMapTraceContentSourceVc,
+    app_structure::find_app_structure, create_app_source, create_page_source,
+    create_web_entry_source, env::load_env, manifest::DevManifestContentSource,
+    next_config::load_next_config, next_image::NextImageContentSourceVc,
+    pages_structure::find_pages_structure, router_source::NextRouterContentSourceVc,
+    source_map::NextSourceMapTraceContentSourceVc,
 };
 <span class="kw">use </span>owo_colors::OwoColorize;
 <span class="kw">use </span>turbo_malloc::TurboMalloc;
 <span class="kw">use </span>turbo_tasks::{
     util::{FormatBytes, FormatDuration},
-    RawVc, StatsType, TransientInstance, TransientValue, TurboTasks, TurboTasksBackendApi, Value,
+    StatsType, TransientInstance, TurboTasks, TurboTasksBackendApi, Value,
 };
-<span class="kw">use </span>turbo_tasks_fs::{DiskFileSystemVc, FileSystemVc};
+<span class="kw">use </span>turbo_tasks_fs::{DiskFileSystemVc, FileSystem, FileSystemVc};
 <span class="kw">use </span>turbo_tasks_memory::MemoryBackend;
-<span class="kw">use </span>turbopack_cli_utils::issue::{ConsoleUi, ConsoleUiVc, LogOptions};
+<span class="kw">use </span>turbopack_cli_utils::issue::{ConsoleUiVc, LogOptions};
 <span class="kw">use </span>turbopack_core::{
     environment::ServerAddr,
-    issue::IssueSeverity,
+    issue::{IssueReporterVc, IssueSeverity},
     resolve::{parse::RequestVc, pattern::QueryMapVc},
+    server_fs::ServerFileSystemVc,
 };
 <span class="kw">use </span>turbopack_dev_server::{
-    fs::DevServerFileSystemVc,
     introspect::IntrospectionSource,
     source::{
         combined::CombinedContentSourceVc, router::RouterContentSource,
@@ -608,6 +638,7 @@
     entry_requests: Vec&lt;EntryRequest&gt;,
     eager_compile: bool,
     hostname: <span class="prelude-ty">Option</span>&lt;IpAddr&gt;,
+    issue_reporter: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>IssueReporterProvider&gt;&gt;,
     port: <span class="prelude-ty">Option</span>&lt;u16&gt;,
     browserslist_query: String,
     log_level: IssueSeverity,
@@ -629,6 +660,7 @@
             entry_requests: <span class="macro">vec!</span>[],
             eager_compile: <span class="bool-val">false</span>,
             hostname: <span class="prelude-val">None</span>,
+            issue_reporter: <span class="prelude-val">None</span>,
             port: <span class="prelude-val">None</span>,
             browserslist_query: <span class="string">&quot;last 1 Chrome versions, last 1 Firefox versions, last 1 Safari \
                                  versions, last 1 Edge versions&quot;
@@ -685,6 +717,14 @@
         <span class="self">self
     </span>}
 
+    <span class="kw">pub fn </span>issue_reporter(
+        <span class="kw-2">mut </span><span class="self">self</span>,
+        issue_reporter: Box&lt;<span class="kw">dyn </span>IssueReporterProvider&gt;,
+    ) -&gt; NextDevServerBuilder {
+        <span class="self">self</span>.issue_reporter = <span class="prelude-val">Some</span>(issue_reporter);
+        <span class="self">self
+    </span>}
+
     <span class="doccomment">/// Attempts to find an open port to bind.
     </span><span class="kw">fn </span>find_port(<span class="kw-2">&amp;</span><span class="self">self</span>, host: IpAddr, port: u16, max_attempts: u16) -&gt; <span class="prelude-ty">Result</span>&lt;DevServerBuilder&gt; {
         <span class="comment">// max_attempts of 1 means we loop 0 times.
@@ -738,17 +778,21 @@
         <span class="kw">let </span>show_all = <span class="self">self</span>.show_all;
         <span class="kw">let </span>log_detail = <span class="self">self</span>.log_detail;
         <span class="kw">let </span>browserslist_query = <span class="self">self</span>.browserslist_query;
-        <span class="kw">let </span>log_options = LogOptions {
+        <span class="kw">let </span>log_options = Arc::new(LogOptions {
             current_dir: current_dir().unwrap(),
+            project_dir: PathBuf::from(project_dir.clone()),
             show_all,
             log_detail,
             log_level: <span class="self">self</span>.log_level,
-        };
+        });
         <span class="kw">let </span>entry_requests = Arc::new(<span class="self">self</span>.entry_requests);
-        <span class="kw">let </span>console_ui = Arc::new(ConsoleUi::new(log_options));
-        <span class="kw">let </span>console_ui_to_dev_server = console_ui.clone();
         <span class="kw">let </span>server_addr = Arc::new(server.addr);
         <span class="kw">let </span>tasks = turbo_tasks.clone();
+        <span class="kw">let </span>issue_provider = <span class="self">self</span>.issue_reporter.unwrap_or_else(|| {
+            <span class="comment">// Initialize a ConsoleUi reporter if no custom reporter was provided
+            </span>Box::new(<span class="kw">move </span>|| ConsoleUiVc::new(log_options.clone().into()).into())
+        });
+
         <span class="kw">let </span>source = <span class="kw">move </span>|| {
             source(
                 root_dir.clone(),
@@ -756,40 +800,26 @@
                 entry_requests.clone().into(),
                 eager_compile,
                 turbo_tasks.clone().into(),
-                console_ui.clone().into(),
                 browserslist_query.clone(),
                 server_addr.clone().into(),
             )
         };
 
-        <span class="prelude-val">Ok</span>(server.serve(tasks, source, console_ui_to_dev_server))
-    }
-}
-
-<span class="kw">async fn </span>handle_issues&lt;T: Into&lt;RawVc&gt;&gt;(source: T, console_ui: ConsoleUiVc) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    <span class="kw">let </span>state = console_ui
-        .group_and_display_issues(TransientValue::new(source.into()))
-        .<span class="kw">await</span><span class="question-mark">?</span>;
-
-    <span class="kw">if </span>state.has_fatal {
-        <span class="prelude-val">Err</span>(<span class="macro">anyhow!</span>(<span class="string">&quot;Fatal issue(s) occurred&quot;</span>))
-    } <span class="kw">else </span>{
-        <span class="prelude-val">Ok</span>(())
+        <span class="kw">let </span>issue_reporter_arc = Arc::new(<span class="kw">move </span>|| issue_provider.get_issue_reporter());
+        <span class="prelude-val">Ok</span>(server.serve(tasks, source, issue_reporter_arc))
     }
 }
 
 <span class="attr">#[turbo_tasks::function]
-</span><span class="kw">async fn </span>project_fs(project_dir: <span class="kw-2">&amp;</span>str, console_ui: ConsoleUiVc) -&gt; <span class="prelude-ty">Result</span>&lt;FileSystemVc&gt; {
+</span><span class="kw">async fn </span>project_fs(project_dir: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;FileSystemVc&gt; {
     <span class="kw">let </span>disk_fs = DiskFileSystemVc::new(<span class="string">&quot;project&quot;</span>.to_string(), project_dir.to_string());
-    handle_issues(disk_fs, console_ui).<span class="kw">await</span><span class="question-mark">?</span>;
     disk_fs.<span class="kw">await</span><span class="question-mark">?</span>.start_watching()<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(disk_fs.into())
 }
 
 <span class="attr">#[turbo_tasks::function]
-</span><span class="kw">async fn </span>output_fs(project_dir: <span class="kw-2">&amp;</span>str, console_ui: ConsoleUiVc) -&gt; <span class="prelude-ty">Result</span>&lt;FileSystemVc&gt; {
+</span><span class="kw">async fn </span>output_fs(project_dir: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;FileSystemVc&gt; {
     <span class="kw">let </span>disk_fs = DiskFileSystemVc::new(<span class="string">&quot;output&quot;</span>.to_string(), project_dir.to_string());
-    handle_issues(disk_fs, console_ui).<span class="kw">await</span><span class="question-mark">?</span>;
     disk_fs.<span class="kw">await</span><span class="question-mark">?</span>.start_watching()<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(disk_fs.into())
 }
@@ -802,30 +832,29 @@
     entry_requests: TransientInstance&lt;Vec&lt;EntryRequest&gt;&gt;,
     eager_compile: bool,
     turbo_tasks: TransientInstance&lt;TurboTasks&lt;MemoryBackend&gt;&gt;,
-    console_ui: TransientInstance&lt;ConsoleUi&gt;,
     browserslist_query: String,
     server_addr: TransientInstance&lt;SocketAddr&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ContentSourceVc&gt; {
-    <span class="kw">let </span>console_ui = (<span class="kw-2">*</span>console_ui).clone().cell();
-    <span class="kw">let </span>output_fs = output_fs(<span class="kw-2">&amp;</span>project_dir, console_ui);
-    <span class="kw">let </span>fs = project_fs(<span class="kw-2">&amp;</span>root_dir, console_ui);
+    <span class="kw">let </span>output_fs = output_fs(<span class="kw-2">&amp;</span>project_dir);
+    <span class="kw">let </span>fs = project_fs(<span class="kw-2">&amp;</span>root_dir);
     <span class="kw">let </span>project_relative = project_dir.strip_prefix(<span class="kw-2">&amp;</span>root_dir).unwrap();
     <span class="kw">let </span>project_relative = project_relative
         .strip_prefix(MAIN_SEPARATOR)
-        .unwrap_or(project_relative);
-    <span class="kw">let </span>project_path = fs.root().join(project_relative);
+        .unwrap_or(project_relative)
+        .replace(MAIN_SEPARATOR, <span class="string">&quot;/&quot;</span>);
+    <span class="kw">let </span>project_path = fs.root().join(<span class="kw-2">&amp;</span>project_relative);
 
     <span class="kw">let </span>env = load_env(project_path);
     <span class="kw">let </span>build_output_root = output_fs.root().join(<span class="string">&quot;.next/build&quot;</span>);
 
-    <span class="kw">let </span>execution_context = ExecutionContextVc::new(project_path, build_output_root);
+    <span class="kw">let </span>execution_context = ExecutionContextVc::new(project_path, build_output_root, env);
 
     <span class="kw">let </span>next_config = load_next_config(execution_context.join(<span class="string">&quot;next_config&quot;</span>));
 
     <span class="kw">let </span>output_root = output_fs.root().join(<span class="string">&quot;.next/server&quot;</span>);
     <span class="kw">let </span>server_addr = ServerAddr::new(<span class="kw-2">*</span>server_addr).cell();
 
-    <span class="kw">let </span>dev_server_fs = DevServerFileSystemVc::new().as_file_system();
+    <span class="kw">let </span>dev_server_fs = ServerFileSystemVc::new().as_file_system();
     <span class="kw">let </span>dev_server_root = dev_server_fs.root();
     <span class="kw">let </span>entry_requests = entry_requests
         .iter()
@@ -847,7 +876,9 @@
         <span class="kw-2">&amp;</span>browserslist_query,
         next_config,
     );
+    <span class="kw">let </span>pages_structure = find_pages_structure(project_path, dev_server_root, next_config);
     <span class="kw">let </span>page_source = create_page_source(
+        pages_structure,
         project_path,
         execution_context,
         output_root.join(<span class="string">&quot;pages&quot;</span>),
@@ -857,7 +888,9 @@
         next_config,
         server_addr,
     );
+    <span class="kw">let </span>app_structure = find_app_structure(project_path, dev_server_root, next_config);
     <span class="kw">let </span>app_source = create_app_source(
+        app_structure,
         project_path,
         execution_context,
         output_root.join(<span class="string">&quot;app&quot;</span>),
@@ -876,6 +909,7 @@
         StaticAssetsContentSourceVc::new(String::new(), project_path.join(<span class="string">&quot;public&quot;</span>)).into();
     <span class="kw">let </span>manifest_source = DevManifestContentSource {
         page_roots: <span class="macro">vec!</span>[app_source, page_source],
+        next_config,
     }
     .cell()
     .into();
@@ -898,6 +932,15 @@
         CombinedContentSourceVc::new(<span class="macro">vec!</span>[static_source, page_source]).into(),
     )
     .into();
+    <span class="kw">let </span>router_source = NextRouterContentSourceVc::new(
+        main_source,
+        execution_context,
+        next_config,
+        server_addr,
+        app_structure,
+        pages_structure,
+    )
+    .into();
     <span class="kw">let </span>source = RouterContentSource {
         routes: <span class="macro">vec!</span>[
             (<span class="string">&quot;__turbopack__/&quot;</span>.to_string(), introspect),
@@ -910,14 +953,10 @@
             </span>(<span class="string">&quot;_next/image&quot;</span>.to_string(), img_source),
             (<span class="string">&quot;__turbopack_sourcemap__/&quot;</span>.to_string(), source_maps),
         ],
-        fallback: main_source,
+        fallback: router_source,
     }
     .cell()
     .into();
-
-    handle_issues(dev_server_fs, console_ui).<span class="kw">await</span><span class="question-mark">?</span>;
-    handle_issues(web_source, console_ui).<span class="kw">await</span><span class="question-mark">?</span>;
-    handle_issues(page_source, console_ui).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(source)
 }
@@ -938,7 +977,7 @@
     <span class="kw">let </span>dir = options
         .dir
         .as_ref()
-        .map(|dir| dir.canonicalize())
+        .map(canonicalize)
         .unwrap_or_else(current_dir)
         .context(<span class="string">&quot;project directory can&#39;t be found&quot;</span>)<span class="question-mark">?
         </span>.to_str()
@@ -946,7 +985,7 @@
         </span>.to_string();
 
     <span class="kw">let </span>root_dir = <span class="kw">if let </span><span class="prelude-val">Some</span>(root) = options.root.as_ref() {
-        root.canonicalize()
+        canonicalize(root)
             .context(<span class="string">&quot;root directory can&#39;t be found&quot;</span>)<span class="question-mark">?
             </span>.to_str()
             .context(<span class="string">&quot;root directory contains invalid characters&quot;</span>)<span class="question-mark">?
@@ -955,7 +994,9 @@
         dir.clone()
     };
 
-    <span class="kw">let </span>tt = TurboTasks::new(MemoryBackend::new());
+    <span class="kw">let </span>tt = TurboTasks::new(MemoryBackend::new(
+        options.memory_limit.map_or(usize::MAX, |l| l * <span class="number">1024 </span>* <span class="number">1024</span>),
+    ));
 
     <span class="kw">let </span>stats_type = <span class="kw">match </span>options.full_stats {
         <span class="bool-val">true </span>=&gt; StatsType::Full,
@@ -1091,6 +1132,19 @@
     future: <span class="kw">impl </span>Future&lt;Output = T&gt;,
 ) -&gt; <span class="kw">impl </span>Future&lt;Output = T&gt; {
     future
+}
+
+<span class="kw">pub trait </span>IssueReporterProvider: Send + Sync + <span class="lifetime">&#39;static </span>{
+    <span class="kw">fn </span>get_issue_reporter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; IssueReporterVc;
+}
+
+<span class="kw">impl</span>&lt;T&gt; IssueReporterProvider <span class="kw">for </span>T
+<span class="kw">where
+    </span>T: Fn() -&gt; IssueReporterVc + Send + Sync + Clone + <span class="lifetime">&#39;static</span>,
+{
+    <span class="kw">fn </span>get_issue_reporter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; IssueReporterVc {
+        <span class="self">self</span>()
+    }
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="next_dev" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.67.0-nightly (215e3cd21 2022-11-03)" ></div></body></html>

@@ -81,7 +81,7 @@
 };
 <span class="kw">use </span>turbo_tasks::primitives::StringVc;
 <span class="kw">use </span>turbopack_core::{
-    asset::AssetVc,
+    asset::{Asset, AssetVc},
     issue::{analyze::AnalyzeIssue, IssueSeverity, IssueSourceVc},
 };
 
@@ -136,7 +136,7 @@
             }
             .cell(),
             category: StringVc::cell(<span class="string">&quot;parse&quot;</span>.to_string()),
-            path: <span class="self">self</span>.source.path(),
+            source_ident: <span class="self">self</span>.source.ident(),
             title: StringVc::cell(title),
             message: StringVc::cell(message),
             code,

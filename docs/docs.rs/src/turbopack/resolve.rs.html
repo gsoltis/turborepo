@@ -271,12 +271,10 @@
 <span id="271">271</span>
 <span id="272">272</span>
 <span id="273">273</span>
-<span id="274">274</span>
-<span id="275">275</span>
 </pre><pre class="rust"><code><span class="kw">use </span>std::collections::BTreeMap;
 
 <span class="kw">use </span>anyhow::Result;
-<span class="kw">use </span>turbo_tasks_fs::FileSystemPathVc;
+<span class="kw">use </span>turbo_tasks_fs::{FileSystem, FileSystemPathVc};
 <span class="kw">use </span>turbopack_core::resolve::{
     find_context_file,
     options::{
@@ -285,9 +283,8 @@
     },
     AliasMap, AliasPattern, FindContextFileResult,
 };
-<span class="kw">use </span>turbopack_ecmascript::{
-    resolve::apply_cjs_specific_options,
-    typescript::resolve::{apply_tsconfig_resolve_options, tsconfig, tsconfig_resolve_options},
+<span class="kw">use </span>turbopack_ecmascript::typescript::resolve::{
+    apply_tsconfig_resolve_options, tsconfig, tsconfig_resolve_options,
 };
 
 <span class="kw">use </span><span class="kw">crate</span>::resolve_options_context::ResolveOptionsContextVc;
@@ -353,7 +350,7 @@
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ResolveOptionsVc&gt; {
     <span class="kw">let </span>parent = context.parent().resolve().<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="kw">if </span>parent != context {
-        <span class="kw">return </span><span class="prelude-val">Ok</span>(resolve_options(parent, options_context));
+        <span class="kw">return </span><span class="prelude-val">Ok</span>(base_resolve_options(parent, options_context));
     }
     <span class="kw">let </span>context_value = context.<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="kw">let </span>opt = options_context.<span class="kw">await</span><span class="question-mark">?</span>;
@@ -417,9 +414,9 @@
             }
         } <span class="kw">else </span>{
             <span class="kw">let </span><span class="kw-2">mut </span>mods = Vec::new();
-            <span class="kw">if </span>opt.enable_node_modules {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(dir) = opt.enable_node_modules {
                 mods.push(ResolveModules::Nested(
-                    root,
+                    dir,
                     <span class="macro">vec!</span>[<span class="string">&quot;node_modules&quot;</span>.to_string()],
                 ));
             }
@@ -450,7 +447,7 @@
                     <span class="kw">for </span>condition <span class="kw">in </span>opt.custom_conditions.iter() {
                         conditions.insert(condition.to_string(), ConditionValue::Set);
                     }
-                    <span class="comment">// Infer some well known conditions
+                    <span class="comment">// Infer some well-known conditions
                     </span><span class="kw">let </span>dev = conditions.get(<span class="string">&quot;development&quot;</span>).cloned();
                     <span class="kw">let </span>prod = conditions.get(<span class="string">&quot;production&quot;</span>).cloned();
                     <span class="kw">if </span>prod.is_none() {
@@ -496,6 +493,7 @@
         },
         import_map: <span class="prelude-val">Some</span>(import_map),
         resolved_map: opt.resolved_map,
+        plugins: opt.plugins.clone(),
         ..Default::default()
     }
     .into())
@@ -520,12 +518,10 @@
 
     <span class="kw">let </span>resolve_options = <span class="kw">if </span>options_context_value.enable_typescript {
         <span class="kw">let </span>tsconfig = find_context_file(context, tsconfig()).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span>cjs_resolve_options = apply_cjs_specific_options(resolve_options);
         <span class="kw">match </span><span class="kw-2">*</span>tsconfig {
-            FindContextFileResult::Found(path, <span class="kw">_</span>) =&gt; apply_tsconfig_resolve_options(
-                resolve_options,
-                tsconfig_resolve_options(path, cjs_resolve_options),
-            ),
+            FindContextFileResult::Found(path, <span class="kw">_</span>) =&gt; {
+                apply_tsconfig_resolve_options(resolve_options, tsconfig_resolve_options(path))
+            }
             FindContextFileResult::NotFound(<span class="kw">_</span>) =&gt; resolve_options,
         }
     } <span class="kw">else </span>{
