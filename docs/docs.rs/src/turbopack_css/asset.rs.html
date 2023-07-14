@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/turbopack-css/src/asset.rs`."><title>asset.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../turbopack_css/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/turbopack-css/src/asset.rs`."><title>asset.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-a23c9d150ad85d8b.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="turbopack_css" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0-nightly (839e9a6e1 2023-07-02)" data-channel="nightly" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../turbopack_css/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -294,7 +294,18 @@
 <a href="#294" id="294">294</a>
 <a href="#295" id="295">295</a>
 <a href="#296" id="296">296</a>
-</pre><pre class="rust"><code><span class="kw">use </span>anyhow::Result;
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::Result;
 <span class="kw">use </span>swc_core::{
     common::{Globals, GLOBALS},
     css::{
@@ -307,14 +318,19 @@
 <span class="kw">use </span>turbo_tasks_fs::FileSystemPathVc;
 <span class="kw">use </span>turbopack_core::{
     asset::{Asset, AssetContentVc, AssetVc},
-    chunk::{ChunkItem, ChunkItemVc, ChunkVc, ChunkableAsset, ChunkableAssetVc, ChunkingContextVc},
+    chunk::{
+        availability_info::AvailabilityInfo, ChunkItem, ChunkItemVc, ChunkVc, ChunkableModule,
+        ChunkableModuleVc, ChunkingContextVc,
+    },
     context::AssetContextVc,
     ident::AssetIdentVc,
+    module::{Module, ModuleVc},
     reference::{AssetReference, AssetReferencesVc},
     resolve::{
         origin::{ResolveOrigin, ResolveOriginVc},
         PrimaryResolveResult,
     },
+    source::SourceVc,
 };
 
 <span class="kw">use crate</span>::{
@@ -323,7 +339,9 @@
         CssChunkPlaceable, CssChunkPlaceableVc, CssChunkVc, CssImport,
     },
     code_gen::{CodeGenerateable, CodeGenerateableVc},
-    parse::{parse, ParseResult, ParseResultSourceMap, ParseResultVc},
+    parse::{
+        parse_css, ParseCss, ParseCssResult, ParseCssResultSourceMap, ParseCssResultVc, ParseCssVc,
+    },
     path_visitor::ApplyVisitors,
     references::{
         analyze_css_stylesheet, compose::CssModuleComposeReferenceVc,
@@ -341,45 +359,42 @@
 <span class="attr">#[turbo_tasks::value]
 #[derive(Clone)]
 </span><span class="kw">pub struct </span>CssModuleAsset {
-    <span class="kw">pub </span>source: AssetVc,
-    <span class="kw">pub </span>context: AssetContextVc,
-    <span class="kw">pub </span>transforms: CssInputTransformsVc,
-    <span class="kw">pub </span>ty: CssModuleAssetType,
+    source: SourceVc,
+    context: AssetContextVc,
+    transforms: CssInputTransformsVc,
+    ty: CssModuleAssetType,
 }
 
 <span class="attr">#[turbo_tasks::value_impl]
 </span><span class="kw">impl </span>CssModuleAssetVc {
-    <span class="doccomment">/// Creates a new CSS asset. The CSS is treated as global CSS.
+    <span class="doccomment">/// Creates a new CSS asset.
     </span><span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">pub fn </span>new(source: AssetVc, context: AssetContextVc, transforms: CssInputTransformsVc) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::cell(CssModuleAsset {
-            source,
-            context,
-            transforms,
-            ty: CssModuleAssetType::Global,
-        })
-    }
-
-    <span class="doccomment">/// Creates a new CSS asset. The CSS is treated as CSS module.
-    </span><span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">pub fn </span>new_module(
-        source: AssetVc,
+    </span><span class="kw">pub fn </span>new(
+        source: SourceVc,
         context: AssetContextVc,
         transforms: CssInputTransformsVc,
+        ty: CssModuleAssetType,
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::cell(CssModuleAsset {
             source,
             context,
             transforms,
-            ty: CssModuleAssetType::Module,
+            ty,
         })
     }
 
-    <span class="doccomment">/// Returns the parsed css.
+    <span class="doccomment">/// Retrns the asset ident of the source without the &quot;css&quot; modifier
     </span><span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>parse(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;ParseResultVc&gt; {
-        <span class="kw">let </span>this = <span class="self">self</span>.<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(parse(this.source, Value::new(this.ty), this.transforms))
+    </span><span class="kw">pub async fn </span>source_ident(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;AssetIdentVc&gt; {
+        <span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="kw">await</span><span class="question-mark">?</span>.source.ident())
+    }
+}
+
+<span class="attr">#[turbo_tasks::value_impl]
+</span><span class="kw">impl </span>ParseCss <span class="kw">for </span>CssModuleAsset {
+    <span class="attr">#[turbo_tasks::function]
+    </span><span class="kw">fn </span>parse_css(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ParseCssResultVc {
+        parse_css(<span class="self">self</span>.source, <span class="self">self</span>.ty, <span class="self">self</span>.transforms)
     }
 }
 
@@ -402,17 +417,24 @@
         </span><span class="prelude-val">Ok</span>(analyze_css_stylesheet(
             this.source,
             self_vc.as_resolve_origin(),
-            Value::new(this.ty),
+            this.ty,
             this.transforms,
         ))
     }
 }
 
 <span class="attr">#[turbo_tasks::value_impl]
-</span><span class="kw">impl </span>ChunkableAsset <span class="kw">for </span>CssModuleAsset {
+</span><span class="kw">impl </span>Module <span class="kw">for </span>CssModuleAsset {}
+
+<span class="attr">#[turbo_tasks::value_impl]
+</span><span class="kw">impl </span>ChunkableModule <span class="kw">for </span>CssModuleAsset {
     <span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">fn </span>as_chunk(self_vc: CssModuleAssetVc, context: ChunkingContextVc) -&gt; ChunkVc {
-        CssChunkVc::new(context, self_vc.into()).into()
+    </span><span class="kw">fn </span>as_chunk(
+        self_vc: CssModuleAssetVc,
+        context: ChunkingContextVc,
+        availability_info: Value&lt;AvailabilityInfo&gt;,
+    ) -&gt; ChunkVc {
+        CssChunkVc::new(context, self_vc.into(), availability_info).into()
     }
 }
 
@@ -420,7 +442,7 @@
 </span><span class="kw">impl </span>CssChunkPlaceable <span class="kw">for </span>CssModuleAsset {
     <span class="attr">#[turbo_tasks::function]
     </span><span class="kw">fn </span>as_chunk_item(self_vc: CssModuleAssetVc, context: ChunkingContextVc) -&gt; CssChunkItemVc {
-        ModuleChunkItemVc::cell(ModuleChunkItem {
+        CssModuleChunkItemVc::cell(CssModuleChunkItem {
             module: self_vc,
             context,
         })
@@ -442,13 +464,13 @@
 }
 
 <span class="attr">#[turbo_tasks::value]
-</span><span class="kw">struct </span>ModuleChunkItem {
+</span><span class="kw">struct </span>CssModuleChunkItem {
     module: CssModuleAssetVc,
     context: ChunkingContextVc,
 }
 
 <span class="attr">#[turbo_tasks::value_impl]
-</span><span class="kw">impl </span>ChunkItem <span class="kw">for </span>ModuleChunkItem {
+</span><span class="kw">impl </span>ChunkItem <span class="kw">for </span>CssModuleChunkItem {
     <span class="attr">#[turbo_tasks::function]
     </span><span class="kw">fn </span>asset_ident(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; AssetIdentVc {
         <span class="self">self</span>.module.ident()
@@ -461,7 +483,7 @@
 }
 
 <span class="attr">#[turbo_tasks::value_impl]
-</span><span class="kw">impl </span>CssChunkItem <span class="kw">for </span>ModuleChunkItem {
+</span><span class="kw">impl </span>CssChunkItem <span class="kw">for </span>CssModuleChunkItem {
     <span class="attr">#[turbo_tasks::function]
     </span><span class="kw">async fn </span>content(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;CssChunkItemContentVc&gt; {
         <span class="kw">let </span>references = <span class="kw-2">&amp;*</span><span class="self">self</span>.module.references().<span class="kw">await</span><span class="question-mark">?</span>;
@@ -519,9 +541,9 @@
             }
         }
 
-        <span class="kw">let </span>parsed = <span class="self">self</span>.module.parse().<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>parsed = <span class="self">self</span>.module.parse_css().<span class="kw">await</span><span class="question-mark">?</span>;
 
-        <span class="kw">if let </span>ParseResult::Ok {
+        <span class="kw">if let </span>ParseCssResult::Ok {
             stylesheet,
             source_map,
             ..
@@ -563,7 +585,7 @@
 
             code_gen.emit(<span class="kw-2">&amp;</span>stylesheet)<span class="question-mark">?</span>;
 
-            <span class="kw">let </span>srcmap = ParseResultSourceMap::new(source_map.clone(), srcmap).cell();
+            <span class="kw">let </span>srcmap = ParseCssResultSourceMap::new(source_map.clone(), srcmap).cell();
 
             <span class="prelude-val">Ok</span>(CssChunkItemContent {
                 inner_code: code_string.into(),
@@ -590,5 +612,4 @@
         <span class="self">self</span>.context
     }
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="turbopack_css" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (900c35403 2023-03-08)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

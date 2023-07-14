@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/turbo-tasks/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../turbo_tasks/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/turbo-tasks/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-a23c9d150ad85d8b.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="turbo_tasks" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0-nightly (839e9a6e1 2023-07-02)" data-channel="nightly" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../turbo_tasks/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -110,7 +110,13 @@
 <a href="#110" id="110">110</a>
 <a href="#111" id="111">111</a>
 <a href="#112" id="112">112</a>
-</pre><pre class="rust"><code><span class="doccomment">//! A task scheduling and caching system that is focused on incremental
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+</pre></div><pre class="rust"><code><span class="doccomment">//! A task scheduling and caching system that is focused on incremental
 //! execution.
 //!
 //! It defines 4 primitives:
@@ -137,10 +143,9 @@
 </span><span class="attr">#![feature(trivial_bounds)]
 #![feature(min_specialization)]
 #![feature(try_trait_v2)]
-#![feature(hash_drain_filter)]
+#![feature(hash_extract_if)]
 #![deny(unsafe_op_in_unsafe_fn)]
 #![feature(result_flattening)]
-#![feature(box_syntax)]
 #![feature(error_generic_member_access)]
 #![feature(provide_any)]
 #![feature(new_uninit)]
@@ -151,11 +156,15 @@
 <span class="kw">mod </span>completion;
 <span class="kw">pub mod </span>debug;
 <span class="kw">mod </span>display;
+<span class="kw">pub mod </span>duration_span;
 <span class="kw">pub mod </span>event;
 <span class="kw">pub mod </span>graph;
 <span class="kw">mod </span>id;
 <span class="kw">mod </span>id_factory;
+<span class="kw">mod </span>invalidation;
 <span class="kw">mod </span>join_iter_ext;
+<span class="attr">#[doc(hidden)]
+</span><span class="kw">pub mod </span>macro_helpers;
 <span class="kw">mod </span>magic_any;
 <span class="kw">mod </span>manager;
 <span class="kw">mod </span>native_function;
@@ -185,11 +194,15 @@
     with_task_id_mapping, without_task_id_mapping, FunctionId, IdMapping, TaskId, TraitTypeId,
     ValueTypeId,
 };
+<span class="kw">pub use </span>invalidation::{
+    DynamicEqHash, InvalidationReason, InvalidationReasonKind, InvalidationReasonSet,
+};
 <span class="kw">pub use </span>join_iter_ext::{JoinIterExt, TryJoinIterExt};
 <span class="kw">pub use </span>manager::{
-    dynamic_call, emit, get_invalidator, mark_stateful, run_once, spawn_blocking, spawn_thread,
-    trait_call, turbo_tasks, Invalidator, StatsType, TaskIdProvider, TurboTasks, TurboTasksApi,
-    TurboTasksBackendApi, TurboTasksCallApi, Unused,
+    dynamic_call, emit, get_invalidator, mark_finished, mark_stateful, run_once,
+    run_once_with_reason, spawn_blocking, spawn_thread, trait_call, turbo_tasks, Invalidator,
+    StatsType, TaskIdProvider, TurboTasks, TurboTasksApi, TurboTasksBackendApi, TurboTasksCallApi,
+    Unused, UpdateInfo,
 };
 <span class="kw">pub use </span>native_function::{NativeFunction, NativeFunctionVc};
 <span class="kw">pub use </span>nothing::{Nothing, NothingVc};
@@ -201,19 +214,12 @@
 <span class="kw">pub use </span>state::State;
 <span class="kw">pub use </span>task_input::{FromTaskInput, SharedReference, SharedValue, TaskInput};
 <span class="kw">pub use </span>trait_ref::{IntoTraitRef, TraitRef};
-<span class="kw">pub use </span>turbo_tasks_macros::{function, value, value_impl, value_trait};
+<span class="kw">pub use </span>turbo_tasks_macros::{function, value, value_impl, value_trait, TaskInput};
 <span class="kw">pub use </span>value::{TransientInstance, TransientValue, Value};
 <span class="kw">pub use </span>value_type::{
     FromSubTrait, IntoSuperTrait, TraitMethod, TraitType, Typed, TypedForInput, ValueTraitVc,
     ValueType, ValueVc,
 };
-
-<span class="attr">#[doc(hidden)]
-</span><span class="kw">pub mod </span>macro_helpers {
-    <span class="kw">pub use </span>once_cell::sync::{Lazy, OnceCell};
-
-    <span class="kw">pub use </span><span class="kw">super</span>::manager::find_cell_by_type;
-}
 
 <span class="kw">pub mod </span>test_helpers {
     <span class="kw">pub use </span><span class="kw">super</span>::manager::{current_task_for_testing, with_turbo_tasks_for_testing};
@@ -222,5 +228,10 @@
 <span class="kw">pub fn </span>register() {
     <span class="macro">include!</span>(<span class="macro">concat!</span>(<span class="macro">env!</span>(<span class="string">&quot;OUT_DIR&quot;</span>), <span class="string">&quot;/register.rs&quot;</span>));
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="turbo_tasks" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (900c35403 2023-03-08)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+
+<span class="doccomment">/// Helper for derive macros
+</span><span class="attr">#[doc(hidden)]
+</span><span class="kw">mod </span>turbo_tasks {
+    <span class="kw">pub use </span><span class="kw">crate</span>::macro_helpers;
+}
+</code></pre></div></section></main></body></html>

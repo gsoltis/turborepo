@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/turbopack-ecmascript/src/typescript/resolve.rs`."><title>resolve.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../turbopack_ecmascript/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/turbopack-ecmascript/src/typescript/resolve.rs`."><title>resolve.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-a23c9d150ad85d8b.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="turbopack_ecmascript" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0-nightly (839e9a6e1 2023-07-02)" data-channel="nightly" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../turbopack_ecmascript/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -396,7 +396,87 @@
 <a href="#396" id="396">396</a>
 <a href="#397" id="397">397</a>
 <a href="#398" id="398">398</a>
-</pre><pre class="rust"><code><span class="kw">use </span>std::{collections::HashMap, fmt::Write};
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
+<a href="#414" id="414">414</a>
+<a href="#415" id="415">415</a>
+<a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
+<a href="#459" id="459">459</a>
+<a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
+<a href="#462" id="462">462</a>
+<a href="#463" id="463">463</a>
+<a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
+<a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
+<a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>std::{collections::HashMap, fmt::Write};
 
 <span class="kw">use </span>anyhow::Result;
 <span class="kw">use </span>serde_json::Value <span class="kw">as </span>JsonValue;
@@ -408,25 +488,26 @@
     FileContent, FileContentVc, FileJsonContent, FileJsonContentVc, FileSystemPathVc,
 };
 <span class="kw">use </span>turbopack_core::{
-    asset::{Asset, AssetVc},
+    asset::Asset,
     context::AssetContext,
+    file_source::FileSourceVc,
     ident::AssetIdentVc,
-    issue::{Issue, IssueSeverity, IssueSeverityVc, IssueVc},
+    issue::{Issue, IssueSeverity, IssueSeverityVc, IssueVc, OptionIssueSourceVc},
     reference::{AssetReference, AssetReferenceVc},
     reference_type::{ReferenceType, TypeScriptReferenceSubType},
     resolve::{
         handle_resolve_error,
         node::node_cjs_resolve_options,
         options::{
-            ConditionValue, ImportMap, ImportMapVc, ImportMapping, ResolveIntoPackage,
-            ResolveModules, ResolveOptionsVc,
+            ConditionValue, ImportMap, ImportMapVc, ImportMapping, ResolveInPackage,
+            ResolveIntoPackage, ResolveModules, ResolveOptionsVc,
         },
         origin::{ResolveOrigin, ResolveOriginVc},
         parse::{Request, RequestVc},
-        pattern::QueryMapVc,
+        pattern::{Pattern, QueryMapVc},
         resolve, AliasPattern, ResolveResultVc,
     },
-    source_asset::SourceAssetVc,
+    source::{option_asset_to_source, OptionSourceVc, SourceVc},
 };
 
 <span class="attr">#[turbo_tasks::value(shared)]
@@ -436,12 +517,20 @@
     <span class="kw">pub </span>message: StringVc,
 }
 
+<span class="attr">#[turbo_tasks::function]
+</span><span class="kw">async fn </span>json_only(resolve_options: ResolveOptionsVc) -&gt; <span class="prelude-ty">Result</span>&lt;ResolveOptionsVc&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>opts = resolve_options.<span class="kw">await</span><span class="question-mark">?</span>.clone_value();
+    opts.extensions = <span class="macro">vec!</span>[<span class="string">&quot;.json&quot;</span>.to_string()];
+    <span class="prelude-val">Ok</span>(opts.cell())
+}
+
 <span class="kw">pub async fn </span>read_tsconfigs(
     <span class="kw-2">mut </span>data: FileContentVc,
-    <span class="kw-2">mut </span>tsconfig: AssetVc,
+    <span class="kw-2">mut </span>tsconfig: SourceVc,
     resolve_options: ResolveOptionsVc,
-) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;(FileJsonContentVc, AssetVc)&gt;&gt; {
+) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;(FileJsonContentVc, SourceVc)&gt;&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>configs = Vec::new();
+    <span class="kw">let </span>resolve_options = json_only(resolve_options);
     <span class="kw">loop </span>{
         <span class="kw">let </span>parsed_data = data.parse_json_with_comments();
         <span class="kw">match </span><span class="kw-2">&amp;*</span>parsed_data.<span class="kw">await</span><span class="question-mark">? </span>{
@@ -461,7 +550,6 @@
                 .cell()
                 .as_issue()
                 .emit();
-                <span class="kw">break</span>;
             }
             FileJsonContent::NotFound =&gt; {
                 TsConfigIssue {
@@ -472,48 +560,108 @@
                 .cell()
                 .as_issue()
                 .emit();
-                <span class="kw">break</span>;
             }
             FileJsonContent::Content(json) =&gt; {
                 configs.push((parsed_data, tsconfig));
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(extends) = json[<span class="string">&quot;extends&quot;</span>].as_str() {
-                    <span class="kw">let </span>context = tsconfig.ident().path().parent();
-                    <span class="kw">let </span>result = resolve(
-                        context,
-                        RequestVc::parse(Value::new(extends.to_string().into())),
-                        resolve_options,
-                    )
-                    .first_asset()
-                    .<span class="kw">await</span><span class="question-mark">?</span>;
-                    <span class="comment">// There might be multiple alternatives like
-                    // &quot;some/path/node_modules/xyz/abc.json&quot; and &quot;some/node_modules/xyz/abc.json&quot;.
-                    // We only want to use the first one.
-                    </span><span class="kw">if let </span><span class="prelude-val">Some</span>(asset) = <span class="kw-2">*</span>result {
-                        data = asset.content().file_content();
-                        tsconfig = asset;
+                    <span class="kw">let </span>resolved = resolve_extends(tsconfig, extends, resolve_options).<span class="kw">await</span><span class="question-mark">?</span>;
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(source) = <span class="kw-2">*</span>resolved.<span class="kw">await</span><span class="question-mark">? </span>{
+                        data = source.content().file_content();
+                        tsconfig = source;
+                        <span class="kw">continue</span>;
                     } <span class="kw">else </span>{
                         TsConfigIssue {
                             severity: IssueSeverity::Error.into(),
                             source_ident: tsconfig.ident(),
-                            message: StringVc::cell(<span class="string">&quot;extends doesn&#39;t resolve correctly&quot;</span>.into()),
+                            message: StringVc::cell(
+                                <span class="string">&quot;extends doesn&#39;t resolve correctly&quot;</span>.to_string(),
+                            ),
                         }
                         .cell()
                         .as_issue()
                         .emit();
-                        <span class="kw">break</span>;
                     }
-                } <span class="kw">else </span>{
-                    <span class="kw">break</span>;
                 }
             }
         }
+        <span class="kw">break</span>;
     }
     <span class="prelude-val">Ok</span>(configs)
 }
 
+<span class="doccomment">/// Resolves tsconfig files according to TS&#39;s implementation:
+/// https://github.com/microsoft/TypeScript/blob/611a912d/src/compiler/commandLineParser.ts#L3294-L3326
+</span><span class="kw">async fn </span>resolve_extends(
+    tsconfig: SourceVc,
+    extends: <span class="kw-2">&amp;</span>str,
+    resolve_options: ResolveOptionsVc,
+) -&gt; <span class="prelude-ty">Result</span>&lt;OptionSourceVc&gt; {
+    <span class="kw">let </span>context = tsconfig.ident().path().parent();
+    <span class="kw">let </span>request = RequestVc::parse_string(extends.to_string());
+
+    <span class="comment">// TS&#39;s resolution is weird, and has special behavior for different import
+    // types. There might be multiple alternatives like
+    // &quot;some/path/node_modules/xyz/abc.json&quot; and &quot;some/node_modules/xyz/abc.json&quot;.
+    // We only want to use the first one.
+    </span><span class="kw">match </span><span class="kw-2">&amp;*</span>request.<span class="kw">await</span><span class="question-mark">? </span>{
+        <span class="comment">// TS has special behavior for &quot;rooted&quot; paths (absolute paths):
+        // https://github.com/microsoft/TypeScript/blob/611a912d/src/compiler/commandLineParser.ts#L3303-L3313
+        </span>Request::Windows { path: Pattern::Constant(path) } |
+        <span class="comment">// Server relative is treated as absolute
+        </span>Request::ServerRelative { path: Pattern::Constant(path) } =&gt; {
+            resolve_extends_rooted_or_relative(context, request, resolve_options, path).<span class="kw">await
+        </span>}
+
+        <span class="comment">// TS has special behavior for (explicitly) &#39;./&#39; and &#39;../&#39;, but not &#39;.&#39; nor &#39;..&#39;:
+        // https://github.com/microsoft/TypeScript/blob/611a912d/src/compiler/commandLineParser.ts#L3303-L3313
+        </span>Request::Relative {
+            path: Pattern::Constant(path),
+            ..
+        } <span class="kw">if </span>path.starts_with(<span class="string">&quot;./&quot;</span>) || path.starts_with(<span class="string">&quot;../&quot;</span>) =&gt; {
+            resolve_extends_rooted_or_relative(context, request, resolve_options, path).<span class="kw">await
+        </span>}
+
+        <span class="comment">// An empty extends is treated as &quot;./tsconfig&quot;
+        </span>Request::Empty =&gt; {
+            <span class="kw">let </span>request = RequestVc::parse_string(<span class="string">&quot;./tsconfig&quot;</span>.to_string());
+            <span class="prelude-val">Ok</span>(option_asset_to_source(resolve(context, request, resolve_options).first_asset()))
+        }
+
+        <span class="comment">// All other types are treated as module imports, and potentially joined with
+        // &quot;tsconfig.json&quot;. This includes &quot;relative&quot; imports like &#39;.&#39; and &#39;..&#39;.
+        </span><span class="kw">_ </span>=&gt; {
+            <span class="kw">let </span><span class="kw-2">mut </span>result = option_asset_to_source(resolve(context, request, resolve_options).first_asset());
+            <span class="kw">if </span>result.<span class="kw">await</span><span class="question-mark">?</span>.is_none() {
+                <span class="kw">let </span>request = RequestVc::parse_string(<span class="macro">format!</span>(<span class="string">&quot;{extends}/tsconfig&quot;</span>));
+                result = option_asset_to_source(resolve(context, request, resolve_options).first_asset());
+            }
+            <span class="prelude-val">Ok</span>(result)
+        }
+    }
+}
+
+<span class="kw">async fn </span>resolve_extends_rooted_or_relative(
+    context: FileSystemPathVc,
+    request: RequestVc,
+    resolve_options: ResolveOptionsVc,
+    path: <span class="kw-2">&amp;</span>str,
+) -&gt; <span class="prelude-ty">Result</span>&lt;OptionSourceVc&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>result =
+        option_asset_to_source(resolve(context, request, resolve_options).first_asset());
+
+    <span class="comment">// If the file doesn&#39;t end with &quot;.json&quot; and we can&#39;t find the file, then we have
+    // to try again with it.
+    // https://github.com/microsoft/TypeScript/blob/611a912d/src/compiler/commandLineParser.ts#L3305
+    </span><span class="kw">if </span>!path.ends_with(<span class="string">&quot;.json&quot;</span>) &amp;&amp; result.<span class="kw">await</span><span class="question-mark">?</span>.is_none() {
+        <span class="kw">let </span>request = RequestVc::parse_string(<span class="macro">format!</span>(<span class="string">&quot;{path}.json&quot;</span>));
+        result = option_asset_to_source(resolve(context, request, resolve_options).first_asset());
+    }
+    <span class="prelude-val">Ok</span>(result)
+}
+
 <span class="kw">pub async fn </span>read_from_tsconfigs&lt;T&gt;(
-    configs: <span class="kw-2">&amp;</span>[(FileJsonContentVc, AssetVc)],
-    accessor: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>JsonValue, AssetVc) -&gt; <span class="prelude-ty">Option</span>&lt;T&gt;,
+    configs: <span class="kw-2">&amp;</span>[(FileJsonContentVc, SourceVc)],
+    accessor: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>JsonValue, SourceVc) -&gt; <span class="prelude-ty">Option</span>&lt;T&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;T&gt;&gt; {
     <span class="kw">for </span>(config, source) <span class="kw">in </span>configs.iter() {
         <span class="kw">if let </span>FileJsonContent::Content(json) = <span class="kw-2">&amp;*</span>config.<span class="kw">await</span><span class="question-mark">? </span>{
@@ -546,7 +694,7 @@
 ) -&gt; <span class="prelude-ty">Result</span>&lt;TsConfigResolveOptionsVc&gt; {
     <span class="kw">let </span>configs = read_tsconfigs(
         tsconfig.read(),
-        SourceAssetVc::new(tsconfig).into(),
+        FileSourceVc::new(tsconfig).into(),
         node_cjs_resolve_options(tsconfig.root()),
     )
     .<span class="kw">await</span><span class="question-mark">?</span>;
@@ -695,7 +843,16 @@
         resolve(context_path, request, options)
     };
     <span class="kw">let </span>result = origin.context().process_resolve_result(result, ty.clone());
-    handle_resolve_error(result, ty, origin.origin_path(), request, options).<span class="kw">await
+    handle_resolve_error(
+        result,
+        ty,
+        origin.origin_path(),
+        request,
+        options,
+        OptionIssueSourceVc::none(),
+        IssueSeverity::Error.cell(),
+    )
+    .<span class="kw">await
 </span>}
 
 <span class="attr">#[turbo_tasks::value]
@@ -740,14 +897,12 @@
         .drain(..)
         .filter_map(|into| {
             <span class="kw">if let </span>ResolveIntoPackage::ExportsField {
-                field,
                 <span class="kw-2">mut </span>conditions,
                 unspecified_conditions,
             } = into
             {
                 conditions.insert(<span class="string">&quot;types&quot;</span>.to_string(), ConditionValue::Set);
                 <span class="prelude-val">Some</span>(ResolveIntoPackage::ExportsField {
-                    field,
                     conditions,
                     unspecified_conditions,
                 })
@@ -762,6 +917,11 @@
     resolve_options
         .into_package
         .push(ResolveIntoPackage::Default(<span class="string">&quot;index&quot;</span>.to_string()));
+    <span class="kw">for </span>item <span class="kw">in </span>resolve_options.in_package.iter_mut() {
+        <span class="kw">if let </span>ResolveInPackage::ImportsField { conditions, .. } = item {
+            conditions.insert(<span class="string">&quot;types&quot;</span>.to_string(), ConditionValue::Set);
+        }
+    }
     <span class="prelude-val">Ok</span>(resolve_options.into())
 }
 
@@ -794,5 +954,4 @@
         <span class="self">self</span>.message
     }
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="turbopack_ecmascript" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (900c35403 2023-03-08)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

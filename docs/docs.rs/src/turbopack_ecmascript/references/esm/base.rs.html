@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/turbopack-ecmascript/src/references/esm/base.rs`."><title>base.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../turbopack_ecmascript/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/turbopack-ecmascript/src/references/esm/base.rs`."><title>base.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-a23c9d150ad85d8b.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="turbopack_ecmascript" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0-nightly (839e9a6e1 2023-07-02)" data-channel="nightly" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../turbopack_ecmascript/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -300,7 +300,35 @@
 <a href="#300" id="300">300</a>
 <a href="#301" id="301">301</a>
 <a href="#302" id="302">302</a>
-</pre><pre class="rust"><code><span class="kw">use </span>anyhow::{anyhow, <span class="prelude-ty">Result</span>};
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>anyhow::{anyhow, bail, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>lazy_static::lazy_static;
 <span class="kw">use </span>swc_core::{
     common::DUMMY_SP,
@@ -311,16 +339,21 @@
 <span class="kw">use </span>turbopack_core::{
     asset::Asset,
     chunk::{
-        ChunkableAssetReference, ChunkableAssetReferenceVc, ChunkingContextVc, ChunkingType,
+        ChunkableModuleReference, ChunkableModuleReferenceVc, ChunkingContext, ChunkingType,
         ChunkingTypeOptionVc, ModuleId,
     },
+    issue::{IssueSeverity, OptionIssueSourceVc},
     reference::{AssetReference, AssetReferenceVc},
-    resolve::{origin::ResolveOriginVc, parse::RequestVc, PrimaryResolveResult, ResolveResultVc},
+    reference_type::EcmaScriptModulesReferenceSubType,
+    resolve::{
+        origin::ResolveOriginVc, parse::RequestVc, ModulePartVc, PrimaryResolveResult,
+        ResolveResultVc,
+    },
 };
 
 <span class="kw">use crate</span>::{
     analyzer::imports::ImportAnnotations,
-    chunk::{EcmascriptChunkItem, EcmascriptChunkPlaceable, EcmascriptChunkPlaceableVc},
+    chunk::{EcmascriptChunkPlaceable, EcmascriptChunkPlaceableVc, EcmascriptChunkingContextVc},
     code_gen::{CodeGenerateable, CodeGenerateableVc, CodeGeneration, CodeGenerationVc},
     create_visitor, magic_identifier,
     references::util::{request_to_string, throw_module_not_found_expr},
@@ -339,7 +372,7 @@
         <span class="prelude-val">Ok</span>(<span class="kw">match </span><span class="self">self </span>{
             ReferencedAsset::Some(asset) =&gt; <span class="prelude-val">Some</span>(<span class="self">Self</span>::get_ident_from_placeable(asset).<span class="kw">await</span><span class="question-mark">?</span>),
             ReferencedAsset::OriginalReferenceTypeExternal(request) =&gt; {
-                <span class="prelude-val">Some</span>(magic_identifier::encode(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;external {}&quot;</span>, request)))
+                <span class="prelude-val">Some</span>(magic_identifier::mangle(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;external {}&quot;</span>, request)))
             }
             ReferencedAsset::None =&gt; <span class="prelude-val">None</span>,
         })
@@ -349,7 +382,7 @@
         asset: <span class="kw-2">&amp;</span>EcmascriptChunkPlaceableVc,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;String&gt; {
         <span class="kw">let </span>path = asset.ident().to_string().<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(magic_identifier::encode(<span class="kw-2">&amp;</span><span class="macro">format!</span>(
+        <span class="prelude-val">Ok</span>(magic_identifier::mangle(<span class="kw-2">&amp;</span><span class="macro">format!</span>(
             <span class="string">&quot;imported module {}&quot;</span>,
             path
         )))
@@ -397,6 +430,8 @@
     <span class="kw">pub </span>origin: ResolveOriginVc,
     <span class="kw">pub </span>request: RequestVc,
     <span class="kw">pub </span>annotations: ImportAnnotations,
+
+    <span class="kw">pub </span>export_name: <span class="prelude-ty">Option</span>&lt;ModulePartVc&gt;,
 }
 
 <span class="kw">impl </span>EsmAssetReference {
@@ -414,8 +449,9 @@
     <span class="attr">#[turbo_tasks::function]
     </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">async fn </span>get_referenced_asset(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;ReferencedAssetVc&gt; {
         <span class="kw">let </span>this = <span class="self">self</span>.<span class="kw">await</span><span class="question-mark">?</span>;
+
         <span class="prelude-val">Ok</span>(ReferencedAssetVc::from_resolve_result(
-            esm_resolve(this.get_origin(), this.request),
+            <span class="self">self</span>.resolve_reference(),
             this.request,
         ))
     }
@@ -425,11 +461,13 @@
         origin: ResolveOriginVc,
         request: RequestVc,
         annotations: Value&lt;ImportAnnotations&gt;,
+        export_name: <span class="prelude-ty">Option</span>&lt;ModulePartVc&gt;,
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::cell(EsmAssetReference {
             origin,
             request,
             annotations: annotations.into_value(),
+            export_name,
         })
     }
 }
@@ -438,7 +476,18 @@
 </span><span class="kw">impl </span>AssetReference <span class="kw">for </span>EsmAssetReference {
     <span class="attr">#[turbo_tasks::function]
     </span><span class="kw">fn </span>resolve_reference(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ResolveResultVc {
-        esm_resolve(<span class="self">self</span>.get_origin(), <span class="self">self</span>.request)
+        <span class="kw">let </span>ty = Value::new(<span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.export_name {
+            <span class="prelude-val">Some</span>(part) =&gt; EcmaScriptModulesReferenceSubType::ImportPart(<span class="kw-2">*</span>part),
+            <span class="prelude-val">None </span>=&gt; EcmaScriptModulesReferenceSubType::Undefined,
+        });
+
+        esm_resolve(
+            <span class="self">self</span>.get_origin(),
+            <span class="self">self</span>.request,
+            ty,
+            OptionIssueSourceVc::none(),
+            IssueSeverity::Error.cell(),
+        )
     }
 }
 
@@ -455,14 +504,14 @@
 }
 
 <span class="attr">#[turbo_tasks::value_impl]
-</span><span class="kw">impl </span>ChunkableAssetReference <span class="kw">for </span>EsmAssetReference {
+</span><span class="kw">impl </span>ChunkableModuleReference <span class="kw">for </span>EsmAssetReference {
     <span class="attr">#[turbo_tasks::function]
     </span><span class="kw">fn </span>chunking_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;ChunkingTypeOptionVc&gt; {
         <span class="prelude-val">Ok</span>(ChunkingTypeOptionVc::cell(
             <span class="kw">if let </span><span class="prelude-val">Some</span>(chunking_type) = <span class="self">self</span>.annotations.chunking_type() {
                 <span class="kw">match </span>chunking_type {
-                    <span class="string">&quot;separate&quot; </span>=&gt; <span class="prelude-val">Some</span>(ChunkingType::Separate),
                     <span class="string">&quot;parallel&quot; </span>=&gt; <span class="prelude-val">Some</span>(ChunkingType::Parallel),
+                    <span class="string">&quot;isolatedParallel&quot; </span>=&gt; <span class="prelude-val">Some</span>(ChunkingType::IsolatedParallel),
                     <span class="string">&quot;none&quot; </span>=&gt; <span class="prelude-val">None</span>,
                     <span class="kw">_ </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="macro">anyhow!</span>(<span class="string">&quot;unknown chunking_type: {}&quot;</span>, chunking_type)),
                 }
@@ -478,7 +527,7 @@
     <span class="attr">#[turbo_tasks::function]
     </span><span class="kw">async fn </span>code_generation(
         self_vc: EsmAssetReferenceVc,
-        context: ChunkingContextVc,
+        context: EcmascriptChunkingContextVc,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;CodeGenerationVc&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>visitors = Vec::new();
 
@@ -502,8 +551,8 @@
             <span class="kw">return </span><span class="prelude-val">Ok</span>(CodeGeneration { visitors }.into());
         }
 
-        <span class="comment">// separate chunks can&#39;t be imported as the modules are not available
-        </span><span class="kw">if </span>!<span class="macro">matches!</span>(<span class="kw-2">*</span>chunking_type, <span class="prelude-val">None </span>| <span class="prelude-val">Some</span>(ChunkingType::Separate)) {
+        <span class="comment">// only chunked references can be imported
+        </span><span class="kw">if </span>chunking_type.is_some() {
             <span class="kw">let </span>referenced_asset = self_vc.get_referenced_asset().<span class="kw">await</span><span class="question-mark">?</span>;
             <span class="kw">if let </span><span class="prelude-val">Some</span>(ident) = referenced_asset.get_ident().<span class="kw">await</span><span class="question-mark">? </span>{
                 <span class="kw">match </span><span class="kw-2">&amp;*</span>referenced_asset {
@@ -522,6 +571,13 @@
                         }));
                     }
                     ReferencedAsset::OriginalReferenceTypeExternal(request) =&gt; {
+                        <span class="kw">if </span>!<span class="kw-2">*</span>context.environment().node_externals().<span class="kw">await</span><span class="question-mark">? </span>{
+                            <span class="macro">bail!</span>(
+                                <span class="string">&quot;the chunking context does not support Node.js external modules \
+                                 (request: {})&quot;</span>,
+                                request
+                            );
+                        }
                         <span class="kw">let </span>request = request.clone();
                         visitors.push(<span class="macro">create_visitor!</span>(visit_mut_program(program: <span class="kw-2">&amp;mut </span>Program) {
                             <span class="comment">// TODO Technically this should insert a ESM external, but we don&#39;t support that yet
@@ -543,7 +599,7 @@
 }
 
 <span class="macro">lazy_static! </span>{
-    <span class="kw">static </span><span class="kw-2">ref </span>ESM_HOISTING_LOCATION: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = Box::leak(Box::new(magic_identifier::encode(
+    <span class="kw">static </span><span class="kw-2">ref </span>ESM_HOISTING_LOCATION: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = Box::leak(Box::new(magic_identifier::mangle(
         <span class="string">&quot;ecmascript hoisting location&quot;
     </span>)));
 }
@@ -568,7 +624,7 @@
                 body.insert(
                     <span class="number">0</span>,
                     ModuleItem::Stmt(Stmt::Expr(ExprStmt {
-                        expr: <span class="kw">box </span>Expr::Lit(Lit::Str((<span class="kw-2">*</span>ESM_HOISTING_LOCATION).into())),
+                        expr: Box::new(Expr::Lit(Lit::Str((<span class="kw-2">*</span>ESM_HOISTING_LOCATION).into()))),
                         span: DUMMY_SP,
                     })),
                 );
@@ -593,7 +649,7 @@
                 body.insert(
                     <span class="number">0</span>,
                     Stmt::Expr(ExprStmt {
-                        expr: <span class="kw">box </span>Expr::Lit(Lit::Str((<span class="kw-2">*</span>ESM_HOISTING_LOCATION).into())),
+                        expr: Box::new(Expr::Lit(Lit::Str((<span class="kw-2">*</span>ESM_HOISTING_LOCATION).into()))),
                         span: DUMMY_SP,
                     }),
                 );
@@ -602,5 +658,4 @@
         }
     }
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="turbopack_ecmascript" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (900c35403 2023-03-08)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

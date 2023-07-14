@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/turbopack-ecmascript/src/analyzer/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../turbopack_ecmascript/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/turbopack-ecmascript/src/analyzer/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-a23c9d150ad85d8b.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="turbopack_ecmascript" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0-nightly (839e9a6e1 2023-07-02)" data-channel="nightly" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../turbopack_ecmascript/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -3318,7 +3318,236 @@
 <a href="#3318" id="3318">3318</a>
 <a href="#3319" id="3319">3319</a>
 <a href="#3320" id="3320">3320</a>
-</pre><pre class="rust"><code><span class="kw">use </span>std::{
+<a href="#3321" id="3321">3321</a>
+<a href="#3322" id="3322">3322</a>
+<a href="#3323" id="3323">3323</a>
+<a href="#3324" id="3324">3324</a>
+<a href="#3325" id="3325">3325</a>
+<a href="#3326" id="3326">3326</a>
+<a href="#3327" id="3327">3327</a>
+<a href="#3328" id="3328">3328</a>
+<a href="#3329" id="3329">3329</a>
+<a href="#3330" id="3330">3330</a>
+<a href="#3331" id="3331">3331</a>
+<a href="#3332" id="3332">3332</a>
+<a href="#3333" id="3333">3333</a>
+<a href="#3334" id="3334">3334</a>
+<a href="#3335" id="3335">3335</a>
+<a href="#3336" id="3336">3336</a>
+<a href="#3337" id="3337">3337</a>
+<a href="#3338" id="3338">3338</a>
+<a href="#3339" id="3339">3339</a>
+<a href="#3340" id="3340">3340</a>
+<a href="#3341" id="3341">3341</a>
+<a href="#3342" id="3342">3342</a>
+<a href="#3343" id="3343">3343</a>
+<a href="#3344" id="3344">3344</a>
+<a href="#3345" id="3345">3345</a>
+<a href="#3346" id="3346">3346</a>
+<a href="#3347" id="3347">3347</a>
+<a href="#3348" id="3348">3348</a>
+<a href="#3349" id="3349">3349</a>
+<a href="#3350" id="3350">3350</a>
+<a href="#3351" id="3351">3351</a>
+<a href="#3352" id="3352">3352</a>
+<a href="#3353" id="3353">3353</a>
+<a href="#3354" id="3354">3354</a>
+<a href="#3355" id="3355">3355</a>
+<a href="#3356" id="3356">3356</a>
+<a href="#3357" id="3357">3357</a>
+<a href="#3358" id="3358">3358</a>
+<a href="#3359" id="3359">3359</a>
+<a href="#3360" id="3360">3360</a>
+<a href="#3361" id="3361">3361</a>
+<a href="#3362" id="3362">3362</a>
+<a href="#3363" id="3363">3363</a>
+<a href="#3364" id="3364">3364</a>
+<a href="#3365" id="3365">3365</a>
+<a href="#3366" id="3366">3366</a>
+<a href="#3367" id="3367">3367</a>
+<a href="#3368" id="3368">3368</a>
+<a href="#3369" id="3369">3369</a>
+<a href="#3370" id="3370">3370</a>
+<a href="#3371" id="3371">3371</a>
+<a href="#3372" id="3372">3372</a>
+<a href="#3373" id="3373">3373</a>
+<a href="#3374" id="3374">3374</a>
+<a href="#3375" id="3375">3375</a>
+<a href="#3376" id="3376">3376</a>
+<a href="#3377" id="3377">3377</a>
+<a href="#3378" id="3378">3378</a>
+<a href="#3379" id="3379">3379</a>
+<a href="#3380" id="3380">3380</a>
+<a href="#3381" id="3381">3381</a>
+<a href="#3382" id="3382">3382</a>
+<a href="#3383" id="3383">3383</a>
+<a href="#3384" id="3384">3384</a>
+<a href="#3385" id="3385">3385</a>
+<a href="#3386" id="3386">3386</a>
+<a href="#3387" id="3387">3387</a>
+<a href="#3388" id="3388">3388</a>
+<a href="#3389" id="3389">3389</a>
+<a href="#3390" id="3390">3390</a>
+<a href="#3391" id="3391">3391</a>
+<a href="#3392" id="3392">3392</a>
+<a href="#3393" id="3393">3393</a>
+<a href="#3394" id="3394">3394</a>
+<a href="#3395" id="3395">3395</a>
+<a href="#3396" id="3396">3396</a>
+<a href="#3397" id="3397">3397</a>
+<a href="#3398" id="3398">3398</a>
+<a href="#3399" id="3399">3399</a>
+<a href="#3400" id="3400">3400</a>
+<a href="#3401" id="3401">3401</a>
+<a href="#3402" id="3402">3402</a>
+<a href="#3403" id="3403">3403</a>
+<a href="#3404" id="3404">3404</a>
+<a href="#3405" id="3405">3405</a>
+<a href="#3406" id="3406">3406</a>
+<a href="#3407" id="3407">3407</a>
+<a href="#3408" id="3408">3408</a>
+<a href="#3409" id="3409">3409</a>
+<a href="#3410" id="3410">3410</a>
+<a href="#3411" id="3411">3411</a>
+<a href="#3412" id="3412">3412</a>
+<a href="#3413" id="3413">3413</a>
+<a href="#3414" id="3414">3414</a>
+<a href="#3415" id="3415">3415</a>
+<a href="#3416" id="3416">3416</a>
+<a href="#3417" id="3417">3417</a>
+<a href="#3418" id="3418">3418</a>
+<a href="#3419" id="3419">3419</a>
+<a href="#3420" id="3420">3420</a>
+<a href="#3421" id="3421">3421</a>
+<a href="#3422" id="3422">3422</a>
+<a href="#3423" id="3423">3423</a>
+<a href="#3424" id="3424">3424</a>
+<a href="#3425" id="3425">3425</a>
+<a href="#3426" id="3426">3426</a>
+<a href="#3427" id="3427">3427</a>
+<a href="#3428" id="3428">3428</a>
+<a href="#3429" id="3429">3429</a>
+<a href="#3430" id="3430">3430</a>
+<a href="#3431" id="3431">3431</a>
+<a href="#3432" id="3432">3432</a>
+<a href="#3433" id="3433">3433</a>
+<a href="#3434" id="3434">3434</a>
+<a href="#3435" id="3435">3435</a>
+<a href="#3436" id="3436">3436</a>
+<a href="#3437" id="3437">3437</a>
+<a href="#3438" id="3438">3438</a>
+<a href="#3439" id="3439">3439</a>
+<a href="#3440" id="3440">3440</a>
+<a href="#3441" id="3441">3441</a>
+<a href="#3442" id="3442">3442</a>
+<a href="#3443" id="3443">3443</a>
+<a href="#3444" id="3444">3444</a>
+<a href="#3445" id="3445">3445</a>
+<a href="#3446" id="3446">3446</a>
+<a href="#3447" id="3447">3447</a>
+<a href="#3448" id="3448">3448</a>
+<a href="#3449" id="3449">3449</a>
+<a href="#3450" id="3450">3450</a>
+<a href="#3451" id="3451">3451</a>
+<a href="#3452" id="3452">3452</a>
+<a href="#3453" id="3453">3453</a>
+<a href="#3454" id="3454">3454</a>
+<a href="#3455" id="3455">3455</a>
+<a href="#3456" id="3456">3456</a>
+<a href="#3457" id="3457">3457</a>
+<a href="#3458" id="3458">3458</a>
+<a href="#3459" id="3459">3459</a>
+<a href="#3460" id="3460">3460</a>
+<a href="#3461" id="3461">3461</a>
+<a href="#3462" id="3462">3462</a>
+<a href="#3463" id="3463">3463</a>
+<a href="#3464" id="3464">3464</a>
+<a href="#3465" id="3465">3465</a>
+<a href="#3466" id="3466">3466</a>
+<a href="#3467" id="3467">3467</a>
+<a href="#3468" id="3468">3468</a>
+<a href="#3469" id="3469">3469</a>
+<a href="#3470" id="3470">3470</a>
+<a href="#3471" id="3471">3471</a>
+<a href="#3472" id="3472">3472</a>
+<a href="#3473" id="3473">3473</a>
+<a href="#3474" id="3474">3474</a>
+<a href="#3475" id="3475">3475</a>
+<a href="#3476" id="3476">3476</a>
+<a href="#3477" id="3477">3477</a>
+<a href="#3478" id="3478">3478</a>
+<a href="#3479" id="3479">3479</a>
+<a href="#3480" id="3480">3480</a>
+<a href="#3481" id="3481">3481</a>
+<a href="#3482" id="3482">3482</a>
+<a href="#3483" id="3483">3483</a>
+<a href="#3484" id="3484">3484</a>
+<a href="#3485" id="3485">3485</a>
+<a href="#3486" id="3486">3486</a>
+<a href="#3487" id="3487">3487</a>
+<a href="#3488" id="3488">3488</a>
+<a href="#3489" id="3489">3489</a>
+<a href="#3490" id="3490">3490</a>
+<a href="#3491" id="3491">3491</a>
+<a href="#3492" id="3492">3492</a>
+<a href="#3493" id="3493">3493</a>
+<a href="#3494" id="3494">3494</a>
+<a href="#3495" id="3495">3495</a>
+<a href="#3496" id="3496">3496</a>
+<a href="#3497" id="3497">3497</a>
+<a href="#3498" id="3498">3498</a>
+<a href="#3499" id="3499">3499</a>
+<a href="#3500" id="3500">3500</a>
+<a href="#3501" id="3501">3501</a>
+<a href="#3502" id="3502">3502</a>
+<a href="#3503" id="3503">3503</a>
+<a href="#3504" id="3504">3504</a>
+<a href="#3505" id="3505">3505</a>
+<a href="#3506" id="3506">3506</a>
+<a href="#3507" id="3507">3507</a>
+<a href="#3508" id="3508">3508</a>
+<a href="#3509" id="3509">3509</a>
+<a href="#3510" id="3510">3510</a>
+<a href="#3511" id="3511">3511</a>
+<a href="#3512" id="3512">3512</a>
+<a href="#3513" id="3513">3513</a>
+<a href="#3514" id="3514">3514</a>
+<a href="#3515" id="3515">3515</a>
+<a href="#3516" id="3516">3516</a>
+<a href="#3517" id="3517">3517</a>
+<a href="#3518" id="3518">3518</a>
+<a href="#3519" id="3519">3519</a>
+<a href="#3520" id="3520">3520</a>
+<a href="#3521" id="3521">3521</a>
+<a href="#3522" id="3522">3522</a>
+<a href="#3523" id="3523">3523</a>
+<a href="#3524" id="3524">3524</a>
+<a href="#3525" id="3525">3525</a>
+<a href="#3526" id="3526">3526</a>
+<a href="#3527" id="3527">3527</a>
+<a href="#3528" id="3528">3528</a>
+<a href="#3529" id="3529">3529</a>
+<a href="#3530" id="3530">3530</a>
+<a href="#3531" id="3531">3531</a>
+<a href="#3532" id="3532">3532</a>
+<a href="#3533" id="3533">3533</a>
+<a href="#3534" id="3534">3534</a>
+<a href="#3535" id="3535">3535</a>
+<a href="#3536" id="3536">3536</a>
+<a href="#3537" id="3537">3537</a>
+<a href="#3538" id="3538">3538</a>
+<a href="#3539" id="3539">3539</a>
+<a href="#3540" id="3540">3540</a>
+<a href="#3541" id="3541">3541</a>
+<a href="#3542" id="3542">3542</a>
+<a href="#3543" id="3543">3543</a>
+<a href="#3544" id="3544">3544</a>
+<a href="#3545" id="3545">3545</a>
+<a href="#3546" id="3546">3546</a>
+<a href="#3547" id="3547">3547</a>
+</pre></div><pre class="rust"><code><span class="attr">#![allow(clippy::redundant_closure_call)]
+
+</span><span class="kw">use </span>std::{
     borrow::Cow,
     cmp::Ordering,
     fmt::Display,
@@ -3329,9 +3558,12 @@
     sync::Arc,
 };
 
-<span class="kw">use </span>indexmap::IndexSet;
+<span class="kw">use </span>anyhow::{bail, Context, <span class="prelude-ty">Result</span>};
+<span class="kw">use </span>indexmap::{IndexMap, IndexSet};
 <span class="kw">use </span>num_bigint::BigInt;
 <span class="kw">use </span>num_traits::identities::Zero;
+<span class="kw">use </span>once_cell::sync::Lazy;
+<span class="kw">use </span>regex::Regex;
 <span class="kw">use </span>swc_core::{
     common::Mark,
     ecma::{
@@ -3344,12 +3576,13 @@
 
 <span class="kw">use </span><span class="self">self</span>::imports::ImportAnnotations;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use </span><span class="self">self</span>::imports::ImportMap;
-<span class="kw">use </span><span class="kw">crate</span>::utils::stringify_js;
+<span class="kw">use crate</span>::{references::require_context::RequireContextMapVc, utils::StringifyJs};
 
 <span class="kw">pub mod </span>builtin;
 <span class="kw">pub mod </span>graph;
 <span class="kw">pub mod </span>imports;
 <span class="kw">pub mod </span>linker;
+<span class="kw">pub mod </span>top_level_await;
 <span class="kw">pub mod </span>well_known;
 
 <span class="kw">type </span>PinnedAsyncUntilSettledBox&lt;<span class="lifetime">&#39;a</span>, E&gt; =
@@ -3470,9 +3703,10 @@
     }
 }
 
-<span class="attr">#[derive(Debug, Clone, Hash, PartialEq, Eq)]
+<span class="attr">#[derive(Debug, Clone, Hash, PartialEq, Eq, Default)]
 </span><span class="kw">pub enum </span>ConstantValue {
-    Undefined,
+    <span class="attr">#[default]
+    </span>Undefined,
     Str(ConstantString),
     Num(ConstantNumber),
     True,
@@ -3486,6 +3720,14 @@
     <span class="kw">pub fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Str(s) =&gt; <span class="prelude-val">Some</span>(s.as_str()),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+        }
+    }
+
+    <span class="kw">pub fn </span>as_bool(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
+        <span class="kw">match </span><span class="self">self </span>{
+            <span class="self">Self</span>::True =&gt; <span class="prelude-val">Some</span>(<span class="bool-val">true</span>),
+            <span class="self">Self</span>::False =&gt; <span class="prelude-val">Some</span>(<span class="bool-val">false</span>),
             <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
         }
     }
@@ -3521,12 +3763,6 @@
 
     <span class="kw">pub fn </span>is_value_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         !<span class="macro">matches!</span>(<span class="self">self</span>, <span class="self">Self</span>::Regex(..))
-    }
-}
-
-<span class="kw">impl </span>Default <span class="kw">for </span>ConstantValue {
-    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-        ConstantValue::Undefined
     }
 }
 
@@ -3569,7 +3805,7 @@
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
         <span class="kw">match </span><span class="self">self </span>{
             ConstantValue::Undefined =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;undefined&quot;</span>),
-            ConstantValue::Str(str) =&gt; f.write_str(<span class="kw-2">&amp;</span>stringify_js(str.as_str())),
+            ConstantValue::Str(str) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, StringifyJs(str.as_str())),
             ConstantValue::True =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;true&quot;</span>),
             ConstantValue::False =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;false&quot;</span>),
             ConstantValue::Null =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;null&quot;</span>),
@@ -3694,7 +3930,7 @@
     </span>WellKnownFunction(WellKnownFunctionKind),
     <span class="doccomment">/// Not-analyzable value. Might contain the original value for additional
     /// info. Has a reason string for explanation.
-    </span>Unknown(<span class="prelude-ty">Option</span>&lt;Arc&lt;JsValue&gt;&gt;, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str),
+    </span>Unknown(<span class="prelude-ty">Option</span>&lt;Arc&lt;JsValue&gt;&gt;, Cow&lt;<span class="lifetime">&#39;static</span>, str&gt;),
 
     <span class="comment">// NESTED VALUES
     // ----------------------------
@@ -3735,6 +3971,9 @@
     <span class="doccomment">/// A function call without a this context.
     /// `(total_node_count, callee, args)`
     </span>Call(usize, Box&lt;JsValue&gt;, Vec&lt;JsValue&gt;),
+    <span class="doccomment">/// A super call to the parent constructor.
+    /// `(total_node_count, args)`
+    </span>SuperCall(usize, Vec&lt;JsValue&gt;),
     <span class="doccomment">/// A function call with a this context.
     /// `(total_node_count, obj, prop, args)`
     </span>MemberCall(usize, Box&lt;JsValue&gt;, Box&lt;JsValue&gt;, Vec&lt;JsValue&gt;),
@@ -3751,7 +3990,7 @@
     </span>Argument(u32, usize),
     <span class="comment">// TODO no predefined kinds, only JsWord
     </span><span class="doccomment">/// A reference to a free variable.
-    </span>FreeVar(FreeVarKind),
+    </span>FreeVar(JsWord),
     <span class="doccomment">/// This is a reference to a imported module.
     </span>Module(ModuleValue),
 }
@@ -3815,7 +4054,7 @@
 
 <span class="kw">impl </span>Default <span class="kw">for </span>JsValue {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-        JsValue::Unknown(<span class="prelude-val">None</span>, <span class="string">&quot;&quot;</span>)
+        JsValue::unknown_empty(<span class="string">&quot;&quot;</span>)
     }
 }
 
@@ -3895,6 +4134,14 @@
                 f,
                 <span class="string">&quot;{}({})&quot;</span>,
                 callee,
+                list.iter()
+                    .map(|v| v.to_string())
+                    .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+                    .join(<span class="string">&quot;, &quot;</span>)
+            ),
+            JsValue::SuperCall(<span class="kw">_</span>, list) =&gt; <span class="macro">write!</span>(
+                f,
+                <span class="string">&quot;super({})&quot;</span>,
                 list.iter()
                     .map(|v| v.to_string())
                     .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
@@ -3994,6 +4241,7 @@
             | JsValue::Logical(..)
             | JsValue::Binary(..)
             | JsValue::Call(..)
+            | JsValue::SuperCall(..)
             | JsValue::MemberCall(..) =&gt; JsValueMetaKind::Operation,
             JsValue::Variable(..)
             | JsValue::Argument(..)
@@ -4036,36 +4284,36 @@
     <span class="kw">pub fn </span>equal(a: JsValue, b: JsValue) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::Binary(
             <span class="number">1 </span>+ a.total_nodes() + b.total_nodes(),
-            <span class="kw">box </span>a,
+            Box::new(a),
             BinaryOperator::Equal,
-            <span class="kw">box </span>b,
+            Box::new(b),
         )
     }
 
     <span class="kw">pub fn </span>not_equal(a: JsValue, b: JsValue) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::Binary(
             <span class="number">1 </span>+ a.total_nodes() + b.total_nodes(),
-            <span class="kw">box </span>a,
+            Box::new(a),
             BinaryOperator::NotEqual,
-            <span class="kw">box </span>b,
+            Box::new(b),
         )
     }
 
     <span class="kw">pub fn </span>strict_equal(a: JsValue, b: JsValue) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::Binary(
             <span class="number">1 </span>+ a.total_nodes() + b.total_nodes(),
-            <span class="kw">box </span>a,
+            Box::new(a),
             BinaryOperator::StrictEqual,
-            <span class="kw">box </span>b,
+            Box::new(b),
         )
     }
 
     <span class="kw">pub fn </span>strict_not_equal(a: JsValue, b: JsValue) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::Binary(
             <span class="number">1 </span>+ a.total_nodes() + b.total_nodes(),
-            <span class="kw">box </span>a,
+            Box::new(a),
             BinaryOperator::StrictNotEqual,
-            <span class="kw">box </span>b,
+            Box::new(b),
         )
     }
 
@@ -4125,6 +4373,10 @@
         <span class="self">Self</span>::Call(<span class="number">1 </span>+ f.total_nodes() + total_nodes(<span class="kw-2">&amp;</span>args), f, args)
     }
 
+    <span class="kw">pub fn </span>super_call(args: Vec&lt;JsValue&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::SuperCall(<span class="number">1 </span>+ total_nodes(<span class="kw-2">&amp;</span>args), args)
+    }
+
     <span class="kw">pub fn </span>member_call(o: Box&lt;JsValue&gt;, p: Box&lt;JsValue&gt;, args: Vec&lt;JsValue&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::MemberCall(
             <span class="number">1 </span>+ o.total_nodes() + p.total_nodes() + total_nodes(<span class="kw-2">&amp;</span>args),
@@ -4133,8 +4385,17 @@
             args,
         )
     }
+
     <span class="kw">pub fn </span>member(o: Box&lt;JsValue&gt;, p: Box&lt;JsValue&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::Member(<span class="number">1 </span>+ o.total_nodes() + p.total_nodes(), o, p)
+    }
+
+    <span class="kw">pub fn </span>unknown(value: <span class="kw">impl </span>Into&lt;Arc&lt;JsValue&gt;&gt;, reason: <span class="kw">impl </span>Into&lt;Cow&lt;<span class="lifetime">&#39;static</span>, str&gt;&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::Unknown(<span class="prelude-val">Some</span>(value.into()), reason.into())
+    }
+
+    <span class="kw">pub fn </span>unknown_empty(reason: <span class="kw">impl </span>Into&lt;Cow&lt;<span class="lifetime">&#39;static</span>, str&gt;&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::Unknown(<span class="prelude-val">None</span>, reason.into())
     }
 }
 
@@ -4161,6 +4422,7 @@
             | JsValue::Logical(c, <span class="kw">_</span>, <span class="kw">_</span>)
             | JsValue::Binary(c, <span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>)
             | JsValue::Call(c, <span class="kw">_</span>, <span class="kw">_</span>)
+            | JsValue::SuperCall(c, <span class="kw">_</span>)
             | JsValue::MemberCall(c, <span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>)
             | JsValue::Member(c, <span class="kw">_</span>, <span class="kw">_</span>)
             | JsValue::Function(c, <span class="kw">_</span>, <span class="kw">_</span>) =&gt; <span class="kw-2">*</span>c,
@@ -4213,6 +4475,9 @@
             }
             JsValue::Call(c, f, list) =&gt; {
                 <span class="kw-2">*</span>c = <span class="number">1 </span>+ f.total_nodes() + total_nodes(list);
+            }
+            JsValue::SuperCall(c, list) =&gt; {
+                <span class="kw-2">*</span>c = <span class="number">1 </span>+ total_nodes(list);
             }
             JsValue::MemberCall(c, o, m, list) =&gt; {
                 <span class="kw-2">*</span>c = <span class="number">1 </span>+ o.total_nodes() + m.total_nodes() + total_nodes(list);
@@ -4291,6 +4556,10 @@
                 }
                 JsValue::Call(<span class="kw">_</span>, f, args) =&gt; {
                     make_max_unknown([<span class="kw-2">&amp;mut **</span>f].into_iter().chain(args.iter_mut()));
+                    <span class="self">self</span>.update_total_nodes();
+                }
+                JsValue::SuperCall(<span class="kw">_</span>, args) =&gt; {
+                    make_max_unknown(args.iter_mut());
                     <span class="self">self</span>.update_total_nodes();
                 }
                 JsValue::MemberCall(<span class="kw">_</span>, o, p, args) =&gt; {
@@ -4450,8 +4719,7 @@
                     <span class="string">&quot;| &quot;
                 </span>)
             ),
-            JsValue::FreeVar(FreeVarKind::Other(name)) =&gt; <span class="macro">format!</span>(<span class="string">&quot;FreeVar({})&quot;</span>, name),
-            JsValue::FreeVar(name) =&gt; <span class="macro">format!</span>(<span class="string">&quot;FreeVar({:?})&quot;</span>, name),
+            JsValue::FreeVar(name) =&gt; <span class="macro">format!</span>(<span class="string">&quot;FreeVar({})&quot;</span>, name),
             JsValue::Variable(name) =&gt; {
                 <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, name.<span class="number">0</span>)
             }
@@ -4521,6 +4789,26 @@
                 <span class="macro">format!</span>(
                     <span class="string">&quot;{}({})&quot;</span>,
                     callee.explain_internal_inner(hints, indent_depth, depth, unknown_depth),
+                    pretty_join(
+                        <span class="kw-2">&amp;</span>list
+                            .iter()
+                            .map(|v| v.explain_internal_inner(
+                                hints,
+                                indent_depth + <span class="number">1</span>,
+                                depth,
+                                unknown_depth
+                            ))
+                            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
+                        indent_depth,
+                        <span class="string">&quot;, &quot;</span>,
+                        <span class="string">&quot;,&quot;</span>,
+                        <span class="string">&quot;&quot;
+                    </span>)
+                )
+            }
+            JsValue::SuperCall(<span class="kw">_</span>, list) =&gt; {
+                <span class="macro">format!</span>(
+                    <span class="string">&quot;super({})&quot;</span>,
                     pretty_join(
                         <span class="kw-2">&amp;</span>list
                             .iter()
@@ -4643,6 +4931,10 @@
                         <span class="string">&quot;@grpc/proto-loader&quot;</span>,
                         <span class="string">&quot;The Node.js @grpc/proto-loader package: https://github.com/grpc/grpc-node&quot;
                     </span>),
+                    WellKnownObjectKind::NodeBuffer =&gt; (
+                        <span class="string">&quot;Buffer&quot;</span>,
+                        <span class="string">&quot;The Node.js Buffer object: https://nodejs.org/api/buffer.html#class-buffer&quot;
+                    </span>),
                     WellKnownObjectKind::RequireCache =&gt; (
                         <span class="string">&quot;require.cache&quot;</span>,
                         <span class="string">&quot;The CommonJS require.cache object: https://nodejs.org/api/modules.html#requirecache&quot;
@@ -4680,6 +4972,10 @@
                     </span>),
                     WellKnownFunctionKind::Require =&gt; (<span class="string">&quot;require&quot;</span>.to_string(), <span class="string">&quot;The require method from CommonJS&quot;</span>),
                     WellKnownFunctionKind::RequireResolve =&gt; (<span class="string">&quot;require.resolve&quot;</span>.to_string(), <span class="string">&quot;The require.resolve method from CommonJS&quot;</span>),
+                    WellKnownFunctionKind::RequireContext =&gt; (<span class="string">&quot;require.context&quot;</span>.to_string(), <span class="string">&quot;The require.context method from webpack&quot;</span>),
+                    WellKnownFunctionKind::RequireContextRequire(..) =&gt; (<span class="string">&quot;require.context(...)&quot;</span>.to_string(), <span class="string">&quot;The require.context(...) method from webpack: https://webpack.js.org/api/module-methods/#requirecontext&quot;</span>),
+                    WellKnownFunctionKind::RequireContextRequireKeys(..) =&gt; (<span class="string">&quot;require.context(...).keys&quot;</span>.to_string(), <span class="string">&quot;The require.context(...).keys method from webpack: https://webpack.js.org/guides/dependency-management/#requirecontext&quot;</span>),
+                    WellKnownFunctionKind::RequireContextRequireResolve(..) =&gt; (<span class="string">&quot;require.context(...).resolve&quot;</span>.to_string(), <span class="string">&quot;The require.context(...).resolve method from webpack: https://webpack.js.org/guides/dependency-management/#requirecontext&quot;</span>),
                     WellKnownFunctionKind::Define =&gt; (<span class="string">&quot;define&quot;</span>.to_string(), <span class="string">&quot;The define method from AMD&quot;</span>),
                     WellKnownFunctionKind::FsReadMethod(name) =&gt; (
                         <span class="macro">format!</span>(<span class="string">&quot;fs.{name}&quot;</span>),
@@ -4780,14 +5076,20 @@
 <span class="comment">// Unknown management
 </span><span class="kw">impl </span>JsValue {
     <span class="doccomment">/// Convert the value into unknown with a specific reason.
-    </span><span class="kw">pub fn </span>make_unknown(<span class="kw-2">&amp;mut </span><span class="self">self</span>, reason: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str) {
-        <span class="kw-2">*</span><span class="self">self </span>= JsValue::Unknown(<span class="prelude-val">Some</span>(Arc::new(take(<span class="self">self</span>))), reason);
+    </span><span class="kw">pub fn </span>make_unknown(<span class="kw-2">&amp;mut </span><span class="self">self</span>, reason: <span class="kw">impl </span>Into&lt;Cow&lt;<span class="lifetime">&#39;static</span>, str&gt;&gt;) {
+        <span class="kw-2">*</span><span class="self">self </span>= JsValue::unknown(take(<span class="self">self</span>), reason);
     }
+
+    <span class="doccomment">/// Convert the owned value into unknown with a specific reason.
+    </span><span class="kw">pub fn </span>into_unknown(<span class="kw-2">mut </span><span class="self">self</span>, reason: <span class="kw">impl </span>Into&lt;Cow&lt;<span class="lifetime">&#39;static</span>, str&gt;&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.make_unknown(reason);
+        <span class="self">self
+    </span>}
 
     <span class="doccomment">/// Convert the value into unknown with a specific reason, but don&#39;t retain
     /// the original value.
-    </span><span class="kw">pub fn </span>make_unknown_without_content(<span class="kw-2">&amp;mut </span><span class="self">self</span>, reason: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str) {
-        <span class="kw-2">*</span><span class="self">self </span>= JsValue::Unknown(<span class="prelude-val">None</span>, reason);
+    </span><span class="kw">pub fn </span>make_unknown_without_content(<span class="kw-2">&amp;mut </span><span class="self">self</span>, reason: <span class="kw">impl </span>Into&lt;Cow&lt;<span class="lifetime">&#39;static</span>, str&gt;&gt;) {
+        <span class="kw-2">*</span><span class="self">self </span>= JsValue::unknown_empty(reason);
     }
 
     <span class="doccomment">/// Make all nested operations unknown when the value is an operation.
@@ -4808,13 +5110,21 @@
     }
 
     <span class="kw">pub fn </span>add_unknown_mutations(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="self">self</span>.add_alt(JsValue::Unknown(<span class="prelude-val">None</span>, <span class="string">&quot;unknown mutation&quot;</span>));
+        <span class="self">self</span>.add_alt(JsValue::unknown_empty(<span class="string">&quot;unknown mutation&quot;</span>));
     }
 }
 
 <span class="comment">// Defineable name management
 </span><span class="kw">impl </span>JsValue {
-    <span class="kw">pub fn </span>get_defineable_name_len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
+    <span class="doccomment">/// When the value has a user-defineable name, return the length of it (in
+    /// segments). Otherwise returns None.
+    /// - any free var has itself as user-defineable name.
+    /// - any member access adds the identifier as segement to the name of the
+    ///   object.
+    /// - some well-known objects/functions have a user-defineable names.
+    /// - member calls without arguments also have a user-defineable name which
+    ///   is the property with `()` appended.
+    </span><span class="kw">pub fn </span>get_defineable_name_len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             JsValue::FreeVar(<span class="kw">_</span>) =&gt; <span class="prelude-val">Some</span>(<span class="number">1</span>),
             JsValue::Member(<span class="kw">_</span>, obj, prop) <span class="kw">if </span>prop.as_str().is_some() =&gt; {
@@ -4832,7 +5142,13 @@
         }
     }
 
-    <span class="kw">pub fn </span>iter_defineable_name_rev(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; DefineableNameIter&lt;<span class="lifetime">&#39;_</span>&gt; {
+    <span class="doccomment">/// Returns a reverse iterator over the segments of the user-defineable
+    /// name. e. g. `foo.bar().baz` would yield `baz`, `bar()`, `foo`.
+    /// `(1+2).foo.baz` would also yield `baz`, `foo` even while the value is
+    /// not a complete user-defineable name. Before calling this method you must
+    /// use [JsValue::get_defineable_name_len] to determine if the value has a
+    /// user-defineable name at all.
+    </span><span class="kw">pub fn </span>iter_defineable_name_rev(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; DefineableNameIter&lt;<span class="lifetime">&#39;_</span>&gt; {
         DefineableNameIter {
             next: <span class="prelude-val">Some</span>(<span class="self">self</span>),
             index: <span class="number">0</span>,
@@ -4851,7 +5167,7 @@
     <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
         <span class="kw">let </span>value = <span class="self">self</span>.next.take()<span class="question-mark">?</span>;
         <span class="prelude-val">Some</span>(<span class="kw">match </span>value {
-            JsValue::FreeVar(kind) =&gt; kind.as_str().into(),
+            JsValue::FreeVar(kind) =&gt; (<span class="kw-2">&amp;**</span>kind).into(),
             JsValue::Member(<span class="kw">_</span>, obj, prop) =&gt; {
                 <span class="self">self</span>.next = <span class="prelude-val">Some</span>(obj);
                 prop.as_str()<span class="question-mark">?</span>.into()
@@ -4889,6 +5205,14 @@
     </span><span class="kw">pub fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             JsValue::Constant(c) =&gt; c.as_str(),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+        }
+    }
+
+    <span class="doccomment">/// Returns the constant bool if the value represents a constant boolean.
+    </span><span class="kw">pub fn </span>as_bool(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;bool&gt; {
+        <span class="kw">match </span><span class="self">self </span>{
+            JsValue::Constant(c) =&gt; c.as_bool(),
             <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
         }
     }
@@ -5101,7 +5425,8 @@
             | JsValue::Argument(..)
             | JsValue::Call(..)
             | JsValue::MemberCall(..)
-            | JsValue::Member(..) =&gt; <span class="prelude-val">None</span>,
+            | JsValue::Member(..)
+            | JsValue::SuperCall(..) =&gt; <span class="prelude-val">None</span>,
         }
     }
 
@@ -5295,6 +5620,18 @@
             JsValue::Call(<span class="kw">_</span>, <span class="kw">box </span>callee, list) =&gt; {
                 <span class="kw">let </span>(new_callee, <span class="kw-2">mut </span>modified) = <span class="macro-nonterminal">$visit_fn</span>(take(callee), $(<span class="macro-nonterminal">$args</span>),+).<span class="kw">await</span><span class="question-mark">?</span>;
                 <span class="kw-2">*</span>callee = new_callee;
+                <span class="kw">for </span>item <span class="kw">in </span>list.iter_mut() {
+                    <span class="kw">let </span>(v, m) = <span class="macro-nonterminal">$visit_fn</span>(take(item), $(<span class="macro-nonterminal">$args</span>),+).<span class="kw">await</span><span class="question-mark">?</span>;
+                    <span class="kw-2">*</span>item = v;
+                    <span class="kw">if </span>m {
+                        modified = <span class="bool-val">true
+                    </span>}
+                }
+                <span class="macro-nonterminal">$value</span>.update_total_nodes();
+                (<span class="macro-nonterminal">$value</span>, modified)
+            }
+            JsValue::SuperCall(<span class="kw">_</span>, list) =&gt; {
+                <span class="kw">let </span><span class="kw-2">mut </span>modified = <span class="bool-val">false</span>;
                 <span class="kw">for </span>item <span class="kw">in </span>list.iter_mut() {
                     <span class="kw">let </span>(v, m) = <span class="macro-nonterminal">$visit_fn</span>(take(item), $(<span class="macro-nonterminal">$args</span>),+).<span class="kw">await</span><span class="question-mark">?</span>;
                     <span class="kw-2">*</span>item = v;
@@ -5571,6 +5908,18 @@
                 }
                 modified
             }
+            JsValue::SuperCall(<span class="kw">_</span>, list) =&gt; {
+                <span class="kw">let </span><span class="kw-2">mut </span>modified = <span class="bool-val">false</span>;
+                <span class="kw">for </span>item <span class="kw">in </span>list.iter_mut() {
+                    <span class="kw">if </span>visitor(item) {
+                        modified = <span class="bool-val">true
+                    </span>}
+                }
+                <span class="kw">if </span>modified {
+                    <span class="self">self</span>.update_total_nodes();
+                }
+                modified
+            }
             JsValue::MemberCall(<span class="kw">_</span>, obj, prop, list) =&gt; {
                 <span class="kw">let </span>m1 = visitor(obj);
                 <span class="kw">let </span>m2 = visitor(prop);
@@ -5735,6 +6084,11 @@
             }
             JsValue::Call(<span class="kw">_</span>, callee, list) =&gt; {
                 visitor(callee);
+                <span class="kw">for </span>item <span class="kw">in </span>list.iter() {
+                    visitor(item);
+                }
+            }
+            JsValue::SuperCall(<span class="kw">_</span>, list) =&gt; {
                 <span class="kw">for </span>item <span class="kw">in </span>list.iter() {
                     visitor(item);
                 }
@@ -6075,6 +6429,9 @@
                 a.similar_hash(state, depth - <span class="number">1</span>);
                 all_similar_hash(b, state, depth - <span class="number">1</span>);
             }
+            JsValue::SuperCall(<span class="kw">_</span>, a) =&gt; {
+                all_similar_hash(a, state, depth - <span class="number">1</span>);
+            }
             JsValue::MemberCall(<span class="kw">_</span>, a, b, c) =&gt; {
                 a.similar_hash(state, depth - <span class="number">1</span>);
                 b.similar_hash(state, depth - <span class="number">1</span>);
@@ -6132,48 +6489,6 @@
     }
 }
 
-<span class="comment">// TODO get rid of that and only use `JsWord` in `FreeVar(...)`
-</span><span class="attr">#[derive(Debug, Clone, Hash, PartialEq, Eq)]
-</span><span class="kw">pub enum </span>FreeVarKind {
-    <span class="comment">// Object
-    </span>Object,
-    <span class="doccomment">/// `__dirname`
-    </span>Dirname,
-
-    <span class="doccomment">/// `__filename`
-    </span>Filename,
-
-    <span class="doccomment">/// A reference to global `require`
-    </span>Require,
-
-    <span class="doccomment">/// A reference to global `define` (AMD)
-    </span>Define,
-
-    <span class="doccomment">/// A reference to `import`
-    </span>Import,
-
-    <span class="doccomment">/// Node.js process
-    </span>NodeProcess,
-
-    <span class="doccomment">/// `abc` `some_global`
-    </span>Other(JsWord),
-}
-
-<span class="kw">impl </span>FreeVarKind {
-    <span class="kw">pub fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
-        <span class="kw">match </span><span class="self">self </span>{
-            FreeVarKind::Object =&gt; <span class="string">&quot;Object&quot;</span>,
-            FreeVarKind::Dirname =&gt; <span class="string">&quot;__dirname&quot;</span>,
-            FreeVarKind::Filename =&gt; <span class="string">&quot;__filename&quot;</span>,
-            FreeVarKind::Require =&gt; <span class="string">&quot;require&quot;</span>,
-            FreeVarKind::Define =&gt; <span class="string">&quot;define&quot;</span>,
-            FreeVarKind::Import =&gt; <span class="string">&quot;import&quot;</span>,
-            FreeVarKind::NodeProcess =&gt; <span class="string">&quot;process&quot;</span>,
-            FreeVarKind::Other(v) =&gt; v.as_ref(),
-        }
-    }
-}
-
 <span class="doccomment">/// A list of well-known objects that have special meaning in the analysis.
 </span><span class="attr">#[derive(Debug, Clone, Hash, PartialEq, Eq)]
 </span><span class="kw">pub enum </span>WellKnownObjectKind {
@@ -6194,6 +6509,7 @@
     NodePreGyp,
     NodeExpressApp,
     NodeProtobufLoader,
+    NodeBuffer,
     RequireCache,
 }
 
@@ -6208,8 +6524,133 @@
             <span class="self">Self</span>::OsModule =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;os&quot;</span>]),
             <span class="self">Self</span>::NodeProcess =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;process&quot;</span>]),
             <span class="self">Self</span>::NodeProcessEnv =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;process&quot;</span>, <span class="string">&quot;env&quot;</span>]),
+            <span class="self">Self</span>::NodeBuffer =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;Buffer&quot;</span>]),
             <span class="self">Self</span>::RequireCache =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;require&quot;</span>, <span class="string">&quot;cache&quot;</span>]),
             <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+        }
+    }
+}
+
+<span class="attr">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>RequireContextOptions {
+    <span class="kw">pub </span>dir: String,
+    <span class="kw">pub </span>include_subdirs: bool,
+    <span class="doccomment">/// this is a regex (pattern, flags)
+    </span><span class="kw">pub </span>filter: Regex,
+}
+
+<span class="doccomment">/// Convert an ECMAScript regex to a Rust regex.
+</span><span class="kw">fn </span>regex_from_js(pattern: <span class="kw-2">&amp;</span>str, flags: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Regex&gt; {
+    <span class="comment">// rust regex doesn&#39;t allow escaped slashes, but they are necessary in js
+    </span><span class="kw">let </span>pattern = pattern.replace(<span class="string">&quot;\\/&quot;</span>, <span class="string">&quot;/&quot;</span>);
+
+    <span class="kw">let </span><span class="kw-2">mut </span>applied_flags = String::new();
+    <span class="kw">for </span>flag <span class="kw">in </span>flags.chars() {
+        <span class="kw">match </span>flag {
+            <span class="comment">// indices for substring matches: not relevant for the regex itself
+            </span><span class="string">&#39;d&#39; </span>=&gt; {}
+            <span class="comment">// global: default in rust, ignore
+            </span><span class="string">&#39;g&#39; </span>=&gt; {}
+            <span class="comment">// case-insensitive: letters match both upper and lower case
+            </span><span class="string">&#39;i&#39; </span>=&gt; applied_flags.push(<span class="string">&#39;i&#39;</span>),
+            <span class="comment">// multi-line mode: ^ and $ match begin/end of line
+            </span><span class="string">&#39;m&#39; </span>=&gt; applied_flags.push(<span class="string">&#39;m&#39;</span>),
+            <span class="comment">// allow . to match \n
+            </span><span class="string">&#39;s&#39; </span>=&gt; applied_flags.push(<span class="string">&#39;s&#39;</span>),
+            <span class="comment">// Unicode support (enabled by default)
+            </span><span class="string">&#39;u&#39; </span>=&gt; applied_flags.push(<span class="string">&#39;u&#39;</span>),
+            <span class="comment">// sticky search: not relevant for the regex itself
+            </span><span class="string">&#39;y&#39; </span>=&gt; {}
+            <span class="kw">_ </span>=&gt; <span class="macro">bail!</span>(<span class="string">&quot;unsupported flag `{}` in regex&quot;</span>, flag),
+        }
+    }
+
+    <span class="kw">let </span>regex = <span class="kw">if </span>!applied_flags.is_empty() {
+        <span class="macro">format!</span>(<span class="string">&quot;(?{}){}&quot;</span>, applied_flags, pattern)
+    } <span class="kw">else </span>{
+        pattern
+    };
+
+    Regex::new(<span class="kw-2">&amp;</span>regex).context(<span class="string">&quot;could not convert ECMAScript regex to Rust regex&quot;</span>)
+}
+
+<span class="doccomment">/// Parse the arguments passed to a require.context invocation, validate them
+/// and convert them to the appropriate rust values.
+</span><span class="kw">pub fn </span>parse_require_context(args: <span class="kw-2">&amp;</span>Vec&lt;JsValue&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;RequireContextOptions&gt; {
+    <span class="kw">if </span>!(<span class="number">1</span>..=<span class="number">3</span>).contains(<span class="kw-2">&amp;</span>args.len()) {
+        <span class="comment">// https://linear.app/vercel/issue/WEB-910/add-support-for-requirecontexts-mode-argument
+        </span><span class="macro">bail!</span>(<span class="string">&quot;require.context() only supports 1-3 arguments (mode is not supported)&quot;</span>);
+    }
+
+    <span class="kw">let </span><span class="prelude-val">Some</span>(dir) = args[<span class="number">0</span>].as_str().map(|s| s.to_string()) <span class="kw">else </span>{
+        <span class="macro">bail!</span>(<span class="string">&quot;require.context(dir, ...) requires dir to be a constant string&quot;</span>);
+    };
+
+    <span class="kw">let </span>include_subdirs = <span class="kw">if let </span><span class="prelude-val">Some</span>(include_subdirs) = args.get(<span class="number">1</span>) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(include_subdirs) = include_subdirs.as_bool() {
+            include_subdirs
+        } <span class="kw">else </span>{
+            <span class="macro">bail!</span>(
+                <span class="string">&quot;require.context(..., includeSubdirs, ...) requires includeSubdirs to be a \
+                 constant boolean&quot;</span>,
+            );
+        }
+    } <span class="kw">else </span>{
+        <span class="bool-val">true
+    </span>};
+
+    <span class="kw">let </span>filter = <span class="kw">if let </span><span class="prelude-val">Some</span>(filter) = args.get(<span class="number">2</span>) {
+        <span class="kw">if let </span>JsValue::Constant(ConstantValue::Regex(pattern, flags)) = filter {
+            regex_from_js(pattern, flags)<span class="question-mark">?
+        </span>} <span class="kw">else </span>{
+            <span class="macro">bail!</span>(<span class="string">&quot;require.context(..., ..., filter) requires filter to be a regex&quot;</span>);
+        }
+    } <span class="kw">else </span>{
+        <span class="comment">// https://webpack.js.org/api/module-methods/#requirecontext
+        // &gt; optional, default /^\.\/.*$/, any file
+        </span><span class="kw">static </span>DEFAULT_REGEX: Lazy&lt;Regex&gt; = Lazy::new(|| Regex::new(<span class="string">r&quot;^\\./.*$&quot;</span>).unwrap());
+
+        DEFAULT_REGEX.clone()
+    };
+
+    <span class="prelude-val">Ok</span>(RequireContextOptions {
+        dir,
+        include_subdirs,
+        filter,
+    })
+}
+
+<span class="attr">#[turbo_tasks::value(transparent)]
+#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>RequireContextValue(IndexMap&lt;String, String&gt;);
+
+<span class="attr">#[turbo_tasks::value_impl]
+</span><span class="kw">impl </span>RequireContextValueVc {
+    <span class="attr">#[turbo_tasks::function]
+    </span><span class="kw">pub async fn </span>from_context_map(map: RequireContextMapVc) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>context_map = IndexMap::new();
+
+        <span class="kw">for </span>(key, entry) <span class="kw">in </span>map.<span class="kw">await</span><span class="question-mark">?</span>.iter() {
+            context_map.insert(key.clone(), entry.origin_relative.clone());
+        }
+
+        <span class="prelude-val">Ok</span>(<span class="self">Self</span>::cell(context_map))
+    }
+}
+
+<span class="kw">impl </span>From&lt;RequireContextMapVc&gt; <span class="kw">for </span>RequireContextValueVc {
+    <span class="kw">fn </span>from(map: RequireContextMapVc) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::from_context_map(map)
+    }
+}
+
+<span class="kw">impl </span>Hash <span class="kw">for </span>RequireContextValue {
+    <span class="kw">fn </span>hash&lt;H: Hasher&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>H) {
+        <span class="self">self</span>.<span class="number">0</span>.len().hash(state);
+        <span class="kw">for </span>(i, (k, v)) <span class="kw">in </span><span class="self">self</span>.<span class="number">0</span>.iter().enumerate() {
+            i.hash(state);
+            k.hash(state);
+            v.hash(state);
         }
     }
 }
@@ -6225,6 +6666,10 @@
     Import,
     Require,
     RequireResolve,
+    RequireContext,
+    RequireContextRequire(RequireContextValueVc),
+    RequireContextRequireKeys(RequireContextValueVc),
+    RequireContextRequireResolve(RequireContextValueVc),
     Define,
     FsReadMethod(JsWord),
     PathToFileUrl,
@@ -6251,6 +6696,7 @@
             <span class="self">Self</span>::Import =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;import&quot;</span>]),
             <span class="self">Self</span>::Require =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;require&quot;</span>]),
             <span class="self">Self</span>::RequireResolve =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;require&quot;</span>, <span class="string">&quot;resolve&quot;</span>]),
+            <span class="self">Self</span>::RequireContext =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;require&quot;</span>, <span class="string">&quot;context&quot;</span>]),
             <span class="self">Self</span>::Define =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;define&quot;</span>]),
             <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
         }
@@ -6263,16 +6709,15 @@
 
 <span class="attr">#[doc(hidden)]
 </span><span class="kw">pub mod </span>test_utils {
-    <span class="kw">use </span>std::sync::Arc;
-
     <span class="kw">use </span>anyhow::Result;
-    <span class="kw">use </span>turbopack_core::compile_time_info::CompileTimeInfoVc;
+    <span class="kw">use </span>indexmap::IndexMap;
+    <span class="kw">use </span>turbopack_core::{compile_time_info::CompileTimeInfoVc, error::PrettyPrintError};
 
     <span class="kw">use super</span>::{
-        builtin::early_replace_builtin, well_known::replace_well_known, FreeVarKind, JsValue,
-        ModuleValue, WellKnownFunctionKind, WellKnownObjectKind,
+        builtin::early_replace_builtin, well_known::replace_well_known, JsValue, ModuleValue,
+        WellKnownFunctionKind, WellKnownObjectKind,
     };
-    <span class="kw">use </span><span class="kw">crate</span>::analyzer::builtin::replace_builtin;
+    <span class="kw">use </span><span class="kw">crate</span>::analyzer::{builtin::replace_builtin, parse_require_context, RequireContextValueVc};
 
     <span class="kw">pub async fn </span>early_visitor(<span class="kw-2">mut </span>v: JsValue) -&gt; <span class="prelude-ty">Result</span>&lt;(JsValue, bool)&gt; {
         <span class="kw">let </span>m = early_replace_builtin(<span class="kw-2">&amp;mut </span>v);
@@ -6290,22 +6735,34 @@
                 <span class="kw-2">ref </span>args,
             ) =&gt; <span class="kw">match </span><span class="kw-2">&amp;</span>args[<span class="number">0</span>] {
                 JsValue::Constant(v) =&gt; (v.to_string() + <span class="string">&quot;/resolved/lib/index.js&quot;</span>).into(),
-                <span class="kw">_ </span>=&gt; JsValue::Unknown(<span class="prelude-val">Some</span>(Arc::new(v)), <span class="string">&quot;resolve.resolve non constant&quot;</span>),
+                <span class="kw">_ </span>=&gt; v.into_unknown(<span class="string">&quot;require.resolve non constant&quot;</span>),
             },
-            JsValue::FreeVar(FreeVarKind::Require) =&gt; {
-                JsValue::WellKnownFunction(WellKnownFunctionKind::Require)
-            }
-            JsValue::FreeVar(FreeVarKind::Define) =&gt; {
-                JsValue::WellKnownFunction(WellKnownFunctionKind::Define)
-            }
-            JsValue::FreeVar(FreeVarKind::Dirname) =&gt; <span class="string">&quot;__dirname&quot;</span>.into(),
-            JsValue::FreeVar(FreeVarKind::Filename) =&gt; <span class="string">&quot;__filename&quot;</span>.into(),
-            JsValue::FreeVar(FreeVarKind::NodeProcess) =&gt; {
-                JsValue::WellKnownObject(WellKnownObjectKind::NodeProcess)
-            }
-            JsValue::FreeVar(kind) =&gt; {
-                JsValue::Unknown(<span class="prelude-val">Some</span>(Arc::new(JsValue::FreeVar(kind))), <span class="string">&quot;unknown global&quot;</span>)
-            }
+            JsValue::Call(
+                <span class="kw">_</span>,
+                <span class="kw">box </span>JsValue::WellKnownFunction(WellKnownFunctionKind::RequireContext),
+                <span class="kw-2">ref </span>args,
+            ) =&gt; <span class="kw">match </span>parse_require_context(args) {
+                <span class="prelude-val">Ok</span>(options) =&gt; {
+                    <span class="kw">let </span><span class="kw-2">mut </span>map = IndexMap::new();
+
+                    map.insert(<span class="string">&quot;./a&quot;</span>.into(), <span class="macro">format!</span>(<span class="string">&quot;[context: {}]/a&quot;</span>, options.dir));
+                    map.insert(<span class="string">&quot;./b&quot;</span>.into(), <span class="macro">format!</span>(<span class="string">&quot;[context: {}]/b&quot;</span>, options.dir));
+                    map.insert(<span class="string">&quot;./c&quot;</span>.into(), <span class="macro">format!</span>(<span class="string">&quot;[context: {}]/c&quot;</span>, options.dir));
+
+                    JsValue::WellKnownFunction(WellKnownFunctionKind::RequireContextRequire(
+                        RequireContextValueVc::cell(map),
+                    ))
+                }
+                <span class="prelude-val">Err</span>(err) =&gt; v.into_unknown(PrettyPrintError(<span class="kw-2">&amp;</span>err).to_string()),
+            },
+            JsValue::FreeVar(<span class="kw-2">ref </span>var) =&gt; <span class="kw">match </span><span class="kw-2">&amp;**</span>var {
+                <span class="string">&quot;require&quot; </span>=&gt; JsValue::WellKnownFunction(WellKnownFunctionKind::Require),
+                <span class="string">&quot;define&quot; </span>=&gt; JsValue::WellKnownFunction(WellKnownFunctionKind::Define),
+                <span class="string">&quot;__dirname&quot; </span>=&gt; <span class="string">&quot;__dirname&quot;</span>.into(),
+                <span class="string">&quot;__filename&quot; </span>=&gt; <span class="string">&quot;__filename&quot;</span>.into(),
+                <span class="string">&quot;process&quot; </span>=&gt; JsValue::WellKnownObject(WellKnownObjectKind::NodeProcess),
+                <span class="kw">_ </span>=&gt; v.into_unknown(<span class="string">&quot;unknown global&quot;</span>),
+            },
             JsValue::Module(ModuleValue {
                 module: <span class="kw-2">ref </span>name, ..
             }) =&gt; <span class="kw">match </span>name.as_ref() {
@@ -6342,10 +6799,8 @@
     };
     <span class="kw">use </span>turbo_tasks::{util::FormatDuration, Value};
     <span class="kw">use </span>turbopack_core::{
-        compile_time_info::{CompileTimeDefinesVc, CompileTimeInfo},
-        environment::{
-            EnvironmentIntention, EnvironmentVc, ExecutionEnvironment, NodeJsEnvironment,
-        },
+        compile_time_info::CompileTimeInfo,
+        environment::{EnvironmentVc, ExecutionEnvironment, NodeJsEnvironment},
         target::{Arch, CompileTarget, Endianness, Libc, Platform},
     };
 
@@ -6509,7 +6964,7 @@
                                         );
                                     }
                                     EffectArg::Spread =&gt; {
-                                        new_args.push(JsValue::Unknown(<span class="prelude-val">None</span>, <span class="string">&quot;spread&quot;</span>));
+                                        new_args.push(JsValue::unknown_empty(<span class="string">&quot;spread&quot;</span>));
                                     }
                                 }
                             }
@@ -6547,8 +7002,11 @@
                                 <span class="kw">let </span>new_args = handle_args(args, <span class="kw-2">&amp;mut </span>queue, <span class="kw-2">&amp;</span>var_graph, i).<span class="kw">await</span>;
                                 resolved.push((
                                     <span class="macro">format!</span>(<span class="string">&quot;{parent} -&gt; {i} call&quot;</span>),
-                                    JsValue::call(<span class="kw">box </span>func, new_args),
+                                    JsValue::call(Box::new(func), new_args),
                                 ));
+                            }
+                            Effect::FreeVar { var, .. } =&gt; {
+                                resolved.push((<span class="macro">format!</span>(<span class="string">&quot;{parent} -&gt; {i} free var&quot;</span>), var));
                             }
                             Effect::MemberCall {
                                 obj, prop, args, ..
@@ -6558,7 +7016,7 @@
                                 <span class="kw">let </span>new_args = handle_args(args, <span class="kw-2">&amp;mut </span>queue, <span class="kw-2">&amp;</span>var_graph, i).<span class="kw">await</span>;
                                 resolved.push((
                                     <span class="macro">format!</span>(<span class="string">&quot;{parent} -&gt; {i} member call&quot;</span>),
-                                    JsValue::member_call(<span class="kw">box </span>obj, <span class="kw">box </span>prop, new_args),
+                                    JsValue::member_call(Box::new(obj), Box::new(prop), new_args),
                                 ));
                             }
                             <span class="kw">_ </span>=&gt; {}
@@ -6605,25 +7063,21 @@
 
     <span class="kw">async fn </span>resolve(var_graph: <span class="kw-2">&amp;</span>VarGraph, val: JsValue) -&gt; JsValue {
         turbo_tasks_testing::VcStorage::with(<span class="kw">async </span>{
-            <span class="kw">let </span>compile_time_info = CompileTimeInfo {
-                environment: EnvironmentVc::new(
-                    Value::new(ExecutionEnvironment::NodeJsLambda(
-                        NodeJsEnvironment {
-                            compile_target: CompileTarget {
-                                arch: Arch::X64,
-                                platform: Platform::Linux,
-                                endianness: Endianness::Little,
-                                libc: Libc::Glibc,
-                            }
-                            .into(),
-                            ..Default::default()
+            <span class="kw">let </span>compile_time_info = CompileTimeInfo::builder(EnvironmentVc::new(Value::new(
+                ExecutionEnvironment::NodeJsLambda(
+                    NodeJsEnvironment {
+                        compile_target: CompileTarget {
+                            arch: Arch::X64,
+                            platform: Platform::Linux,
+                            endianness: Endianness::Little,
+                            libc: Libc::Glibc,
                         }
                         .into(),
-                    )),
-                    Value::new(EnvironmentIntention::ServerRendering),
+                        ..Default::default()
+                    }
+                    .into(),
                 ),
-                defines: CompileTimeDefinesVc::empty(),
-            }
+            )))
             .cell();
             link(
                 var_graph,
@@ -6638,5 +7092,4 @@
         </span>.unwrap()
     }
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="turbopack_ecmascript" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (900c35403 2023-03-08)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

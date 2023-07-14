@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/turbopack-css/src/chunk/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../turbopack_css/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/turbopack-css/src/chunk/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-a23c9d150ad85d8b.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="turbopack_css" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0-nightly (839e9a6e1 2023-07-02)" data-channel="nightly" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../turbopack_css/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -453,7 +453,118 @@
 <a href="#453" id="453">453</a>
 <a href="#454" id="454">454</a>
 <a href="#455" id="455">455</a>
-</pre><pre class="rust"><code><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>optimize;
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
+<a href="#459" id="459">459</a>
+<a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
+<a href="#462" id="462">462</a>
+<a href="#463" id="463">463</a>
+<a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
+<a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
+<a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+<a href="#479" id="479">479</a>
+<a href="#480" id="480">480</a>
+<a href="#481" id="481">481</a>
+<a href="#482" id="482">482</a>
+<a href="#483" id="483">483</a>
+<a href="#484" id="484">484</a>
+<a href="#485" id="485">485</a>
+<a href="#486" id="486">486</a>
+<a href="#487" id="487">487</a>
+<a href="#488" id="488">488</a>
+<a href="#489" id="489">489</a>
+<a href="#490" id="490">490</a>
+<a href="#491" id="491">491</a>
+<a href="#492" id="492">492</a>
+<a href="#493" id="493">493</a>
+<a href="#494" id="494">494</a>
+<a href="#495" id="495">495</a>
+<a href="#496" id="496">496</a>
+<a href="#497" id="497">497</a>
+<a href="#498" id="498">498</a>
+<a href="#499" id="499">499</a>
+<a href="#500" id="500">500</a>
+<a href="#501" id="501">501</a>
+<a href="#502" id="502">502</a>
+<a href="#503" id="503">503</a>
+<a href="#504" id="504">504</a>
+<a href="#505" id="505">505</a>
+<a href="#506" id="506">506</a>
+<a href="#507" id="507">507</a>
+<a href="#508" id="508">508</a>
+<a href="#509" id="509">509</a>
+<a href="#510" id="510">510</a>
+<a href="#511" id="511">511</a>
+<a href="#512" id="512">512</a>
+<a href="#513" id="513">513</a>
+<a href="#514" id="514">514</a>
+<a href="#515" id="515">515</a>
+<a href="#516" id="516">516</a>
+<a href="#517" id="517">517</a>
+<a href="#518" id="518">518</a>
+<a href="#519" id="519">519</a>
+<a href="#520" id="520">520</a>
+<a href="#521" id="521">521</a>
+<a href="#522" id="522">522</a>
+<a href="#523" id="523">523</a>
+<a href="#524" id="524">524</a>
+<a href="#525" id="525">525</a>
+<a href="#526" id="526">526</a>
+<a href="#527" id="527">527</a>
+<a href="#528" id="528">528</a>
+<a href="#529" id="529">529</a>
+<a href="#530" id="530">530</a>
+<a href="#531" id="531">531</a>
+<a href="#532" id="532">532</a>
+<a href="#533" id="533">533</a>
+<a href="#534" id="534">534</a>
+<a href="#535" id="535">535</a>
+<a href="#536" id="536">536</a>
+<a href="#537" id="537">537</a>
+<a href="#538" id="538">538</a>
+<a href="#539" id="539">539</a>
+<a href="#540" id="540">540</a>
+<a href="#541" id="541">541</a>
+<a href="#542" id="542">542</a>
+<a href="#543" id="543">543</a>
+<a href="#544" id="544">544</a>
+<a href="#545" id="545">545</a>
+<a href="#546" id="546">546</a>
+<a href="#547" id="547">547</a>
+<a href="#548" id="548">548</a>
+<a href="#549" id="549">549</a>
+<a href="#550" id="550">550</a>
+<a href="#551" id="551">551</a>
+<a href="#552" id="552">552</a>
+<a href="#553" id="553">553</a>
+<a href="#554" id="554">554</a>
+<a href="#555" id="555">555</a>
+<a href="#556" id="556">556</a>
+<a href="#557" id="557">557</a>
+<a href="#558" id="558">558</a>
+<a href="#559" id="559">559</a>
+<a href="#560" id="560">560</a>
+<a href="#561" id="561">561</a>
+<a href="#562" id="562">562</a>
+<a href="#563" id="563">563</a>
+<a href="#564" id="564">564</a>
+<a href="#565" id="565">565</a>
+<a href="#566" id="566">566</a>
+</pre></div><pre class="rust"><code><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>single_item_chunk;
 <span class="kw">pub mod </span>source_map;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>writer;
 
@@ -461,16 +572,15 @@
 
 <span class="kw">use </span>anyhow::{anyhow, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>indexmap::IndexSet;
-<span class="kw">use </span>turbo_tasks::{primitives::StringVc, Value, ValueToString};
-<span class="kw">use </span>turbo_tasks_fs::{rope::Rope, File, FileSystemPathOptionVc, FileSystemPathVc};
+<span class="kw">use </span>turbo_tasks::{primitives::StringVc, TryJoinIterExt, Value, ValueToString};
+<span class="kw">use </span>turbo_tasks_fs::{rope::Rope, File, FileSystemPathOptionVc};
 <span class="kw">use </span>turbopack_core::{
-    asset::{Asset, AssetContentVc, AssetVc},
+    asset::{Asset, AssetContentVc, AssetVc, AssetsVc},
     chunk::{
-        chunk_content, chunk_content_split,
-        optimize::{ChunkOptimizerVc, OptimizableChunk, OptimizableChunkVc},
-        Chunk, ChunkContentResult, ChunkGroupReferenceVc, ChunkGroupVc, ChunkItem, ChunkItemVc,
-        ChunkReferenceVc, ChunkVc, ChunkableAssetVc, ChunkingContext, ChunkingContextVc,
-        FromChunkableAsset, ModuleId, ModuleIdVc,
+        availability_info::AvailabilityInfo, chunk_content, chunk_content_split, Chunk,
+        ChunkContentResult, ChunkItem, ChunkItemVc, ChunkVc, ChunkableModule, ChunkableModuleVc,
+        ChunkingContext, ChunkingContextVc, ChunksVc, FromChunkableModule, ModuleId, ModuleIdVc,
+        ModuleIdsVc, OutputChunk, OutputChunkRuntimeInfo, OutputChunkRuntimeInfoVc, OutputChunkVc,
     },
     code_builder::{CodeBuilder, CodeVc},
     ident::{AssetIdent, AssetIdentVc},
@@ -478,40 +588,62 @@
         asset::{children_from_asset_references, content_to_details, IntrospectableAssetVc},
         Introspectable, IntrospectableChildrenVc, IntrospectableVc,
     },
+    module::{Module, ModuleVc},
+    output::{OutputAsset, OutputAssetVc},
     reference::{AssetReference, AssetReferenceVc, AssetReferencesVc},
     resolve::PrimaryResolveResult,
-    source_map::{GenerateSourceMap, GenerateSourceMapVc, SourceMapVc},
+    source_map::{GenerateSourceMap, GenerateSourceMapVc, OptionSourceMapVc},
 };
 <span class="kw">use </span>writer::expand_imports;
 
-<span class="kw">use </span><span class="self">self</span>::{optimize::CssChunkOptimizerVc, source_map::CssChunkSourceMapAssetReferenceVc};
+<span class="kw">use </span><span class="self">self</span>::{
+    single_item_chunk::{chunk::SingleItemCssChunkVc, reference::SingleItemCssChunkReferenceVc},
+    source_map::CssChunkSourceMapAssetReferenceVc,
+};
 <span class="kw">use crate</span>::{
     embed::{CssEmbed, CssEmbeddable, CssEmbeddableVc},
-    parse::ParseResultSourceMapVc,
+    parse::ParseCssResultSourceMapVc,
     util::stringify_js,
     ImportAssetReferenceVc,
 };
 
 <span class="attr">#[turbo_tasks::value]
 </span><span class="kw">pub struct </span>CssChunk {
-    context: ChunkingContextVc,
-    main_entries: CssChunkPlaceablesVc,
+    <span class="kw">pub </span>context: ChunkingContextVc,
+    <span class="kw">pub </span>main_entries: CssChunkPlaceablesVc,
+    <span class="kw">pub </span>availability_info: AvailabilityInfo,
 }
+
+<span class="attr">#[turbo_tasks::value(transparent)]
+</span><span class="kw">pub struct </span>CssChunks(Vec&lt;CssChunkVc&gt;);
 
 <span class="attr">#[turbo_tasks::value_impl]
 </span><span class="kw">impl </span>CssChunkVc {
     <span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">pub fn </span>new_normalized(context: ChunkingContextVc, main_entries: CssChunkPlaceablesVc) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>new_normalized(
+        context: ChunkingContextVc,
+        main_entries: CssChunkPlaceablesVc,
+        availability_info: Value&lt;AvailabilityInfo&gt;,
+    ) -&gt; <span class="self">Self </span>{
         CssChunk {
             context,
             main_entries,
+            availability_info: availability_info.into_value(),
         }
         .cell()
     }
 
     <span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">pub fn </span>new(context: ChunkingContextVc, entry: CssChunkPlaceableVc) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::new_normalized(context, CssChunkPlaceablesVc::cell(<span class="macro">vec!</span>[entry]))
+    </span><span class="kw">pub fn </span>new(
+        context: ChunkingContextVc,
+        entry: CssChunkPlaceableVc,
+        availability_info: Value&lt;AvailabilityInfo&gt;,
+    ) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::new_normalized(
+            context,
+            CssChunkPlaceablesVc::cell(<span class="macro">vec!</span>[entry]),
+            availability_info,
+        )
     }
 
     <span class="doccomment">/// Return the most specific directory which contains all elements of the
@@ -543,11 +675,10 @@
     <span class="attr">#[turbo_tasks::function]
     </span><span class="kw">async fn </span>chunk_content(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;CssChunkContentVc&gt; {
         <span class="kw">let </span>this = <span class="self">self</span>.<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span>chunk_path = <span class="self">self</span>.path();
         <span class="prelude-val">Ok</span>(CssChunkContentVc::new(
             this.main_entries,
             this.context,
-            chunk_path,
+            <span class="self">self</span>,
         ))
     }
 }
@@ -556,7 +687,7 @@
 </span><span class="kw">struct </span>CssChunkContent {
     main_entries: CssChunkPlaceablesVc,
     context: ChunkingContextVc,
-    chunk_path: FileSystemPathVc,
+    chunk: CssChunkVc,
 }
 
 <span class="attr">#[turbo_tasks::value_impl]
@@ -565,12 +696,12 @@
     </span><span class="kw">async fn </span>new(
         main_entries: CssChunkPlaceablesVc,
         context: ChunkingContextVc,
-        chunk_path: FileSystemPathVc,
+        chunk: CssChunkVc,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="prelude-val">Ok</span>(CssChunkContent {
             main_entries,
             context,
-            chunk_path,
+            chunk,
         }
         .cell())
     }
@@ -580,7 +711,7 @@
         <span class="kw">use </span>std::io::Write;
 
         <span class="kw">let </span>this = <span class="self">self</span>.<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span>chunk_name = this.chunk_path.to_string();
+        <span class="kw">let </span>chunk_name = this.chunk.path().to_string();
 
         <span class="kw">let </span><span class="kw-2">mut </span>body = CodeBuilder::default();
         <span class="kw">let </span><span class="kw-2">mut </span>external_imports = IndexSet::new();
@@ -588,7 +719,8 @@
             <span class="kw">let </span>entry_placeable = CssChunkPlaceableVc::cast_from(entry);
             <span class="kw">let </span>entry_item = entry_placeable.as_chunk_item(this.context);
 
-            <span class="kw">for </span>external_import <span class="kw">in </span>expand_imports(<span class="kw-2">&amp;mut </span>body, entry_item).<span class="kw">await</span><span class="question-mark">? </span>{
+            <span class="comment">// TODO(WEB-1261)
+            </span><span class="kw">for </span>external_import <span class="kw">in </span>expand_imports(<span class="kw-2">&amp;mut </span>body, entry_item).<span class="kw">await</span><span class="question-mark">? </span>{
                 external_imports.insert(external_import.<span class="kw">await</span><span class="question-mark">?</span>.to_owned());
             }
         }
@@ -601,8 +733,13 @@
 
         code.push_code(<span class="kw-2">&amp;</span>body.build());
 
-        <span class="kw">if </span>code.has_source_map() {
-            <span class="kw">let </span>chunk_path = this.chunk_path.<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">if </span><span class="kw-2">*</span>this
+            .context
+            .reference_chunk_source_maps(this.chunk.into())
+            .<span class="kw">await</span><span class="question-mark">?
+            </span>&amp;&amp; code.has_source_map()
+        {
+            <span class="kw">let </span>chunk_path = this.chunk.path().<span class="kw">await</span><span class="question-mark">?</span>;
             <span class="macro">write!</span>(
                 code,
                 <span class="string">&quot;\n/*# sourceMappingURL={}.map*/&quot;</span>,
@@ -624,7 +761,7 @@
 <span class="attr">#[turbo_tasks::value_impl]
 </span><span class="kw">impl </span>GenerateSourceMap <span class="kw">for </span>CssChunkContent {
     <span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">fn </span>generate_source_map(self_vc: CssChunkContentVc) -&gt; SourceMapVc {
+    </span><span class="kw">fn </span>generate_source_map(self_vc: CssChunkContentVc) -&gt; OptionSourceMapVc {
         self_vc.code().generate_source_map()
     }
 }
@@ -633,7 +770,6 @@
 </span><span class="kw">pub struct </span>CssChunkContentResult {
     <span class="kw">pub </span>chunk_items: Vec&lt;CssChunkItemVc&gt;,
     <span class="kw">pub </span>chunks: Vec&lt;ChunkVc&gt;,
-    <span class="kw">pub </span>async_chunk_groups: Vec&lt;ChunkGroupVc&gt;,
     <span class="kw">pub </span>external_asset_references: Vec&lt;AssetReferenceVc&gt;,
 }
 
@@ -642,7 +778,6 @@
         CssChunkContentResult {
             chunk_items: from.chunk_items,
             chunks: from.chunks,
-            async_chunk_groups: from.async_chunk_groups,
             external_asset_references: from.external_asset_references,
         }
     }
@@ -652,12 +787,13 @@
 </span><span class="kw">async fn </span>css_chunk_content(
     context: ChunkingContextVc,
     entries: CssChunkPlaceablesVc,
+    availability_info: Value&lt;AvailabilityInfo&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;CssChunkContentResultVc&gt; {
     <span class="kw">let </span>entries = entries.<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="kw">let </span>entries = entries.iter().copied();
 
     <span class="kw">let </span>contents = entries
-        .map(|entry| css_chunk_content_single_entry(context, entry))
+        .map(|entry| css_chunk_content_single_entry(context, entry, availability_info))
         .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
     <span class="kw">if </span>contents.len() == <span class="number">1 </span>{
@@ -666,26 +802,22 @@
 
     <span class="kw">let </span><span class="kw-2">mut </span>all_chunk_items = IndexSet::&lt;CssChunkItemVc&gt;::new();
     <span class="kw">let </span><span class="kw-2">mut </span>all_chunks = IndexSet::&lt;ChunkVc&gt;::new();
-    <span class="kw">let </span><span class="kw-2">mut </span>all_async_chunk_groups = IndexSet::&lt;ChunkGroupVc&gt;::new();
     <span class="kw">let </span><span class="kw-2">mut </span>all_external_asset_references = IndexSet::&lt;AssetReferenceVc&gt;::new();
 
     <span class="kw">for </span>content <span class="kw">in </span>contents {
         <span class="kw">let </span>CssChunkContentResult {
             chunk_items,
             chunks,
-            async_chunk_groups,
             external_asset_references,
         } = <span class="kw-2">&amp;*</span>content.<span class="kw">await</span><span class="question-mark">?</span>;
         all_chunk_items.extend(chunk_items.iter().copied());
         all_chunks.extend(chunks.iter().copied());
-        all_async_chunk_groups.extend(async_chunk_groups.iter().copied());
         all_external_asset_references.extend(external_asset_references.iter().copied());
     }
 
     <span class="prelude-val">Ok</span>(CssChunkContentResult {
         chunk_items: all_chunk_items.into_iter().collect(),
         chunks: all_chunks.into_iter().collect(),
-        async_chunk_groups: all_async_chunk_groups.into_iter().collect(),
         external_asset_references: all_external_asset_references.into_iter().collect(),
     }
     .cell())
@@ -695,27 +827,102 @@
 </span><span class="kw">async fn </span>css_chunk_content_single_entry(
     context: ChunkingContextVc,
     entry: CssChunkPlaceableVc,
+    availability_info: Value&lt;AvailabilityInfo&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;CssChunkContentResultVc&gt; {
     <span class="kw">let </span>asset = entry.as_asset();
-    <span class="kw">let </span>res = <span class="kw">if let </span><span class="prelude-val">Some</span>(res) = chunk_content::&lt;CssChunkItemVc&gt;(context, asset, <span class="prelude-val">None</span>).<span class="kw">await</span><span class="question-mark">? </span>{
+    <span class="kw">let </span>res = <span class="kw">if let </span><span class="prelude-val">Some</span>(res) =
+        chunk_content::&lt;CssChunkItemVc&gt;(context, asset, <span class="prelude-val">None</span>, availability_info).<span class="kw">await</span><span class="question-mark">?
+    </span>{
         res
     } <span class="kw">else </span>{
-        chunk_content_split::&lt;CssChunkItemVc&gt;(context, asset, <span class="prelude-val">None</span>).<span class="kw">await</span><span class="question-mark">?
+        chunk_content_split::&lt;CssChunkItemVc&gt;(context, asset, <span class="prelude-val">None</span>, availability_info).<span class="kw">await</span><span class="question-mark">?
     </span>};
 
     <span class="prelude-val">Ok</span>(CssChunkContentResultVc::cell(res.into()))
 }
 
 <span class="attr">#[turbo_tasks::value_impl]
-</span><span class="kw">impl </span>Chunk <span class="kw">for </span>CssChunk {}
-
-<span class="attr">#[turbo_tasks::value_impl]
-</span><span class="kw">impl </span>OptimizableChunk <span class="kw">for </span>CssChunk {
+</span><span class="kw">impl </span>Chunk <span class="kw">for </span>CssChunk {
     <span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">fn </span>get_optimizer(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ChunkOptimizerVc {
-        CssChunkOptimizerVc::new(<span class="self">self</span>.context).into()
+    </span><span class="kw">fn </span>chunking_context(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ChunkingContextVc {
+        <span class="self">self</span>.context
+    }
+
+    <span class="attr">#[turbo_tasks::function]
+    </span><span class="kw">async fn </span>parallel_chunks(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;ChunksVc&gt; {
+        <span class="kw">let </span>content = css_chunk_content(
+            <span class="self">self</span>.context,
+            <span class="self">self</span>.main_entries,
+            Value::new(<span class="self">self</span>.availability_info),
+        )
+        .<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>chunks = Vec::new();
+        <span class="kw">for </span>chunk <span class="kw">in </span>content.chunks.iter() {
+            chunks.push(<span class="kw-2">*</span>chunk);
+        }
+        <span class="prelude-val">Ok</span>(ChunksVc::cell(chunks))
     }
 }
+
+<span class="attr">#[turbo_tasks::value_impl]
+</span><span class="kw">impl </span>OutputChunk <span class="kw">for </span>CssChunk {
+    <span class="attr">#[turbo_tasks::function]
+    </span><span class="kw">async fn </span>runtime_info(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;OutputChunkRuntimeInfoVc&gt; {
+        <span class="kw">let </span>content = css_chunk_content(
+            <span class="self">self</span>.context,
+            <span class="self">self</span>.main_entries,
+            Value::new(<span class="self">self</span>.availability_info),
+        )
+        .<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>entries_chunk_items: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self
+            </span>.main_entries
+            .<span class="kw">await</span><span class="question-mark">?
+            </span>.iter()
+            .map(|<span class="kw-2">&amp;</span>entry| entry.as_chunk_item(<span class="self">self</span>.context))
+            .collect();
+        <span class="kw">let </span>included_ids = entries_chunk_items
+            .iter()
+            .map(|chunk_item| chunk_item.id())
+            .collect();
+        <span class="kw">let </span>imports_chunk_items: Vec&lt;<span class="kw">_</span>&gt; = entries_chunk_items
+            .iter()
+            .map(|<span class="kw-2">&amp;</span>chunk_item| <span class="kw">async move </span>{
+                <span class="prelude-val">Ok</span>(chunk_item
+                    .content()
+                    .<span class="kw">await</span><span class="question-mark">?
+                    </span>.imports
+                    .iter()
+                    .filter_map(|import| {
+                        <span class="kw">if let </span>CssImport::Internal(<span class="kw">_</span>, item) = import {
+                            <span class="prelude-val">Some</span>(<span class="kw-2">*</span>item)
+                        } <span class="kw">else </span>{
+                            <span class="prelude-val">None
+                        </span>}
+                    })
+                    .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;())
+            })
+            .try_join()
+            .<span class="kw">await</span><span class="question-mark">?
+            </span>.into_iter()
+            .flatten()
+            .collect();
+        <span class="kw">let </span>module_chunks: Vec&lt;<span class="kw">_</span>&gt; = content
+            .chunk_items
+            .iter()
+            .chain(imports_chunk_items.iter())
+            .map(|item| SingleItemCssChunkVc::new(<span class="self">self</span>.context, <span class="kw-2">*</span>item).into())
+            .collect();
+        <span class="prelude-val">Ok</span>(OutputChunkRuntimeInfo {
+            included_ids: <span class="prelude-val">Some</span>(ModuleIdsVc::cell(included_ids)),
+            module_chunks: <span class="prelude-val">Some</span>(AssetsVc::cell(module_chunks)),
+            ..Default::default()
+        }
+        .cell())
+    }
+}
+
+<span class="attr">#[turbo_tasks::value_impl]
+</span><span class="kw">impl </span>OutputAsset <span class="kw">for </span>CssChunk {}
 
 <span class="attr">#[turbo_tasks::value_impl]
 </span><span class="kw">impl </span>Asset <span class="kw">for </span>CssChunk {
@@ -740,6 +947,7 @@
                 fragment: <span class="prelude-val">None</span>,
                 assets,
                 modifiers: Vec::new(),
+                part: <span class="prelude-val">None</span>,
             }))
         };
 
@@ -756,7 +964,12 @@
     <span class="attr">#[turbo_tasks::function]
     </span><span class="kw">async fn </span>references(self_vc: CssChunkVc) -&gt; <span class="prelude-ty">Result</span>&lt;AssetReferencesVc&gt; {
         <span class="kw">let </span>this = self_vc.<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span>content = css_chunk_content(this.context, this.main_entries).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>content = css_chunk_content(
+            this.context,
+            this.main_entries,
+            Value::new(this.availability_info),
+        )
+        .<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>references = Vec::new();
         <span class="kw">for </span>r <span class="kw">in </span>content.external_asset_references.iter() {
             references.push(<span class="kw-2">*</span>r);
@@ -769,13 +982,16 @@
                 }
             }
         }
-        <span class="kw">for </span>chunk <span class="kw">in </span>content.chunks.iter() {
-            references.push(ChunkReferenceVc::new_parallel(<span class="kw-2">*</span>chunk).into());
+        <span class="kw">for </span>item <span class="kw">in </span>content.chunk_items.iter() {
+            references.push(SingleItemCssChunkReferenceVc::new(this.context, <span class="kw-2">*</span>item).into());
         }
-        <span class="kw">for </span>chunk_group <span class="kw">in </span>content.async_chunk_groups.iter() {
-            references.push(ChunkGroupReferenceVc::new(<span class="kw-2">*</span>chunk_group).into());
+        <span class="kw">if </span><span class="kw-2">*</span>this
+            .context
+            .reference_chunk_source_maps(self_vc.into())
+            .<span class="kw">await</span><span class="question-mark">?
+        </span>{
+            references.push(CssChunkSourceMapAssetReferenceVc::new(self_vc).into());
         }
-        references.push(CssChunkSourceMapAssetReferenceVc::new(self_vc).into());
         <span class="prelude-val">Ok</span>(AssetReferencesVc::cell(references))
     }
 }
@@ -783,7 +999,7 @@
 <span class="attr">#[turbo_tasks::value_impl]
 </span><span class="kw">impl </span>GenerateSourceMap <span class="kw">for </span>CssChunk {
     <span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">fn </span>generate_source_map(self_vc: CssChunkVc) -&gt; SourceMapVc {
+    </span><span class="kw">fn </span>generate_source_map(self_vc: CssChunkVc) -&gt; OptionSourceMapVc {
         self_vc.chunk_content().generate_source_map()
     }
 }
@@ -812,7 +1028,7 @@
 }
 
 <span class="attr">#[turbo_tasks::value_trait]
-</span><span class="kw">pub trait </span>CssChunkPlaceable: Asset {
+</span><span class="kw">pub trait </span>CssChunkPlaceable: ChunkableModule + Module + Asset {
     <span class="kw">fn </span>as_chunk_item(<span class="kw-2">&amp;</span><span class="self">self</span>, context: ChunkingContextVc) -&gt; CssChunkItemVc;
 }
 
@@ -831,7 +1047,7 @@
 </span><span class="kw">pub struct </span>CssChunkItemContent {
     <span class="kw">pub </span>inner_code: Rope,
     <span class="kw">pub </span>imports: Vec&lt;CssImport&gt;,
-    <span class="kw">pub </span>source_map: <span class="prelude-ty">Option</span>&lt;ParseResultSourceMapVc&gt;,
+    <span class="kw">pub </span>source_map: <span class="prelude-ty">Option</span>&lt;ParseCssResultSourceMapVc&gt;,
 }
 
 <span class="attr">#[turbo_tasks::value_trait]
@@ -844,7 +1060,7 @@
 }
 
 <span class="attr">#[async_trait::async_trait]
-</span><span class="kw">impl </span>FromChunkableAsset <span class="kw">for </span>CssChunkItemVc {
+</span><span class="kw">impl </span>FromChunkableModule <span class="kw">for </span>CssChunkItemVc {
     <span class="kw">async fn </span>from_asset(context: ChunkingContextVc, asset: AssetVc) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt;&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(placeable) = CssChunkPlaceableVc::resolve_from(asset).<span class="kw">await</span><span class="question-mark">? </span>{
             <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(placeable.as_chunk_item(context)));
@@ -854,7 +1070,8 @@
 
     <span class="kw">async fn </span>from_async_asset(
         _context: ChunkingContextVc,
-        _asset: ChunkableAssetVc,
+        _asset: ChunkableModuleVc,
+        _availability_info: Value&lt;AvailabilityInfo&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt;&gt; {
         <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
     }
@@ -887,7 +1104,12 @@
         <span class="kw">let </span>content = content_to_details(self_vc.content());
         <span class="kw">let </span><span class="kw-2">mut </span>details = String::new();
         <span class="kw">let </span>this = self_vc.<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span>chunk_content = css_chunk_content(this.context, this.main_entries).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>chunk_content = css_chunk_content(
+            this.context,
+            this.main_entries,
+            Value::new(this.availability_info),
+        )
+        .<span class="kw">await</span><span class="question-mark">?</span>;
         details += <span class="string">&quot;Chunk items:\n\n&quot;</span>;
         <span class="kw">for </span>item <span class="kw">in </span>chunk_content.chunk_items.iter() {
             <span class="macro">writeln!</span>(details, <span class="string">&quot;- {}&quot;</span>, item.asset_ident().to_string().<span class="kw">await</span><span class="question-mark">?</span>)<span class="question-mark">?</span>;
@@ -908,5 +1130,4 @@
         <span class="prelude-val">Ok</span>(IntrospectableChildrenVc::cell(children))
     }
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="turbopack_css" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (900c35403 2023-03-08)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

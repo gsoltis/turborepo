@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["TextContentFileSource","TextContentFileSourceVc"],"type":["TextContentFileSourceReadRef"]};

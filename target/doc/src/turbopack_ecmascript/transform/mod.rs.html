@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/turbopack-ecmascript/src/transform/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../turbopack_ecmascript/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/turbopack-ecmascript/src/transform/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-a23c9d150ad85d8b.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="turbopack_ecmascript" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0-nightly (839e9a6e1 2023-07-02)" data-channel="nightly" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../turbopack_ecmascript/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -297,103 +297,131 @@
 <a href="#297" id="297">297</a>
 <a href="#298" id="298">298</a>
 <a href="#299" id="299">299</a>
-</pre><pre class="rust"><code><span class="kw">mod </span>server_to_client_proxy;
-
-<span class="kw">use </span>std::{path::Path, sync::Arc};
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>std::{fmt::Debug, hash::Hash, sync::Arc};
 
 <span class="kw">use </span>anyhow::Result;
-<span class="kw">use </span>next_transform_dynamic::{next_dynamic, NextDynamicMode};
-<span class="kw">use </span>next_transform_strip_page_exports::{next_transform_strip_page_exports, ExportFilter};
-<span class="kw">use </span>serde::{Deserialize, Serialize};
+<span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>swc_core::{
     base::SwcComments,
-    common::{chain, util::take::Take, FileName, Mark, SourceMap},
+    common::{chain, comments::Comments, util::take::Take, Mark, SourceMap},
     ecma::{
-        ast::{Module, ModuleItem, Program},
-        atoms::JsWord,
+        ast::{Module, ModuleItem, Program, Script},
         preset_env::{<span class="self">self</span>, Targets},
         transforms::{
-            base::{feature::FeatureFlag, helpers::inject_helpers, resolver, Assumptions},
+            base::{feature::FeatureFlag, helpers::inject_helpers, Assumptions},
             react::react,
         },
         visit::{FoldWith, VisitMutWith},
     },
 };
-<span class="kw">use </span>turbo_tasks::{
-    primitives::{StringVc, StringsVc},
-    trace::TraceRawVcs,
+<span class="kw">use </span>turbo_tasks::primitives::{OptionStringVc, StringVc};
+<span class="kw">use </span>turbo_tasks_fs::FileSystemPathVc;
+<span class="kw">use </span>turbopack_core::{
+    environment::EnvironmentVc,
+    issue::{Issue, IssueSeverity, IssueSeverityVc, IssueVc},
 };
-<span class="kw">use </span>turbo_tasks_fs::{json::parse_json_with_source_context, FileSystemPathVc};
-<span class="kw">use </span>turbopack_core::environment::EnvironmentVc;
-
-<span class="kw">use </span><span class="self">self</span>::server_to_client_proxy::{create_proxy_module, is_client_module};
-
-<span class="attr">#[derive(
-    Debug, Copy, Clone, Eq, PartialEq, PartialOrd, Ord, Hash, Serialize, Deserialize, TraceRawVcs,
-)]
-</span><span class="kw">pub enum </span>NextJsPageExportFilter {
-    <span class="doccomment">/// Strip all data exports (getServerSideProps,
-    /// getStaticProps, getStaticPaths exports.) and their unique dependencies.
-    </span>StripDataExports,
-    <span class="doccomment">/// Strip default export and all its unique dependencies.
-    </span>StripDefaultExport,
-}
-
-<span class="kw">impl </span>From&lt;NextJsPageExportFilter&gt; <span class="kw">for </span>ExportFilter {
-    <span class="kw">fn </span>from(val: NextJsPageExportFilter) -&gt; <span class="self">Self </span>{
-        <span class="kw">match </span>val {
-            NextJsPageExportFilter::StripDataExports =&gt; ExportFilter::StripDataExports,
-            NextJsPageExportFilter::StripDefaultExport =&gt; ExportFilter::StripDefaultExport,
-        }
-    }
-}
 
 <span class="attr">#[turbo_tasks::value(serialization = <span class="string">&quot;auto_for_input&quot;</span>)]
-#[derive(PartialOrd, Ord, Hash, Debug, Copy, Clone)]
+#[derive(Debug, Clone, PartialOrd, Ord, Hash)]
 </span><span class="kw">pub enum </span>EcmascriptInputTransform {
-    ClientDirective(StringVc),
     CommonJs,
-    Custom,
-    Emotion,
-    <span class="doccomment">/// This enables a Next.js transform which will eliminate some exports
-    /// from a page file, as well as any imports exclusively used by these
-    /// exports.
-    ///
-    /// It also provides diagnostics for improper use of `getServerSideProps`.
-    </span>NextJsStripPageExports(NextJsPageExportFilter),
-    <span class="doccomment">/// Enables the Next.js transform for next/dynamic.
-    </span>NextJsDynamic {
-        is_development: bool,
-        is_server: bool,
-        is_server_components: bool,
-        pages_dir: <span class="prelude-ty">Option</span>&lt;FileSystemPathVc&gt;,
-    },
-    NextJsFont(StringsVc),
+    Plugin(TransformPluginVc),
     PresetEnv(EnvironmentVc),
     React {
         <span class="attr">#[serde(default)]
+        </span>development: bool,
+        <span class="attr">#[serde(default)]
         </span>refresh: bool,
+        <span class="comment">// swc.jsc.transform.react.importSource
+        </span>import_source: OptionStringVc,
+        <span class="comment">// swc.jsc.transform.react.runtime,
+        </span>runtime: OptionStringVc,
     },
-    StyledComponents,
-    StyledJsx,
     <span class="comment">// These options are subset of swc_core::ecma::transforms::typescript::Config, but
     // it doesn&#39;t derive `Copy` so repeating values in here
     </span>TypeScript {
         <span class="attr">#[serde(default)]
         </span>use_define_for_class_fields: bool,
     },
+    Decorators {
+        <span class="attr">#[serde(default)]
+        </span>is_legacy: bool,
+        <span class="attr">#[serde(default)]
+        </span>is_ecma: bool,
+        <span class="attr">#[serde(default)]
+        </span>emit_decorators_metadata: bool,
+        <span class="attr">#[serde(default)]
+        </span>use_define_for_class_fields: bool,
+    },
+}
+
+<span class="doccomment">/// The CustomTransformer trait allows you to implement your own custom SWC
+/// transformer to run over all ECMAScript files imported in the graph.
+</span><span class="attr">#[async_trait]
+</span><span class="kw">pub trait </span>CustomTransformer: Debug {
+    <span class="kw">async fn </span>transform(<span class="kw-2">&amp;</span><span class="self">self</span>, program: <span class="kw-2">&amp;mut </span>Program, ctx: <span class="kw-2">&amp;</span>TransformContext&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;;
+}
+
+<span class="doccomment">/// A wrapper around a TransformPlugin instance, allowing it to operate with
+/// the turbo_task caching requirements.
+</span><span class="attr">#[turbo_tasks::value(
+    transparent,
+    serialization = <span class="string">&quot;none&quot;</span>,
+    eq = <span class="string">&quot;manual&quot;</span>,
+    into = <span class="string">&quot;new&quot;</span>,
+    cell = <span class="string">&quot;new&quot;
+</span>)]
+#[derive(Debug)]
+</span><span class="kw">pub struct </span>TransformPlugin(<span class="attr">#[turbo_tasks(trace_ignore)] </span>Box&lt;<span class="kw">dyn </span>CustomTransformer + Send + Sync&gt;);
+
+<span class="attr">#[turbo_tasks::value(transparent)]
+</span><span class="kw">pub struct </span>OptionTransformPlugin(<span class="prelude-ty">Option</span>&lt;TransformPluginVc&gt;);
+
+<span class="kw">impl </span>Default <span class="kw">for </span>OptionTransformPluginVc {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        OptionTransformPluginVc::cell(<span class="prelude-val">None</span>)
+    }
+}
+
+<span class="attr">#[async_trait]
+</span><span class="kw">impl </span>CustomTransformer <span class="kw">for </span>TransformPlugin {
+    <span class="kw">async fn </span>transform(<span class="kw-2">&amp;</span><span class="self">self</span>, program: <span class="kw-2">&amp;mut </span>Program, ctx: <span class="kw-2">&amp;</span>TransformContext&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="self">self</span>.<span class="number">0</span>.transform(program, ctx).<span class="kw">await
+    </span>}
 }
 
 <span class="attr">#[turbo_tasks::value(transparent, serialization = <span class="string">&quot;auto_for_input&quot;</span>)]
-#[derive(Debug, PartialOrd, Ord, Hash, Clone)]
+#[derive(Debug, Clone, PartialOrd, Ord, Hash)]
 </span><span class="kw">pub struct </span>EcmascriptInputTransforms(Vec&lt;EcmascriptInputTransform&gt;);
 
 <span class="attr">#[turbo_tasks::value_impl]
 </span><span class="kw">impl </span>EcmascriptInputTransformsVc {
     <span class="attr">#[turbo_tasks::function]
+    </span><span class="kw">pub fn </span>empty() -&gt; <span class="self">Self </span>{
+        EcmascriptInputTransformsVc::cell(Vec::new())
+    }
+
+    <span class="attr">#[turbo_tasks::function]
     </span><span class="kw">pub async fn </span>extend(<span class="self">self</span>, other: EcmascriptInputTransformsVc) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>transforms = <span class="self">self</span>.<span class="kw">await</span><span class="question-mark">?</span>.clone_value();
-        transforms.extend(<span class="kw-2">&amp;*</span>other.<span class="kw">await</span><span class="question-mark">?</span>);
+        transforms.extend(other.<span class="kw">await</span><span class="question-mark">?</span>.clone_value());
         <span class="prelude-val">Ok</span>(EcmascriptInputTransformsVc::cell(transforms))
     }
 }
@@ -406,44 +434,73 @@
     <span class="kw">pub </span>file_path_str: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
     <span class="kw">pub </span>file_name_str: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
     <span class="kw">pub </span>file_name_hash: u128,
+    <span class="kw">pub </span>file_path: FileSystemPathVc,
 }
 
 <span class="kw">impl </span>EcmascriptInputTransform {
-    <span class="kw">pub async fn </span>apply(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        program: <span class="kw-2">&amp;mut </span>Program,
-        <span class="kw-2">&amp;</span>TransformContext {
+    <span class="kw">pub async fn </span>apply(<span class="kw-2">&amp;</span><span class="self">self</span>, program: <span class="kw-2">&amp;mut </span>Program, ctx: <span class="kw-2">&amp;</span>TransformContext&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="kw">let </span><span class="kw-2">&amp;</span>TransformContext {
             comments,
             source_map,
             top_level_mark,
             unresolved_mark,
-            file_path_str,
-            file_name_str,
-            file_name_hash,
-        }: <span class="kw-2">&amp;</span>TransformContext&lt;<span class="lifetime">&#39;_</span>&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">match </span><span class="kw-2">*</span><span class="self">self </span>{
-            EcmascriptInputTransform::React { refresh } =&gt; {
-                program.visit_mut_with(<span class="kw-2">&amp;mut </span>react(
+            ..
+        } = ctx;
+        <span class="kw">match </span><span class="self">self </span>{
+            EcmascriptInputTransform::React {
+                development,
+                refresh,
+                import_source,
+                runtime,
+            } =&gt; {
+                <span class="kw">use </span>swc_core::ecma::transforms::react::{Options, Runtime};
+                <span class="kw">let </span>runtime = <span class="kw">if let </span><span class="prelude-val">Some</span>(runtime) = <span class="kw-2">&amp;*</span>runtime.<span class="kw">await</span><span class="question-mark">? </span>{
+                    <span class="kw">match </span>runtime.as_str() {
+                        <span class="string">&quot;classic&quot; </span>=&gt; Runtime::Classic,
+                        <span class="string">&quot;automatic&quot; </span>=&gt; Runtime::Automatic,
+                        <span class="kw">_ </span>=&gt; {
+                            <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="macro">anyhow::anyhow!</span>(
+                                <span class="string">&quot;Invalid value for swc.jsc.transform.react.runtime: {}&quot;</span>,
+                                runtime
+                            ))
+                        }
+                    }
+                } <span class="kw">else </span>{
+                    Runtime::Automatic
+                };
+
+                <span class="kw">let </span>config = Options {
+                    runtime: <span class="prelude-val">Some</span>(runtime),
+                    development: <span class="prelude-val">Some</span>(<span class="kw-2">*</span>development),
+                    import_source: import_source.<span class="kw">await</span><span class="question-mark">?</span>.clone_value(),
+                    refresh: <span class="kw">if </span><span class="kw-2">*</span>refresh {
+                        <span class="prelude-val">Some</span>(swc_core::ecma::transforms::react::RefreshOptions {
+                            refresh_reg: <span class="string">&quot;__turbopack_refresh__.register&quot;</span>.to_string(),
+                            refresh_sig: <span class="string">&quot;__turbopack_refresh__.signature&quot;</span>.to_string(),
+                            ..Default::default()
+                        })
+                    } <span class="kw">else </span>{
+                        <span class="prelude-val">None
+                    </span>},
+                    ..Default::default()
+                };
+
+                <span class="comment">// Explicit type annotation to ensure that we don&#39;t duplicate transforms in the
+                // final binary
+                </span>program.visit_mut_with(<span class="kw-2">&amp;mut </span>react::&lt;<span class="kw-2">&amp;</span><span class="kw">dyn </span>Comments&gt;(
                     source_map.clone(),
-                    <span class="prelude-val">Some</span>(comments.clone()),
-                    swc_core::ecma::transforms::react::Options {
-                        runtime: <span class="prelude-val">Some</span>(swc_core::ecma::transforms::react::Runtime::Automatic),
-                        development: <span class="prelude-val">Some</span>(<span class="bool-val">true</span>),
-                        refresh: <span class="kw">if </span>refresh {
-                            <span class="prelude-val">Some</span>(swc_core::ecma::transforms::react::RefreshOptions {
-                                ..Default::default()
-                            })
-                        } <span class="kw">else </span>{
-                            <span class="prelude-val">None
-                        </span>},
-                        ..Default::default()
-                    },
+                    <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>comments),
+                    config,
                     top_level_mark,
+                    unresolved_mark,
                 ));
             }
             EcmascriptInputTransform::CommonJs =&gt; {
-                program.visit_mut_with(<span class="kw-2">&amp;mut </span>swc_core::ecma::transforms::module::common_js(
+                <span class="comment">// Explicit type annotation to ensure that we don&#39;t duplicate transforms in the
+                // final binary
+                </span>program.visit_mut_with(<span class="kw-2">&amp;mut </span>swc_core::ecma::transforms::module::common_js::&lt;
+                    <span class="kw-2">&amp;</span><span class="kw">dyn </span>Comments,
+                &gt;(
                     unresolved_mark,
                     swc_core::ecma::transforms::module::util::Config {
                         allow_top_level_this: <span class="bool-val">true</span>,
@@ -453,17 +510,8 @@
                         ..Default::default()
                     },
                     swc_core::ecma::transforms::base::feature::FeatureFlag::all(),
-                    <span class="prelude-val">Some</span>(comments.clone()),
+                    <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>comments),
                 ));
-            }
-            EcmascriptInputTransform::Emotion =&gt; {
-                <span class="kw">let </span>p = std::mem::replace(program, Program::Module(Module::dummy()));
-                <span class="kw-2">*</span>program = p.fold_with(<span class="kw-2">&amp;mut </span>swc_emotion::emotion(
-                    Default::default(),
-                    Path::new(file_name_str),
-                    source_map.clone(),
-                    comments.clone(),
-                ))
             }
             EcmascriptInputTransform::PresetEnv(env) =&gt; {
                 <span class="kw">let </span>versions = env.runtime_versions().<span class="kw">await</span><span class="question-mark">?</span>;
@@ -473,12 +521,29 @@
                     </span>..Default::default()
                 };
 
-                <span class="kw">let </span>module_program = unwrap_module_program(program);
+                <span class="kw">let </span>module_program = std::mem::replace(program, Program::Module(Module::dummy()));
 
-                <span class="kw-2">*</span>program = module_program.fold_with(<span class="kw-2">&amp;mut </span><span class="macro">chain!</span>(
-                    preset_env::preset_env(
+                <span class="kw">let </span>module_program = <span class="kw">if let </span>Program::Script(Script {
+                    span,
+                    <span class="kw-2">mut </span>body,
+                    shebang,
+                }) = module_program
+                {
+                    Program::Module(Module {
+                        span,
+                        body: body.drain(..).map(ModuleItem::Stmt).collect(),
+                        shebang,
+                    })
+                } <span class="kw">else </span>{
+                    module_program
+                };
+
+                <span class="comment">// Explicit type annotation to ensure that we don&#39;t duplicate transforms in the
+                // final binary
+                </span><span class="kw-2">*</span>program = module_program.fold_with(<span class="kw-2">&amp;mut </span><span class="macro">chain!</span>(
+                    preset_env::preset_env::&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;_ </span><span class="kw">dyn </span>Comments&gt;(
                         top_level_mark,
-                        <span class="prelude-val">Some</span>(comments.clone()),
+                        <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>comments),
                         config,
                         Assumptions::default(),
                         <span class="kw-2">&amp;mut </span>FeatureFlag::empty(),
@@ -486,86 +551,37 @@
                     inject_helpers(unresolved_mark),
                 ));
             }
-            EcmascriptInputTransform::StyledComponents =&gt; {
-                program.visit_mut_with(<span class="kw-2">&amp;mut </span>styled_components::styled_components(
-                    FileName::Anon,
-                    file_name_hash,
-                    parse_json_with_source_context(<span class="string">&quot;{}&quot;</span>)<span class="question-mark">?</span>,
-                ));
-            }
-            EcmascriptInputTransform::StyledJsx =&gt; {
-                <span class="comment">// Modeled after https://github.com/swc-project/plugins/blob/ae735894cdb7e6cfd776626fe2bc580d3e80fed9/packages/styled-jsx/src/lib.rs
-                </span><span class="kw">let </span>real_program = std::mem::replace(program, Program::Module(Module::dummy()));
-                <span class="kw-2">*</span>program = real_program.fold_with(<span class="kw-2">&amp;mut </span>styled_jsx::visitor::styled_jsx(
-                    source_map.clone(),
-                    <span class="comment">// styled_jsx don&#39;t really use that in a relevant way
-                    </span>FileName::Anon,
-                ));
-            }
             EcmascriptInputTransform::TypeScript {
-                use_define_for_class_fields,
+                <span class="comment">// TODO(WEB-1213)
+                </span>use_define_for_class_fields: _use_define_for_class_fields,
             } =&gt; {
-                <span class="kw">use </span>swc_core::ecma::transforms::typescript::{strip_with_config, Config};
-                <span class="kw">let </span>config = Config {
-                    use_define_for_class_fields,
-                    ..Default::default()
-                };
+                <span class="kw">use </span>swc_core::ecma::transforms::typescript::strip_with_config;
+                <span class="kw">let </span>config = Default::default();
                 program.visit_mut_with(<span class="kw-2">&amp;mut </span>strip_with_config(config, top_level_mark));
             }
-            EcmascriptInputTransform::ClientDirective(transition_name) =&gt; {
-                <span class="kw">let </span>transition_name = <span class="kw-2">&amp;*</span>transition_name.<span class="kw">await</span><span class="question-mark">?</span>;
-                <span class="kw">if </span>is_client_module(program) {
-                    <span class="kw-2">*</span>program = create_proxy_module(transition_name, <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;./{file_name_str}&quot;</span>));
-                    program.visit_mut_with(<span class="kw-2">&amp;mut </span>resolver(unresolved_mark, top_level_mark, <span class="bool-val">false</span>));
-                }
-            }
-            EcmascriptInputTransform::NextJsStripPageExports(export_type) =&gt; {
-                <span class="comment">// TODO(alexkirsz) Connect the eliminated_packages to telemetry.
-                </span><span class="kw">let </span>eliminated_packages = Default::default();
-
-                <span class="kw">let </span>module_program = unwrap_module_program(program);
-
-                <span class="kw-2">*</span>program = module_program.fold_with(<span class="kw-2">&amp;mut </span>next_transform_strip_page_exports(
-                    export_type.into(),
-                    eliminated_packages,
-                ));
-            }
-            EcmascriptInputTransform::NextJsDynamic {
-                is_development,
-                is_server,
-                is_server_components,
-                pages_dir,
+            EcmascriptInputTransform::Decorators {
+                is_legacy,
+                is_ecma: <span class="kw">_</span>,
+                emit_decorators_metadata,
+                <span class="comment">// TODO(WEB-1213)
+                </span>use_define_for_class_fields: _use_define_for_class_fields,
             } =&gt; {
-                <span class="kw">let </span>module_program = unwrap_module_program(program);
+                <span class="kw">use </span>swc_core::ecma::transforms::proposal::decorators::{decorators, Config};
+                <span class="kw">let </span>config = Config {
+                    legacy: <span class="kw-2">*</span>is_legacy,
+                    emit_metadata: <span class="kw-2">*</span>emit_decorators_metadata,
+                    ..Default::default()
+                };
 
-                <span class="kw">let </span>pages_dir = <span class="kw">if let </span><span class="prelude-val">Some</span>(pages_dir) = pages_dir {
-                    <span class="prelude-val">Some</span>(pages_dir.<span class="kw">await</span><span class="question-mark">?</span>.path.clone().into())
-                } <span class="kw">else </span>{
-                    <span class="prelude-val">None
-                </span>};
-
-                <span class="kw-2">*</span>program = module_program.fold_with(<span class="kw-2">&amp;mut </span>next_dynamic(
-                    is_development,
-                    is_server,
-                    is_server_components,
-                    NextDynamicMode::Turbo,
-                    FileName::Real(file_path_str.into()),
-                    pages_dir,
+                <span class="kw">let </span>p = std::mem::replace(program, Program::Module(Module::dummy()));
+                <span class="kw-2">*</span>program = p.fold_with(<span class="kw-2">&amp;mut </span><span class="macro">chain!</span>(
+                    decorators(config),
+                    inject_helpers(unresolved_mark)
                 ));
             }
-            EcmascriptInputTransform::NextJsFont(font_loaders_vc) =&gt; {
-                <span class="kw">let </span><span class="kw-2">mut </span>font_loaders = <span class="macro">vec!</span>[];
-                <span class="kw">for </span>loader <span class="kw">in </span><span class="kw-2">&amp;</span>(<span class="kw-2">*</span>font_loaders_vc.<span class="kw">await</span><span class="question-mark">?</span>) {
-                    font_loaders.push(std::convert::Into::&lt;JsWord&gt;::into(<span class="kw-2">&amp;**</span>loader));
-                }
-                <span class="kw">let </span><span class="kw-2">mut </span>next_font = next_font::next_font_loaders(next_font::Config {
-                    font_loaders,
-                    relative_file_path_from_root: file_name_str.into(),
-                });
-
-                program.visit_mut_with(<span class="kw-2">&amp;mut </span>next_font);
-            }
-            EcmascriptInputTransform::Custom =&gt; <span class="macro">todo!</span>(),
+            EcmascriptInputTransform::Plugin(transform) =&gt; {
+                transform.<span class="kw">await</span><span class="question-mark">?</span>.transform(program, ctx).<span class="kw">await</span><span class="question-mark">?
+            </span>}
         }
         <span class="prelude-val">Ok</span>(())
     }
@@ -582,19 +598,36 @@
     }
 }
 
-<span class="kw">fn </span>unwrap_module_program(program: <span class="kw-2">&amp;mut </span>Program) -&gt; Program {
-    <span class="kw">match </span>program {
-        Program::Module(module) =&gt; Program::Module(module.take()),
-        Program::Script(s) =&gt; Program::Module(Module {
-            span: s.span,
-            body: s
-                .body
-                .iter()
-                .map(|stmt| ModuleItem::Stmt(stmt.clone()))
-                .collect(),
-            shebang: s.shebang.clone(),
-        }),
+<span class="attr">#[turbo_tasks::value(shared)]
+</span><span class="kw">pub struct </span>UnsupportedServerActionIssue {
+    <span class="kw">pub </span>context: FileSystemPathVc,
+}
+
+<span class="attr">#[turbo_tasks::value_impl]
+</span><span class="kw">impl </span>Issue <span class="kw">for </span>UnsupportedServerActionIssue {
+    <span class="attr">#[turbo_tasks::function]
+    </span><span class="kw">fn </span>severity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; IssueSeverityVc {
+        IssueSeverity::Error.into()
+    }
+
+    <span class="attr">#[turbo_tasks::function]
+    </span><span class="kw">fn </span>category(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StringVc {
+        StringVc::cell(<span class="string">&quot;unsupported&quot;</span>.to_string())
+    }
+
+    <span class="attr">#[turbo_tasks::function]
+    </span><span class="kw">fn </span>title(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StringVc {
+        StringVc::cell(<span class="string">&quot;Server actions (\&quot;use server\&quot;) are not yet supported in Turbopack&quot;</span>.into())
+    }
+
+    <span class="attr">#[turbo_tasks::function]
+    </span><span class="kw">fn </span>context(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; FileSystemPathVc {
+        <span class="self">self</span>.context
+    }
+
+    <span class="attr">#[turbo_tasks::function]
+    </span><span class="kw">async fn </span>description(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;StringVc&gt; {
+        <span class="prelude-val">Ok</span>(StringVc::cell(<span class="string">&quot;&quot;</span>.to_string()))
     }
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="turbopack_ecmascript" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (900c35403 2023-03-08)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

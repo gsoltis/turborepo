@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/turbopack-dev-server/src/source/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../turbopack_dev_server/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/turbopack-dev-server/src/source/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-a23c9d150ad85d8b.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="turbopack_dev_server" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0-nightly (839e9a6e1 2023-07-02)" data-channel="nightly" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../turbopack_dev_server/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -551,7 +551,7 @@
 <a href="#551" id="551">551</a>
 <a href="#552" id="552">552</a>
 <a href="#553" id="553">553</a>
-</pre><pre class="rust"><code><span class="kw">pub mod </span>asset_graph;
+</pre></div><pre class="rust"><code><span class="kw">pub mod </span>asset_graph;
 <span class="kw">pub mod </span>combined;
 <span class="kw">pub mod </span>conditional;
 <span class="kw">pub mod </span>headers;
@@ -560,23 +560,28 @@
 <span class="kw">pub mod </span>query;
 <span class="kw">pub mod </span>request;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>resolve;
+<span class="kw">pub mod </span>route_tree;
 <span class="kw">pub mod </span>router;
 <span class="kw">pub mod </span>source_maps;
-<span class="kw">pub mod </span>specificity;
 <span class="kw">pub mod </span>static_assets;
 <span class="kw">pub mod </span>wrapping_source;
 
-<span class="kw">use </span>std::{collections::BTreeSet, sync::Arc};
+<span class="kw">use </span>std::collections::BTreeSet;
 
 <span class="kw">use </span>anyhow::Result;
-<span class="kw">use </span>serde::{Deserialize, Serialize, Serializer};
-<span class="kw">use </span>turbo_tasks::{trace::TraceRawVcs, Value};
-<span class="kw">use </span>turbo_tasks_fs::{rope::Rope, FileSystemPathVc};
-<span class="kw">use </span>turbopack_core::version::VersionedContentVc;
+<span class="kw">use </span>futures::{stream::Stream <span class="kw">as </span>StreamTrait, TryStreamExt};
+<span class="kw">use </span>serde::{Deserialize, Serialize};
+<span class="kw">use </span>turbo_tasks::{
+    primitives::StringVc, trace::TraceRawVcs, util::SharedError, CompletionVc, Value,
+};
+<span class="kw">use </span>turbo_tasks_bytes::{Bytes, Stream, StreamRead};
+<span class="kw">use </span>turbo_tasks_fs::FileSystemPathVc;
+<span class="kw">use </span>turbo_tasks_hash::{DeterministicHash, DeterministicHasher, Xxh3Hash64Hasher};
+<span class="kw">use </span>turbopack_core::version::{Version, VersionVc, VersionedContentVc};
 
 <span class="kw">use </span><span class="self">self</span>::{
     headers::Headers, issue_context::IssueContextContentSourceVc, query::Query,
-    specificity::SpecificityVc,
+    route_tree::RouteTreeVc,
 };
 
 <span class="doccomment">/// The result of proxying a request to another HTTP server.
@@ -587,56 +592,24 @@
     <span class="doccomment">/// Headers arranged as contiguous (name, value) pairs.
     </span><span class="kw">pub </span>headers: Vec&lt;(String, String)&gt;,
     <span class="doccomment">/// The body to return.
-    </span><span class="kw">pub </span>body: Rope,
-}
-
-<span class="doccomment">/// The return value of a content source when getting a path. A specificity is
-/// attached and when combining results this specificity should be used to order
-/// results.
-</span><span class="attr">#[turbo_tasks::value(shared)]
-</span><span class="kw">pub enum </span>ContentSourceResult {
-    NotFound,
-    NeedData(NeededData),
-    <span class="prelude-ty">Result </span>{
-        specificity: SpecificityVc,
-        get_content: GetContentSourceContentVc,
-    },
+    </span><span class="kw">pub </span>body: Body,
 }
 
 <span class="attr">#[turbo_tasks::value_impl]
-</span><span class="kw">impl </span>ContentSource <span class="kw">for </span>ContentSourceResult {
+</span><span class="kw">impl </span>Version <span class="kw">for </span>ProxyResult {
     <span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">fn </span>get(
-        self_vc: ContentSourceResultVc,
-        _path: <span class="kw-2">&amp;</span>str,
-        _data: Value&lt;ContentSourceData&gt;,
-    ) -&gt; ContentSourceResultVc {
-        self_vc
-    }
-}
-
-<span class="attr">#[turbo_tasks::value_impl]
-</span><span class="kw">impl </span>ContentSourceResultVc {
-    <span class="doccomment">/// Wraps some content source content with exact match specificity.
-    </span><span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">pub fn </span>exact(get_content: GetContentSourceContentVc) -&gt; ContentSourceResultVc {
-        ContentSourceResult::Result {
-            specificity: SpecificityVc::exact(),
-            get_content,
+    </span><span class="kw">async fn </span>id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;StringVc&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>hash = Xxh3Hash64Hasher::new();
+        hash.write_u16(<span class="self">self</span>.status);
+        <span class="kw">for </span>(name, value) <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.headers {
+            name.deterministic_hash(<span class="kw-2">&amp;mut </span>hash);
+            value.deterministic_hash(<span class="kw-2">&amp;mut </span>hash);
         }
-        .cell()
-    }
-
-    <span class="doccomment">/// Wraps some content source content with exact match specificity.
-    </span><span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">pub fn </span>need_data(data: Value&lt;NeededData&gt;) -&gt; ContentSourceResultVc {
-        ContentSourceResult::NeedData(data.into_value()).cell()
-    }
-
-    <span class="doccomment">/// Result when no match was found with the lowest specificity.
-    </span><span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">pub fn </span>not_found() -&gt; ContentSourceResultVc {
-        ContentSourceResult::NotFound.cell()
+        <span class="kw">let </span><span class="kw-2">mut </span>read = <span class="self">self</span>.body.read();
+        <span class="kw">while let </span><span class="prelude-val">Some</span>(chunk) = read.try_next().<span class="kw">await</span><span class="question-mark">? </span>{
+            hash.write_bytes(<span class="kw-2">&amp;</span>chunk);
+        }
+        <span class="prelude-val">Ok</span>(StringVc::cell(hash.finish().to_string()))
     }
 }
 
@@ -650,8 +623,11 @@
     }
 
     <span class="doccomment">/// Get the content
-    </span><span class="kw">fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, data: Value&lt;ContentSourceData&gt;) -&gt; ContentSourceContentVc;
+    </span><span class="kw">fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, data: Value&lt;ContentSourceData&gt;) -&gt; ContentSourceContentVc;
 }
+
+<span class="attr">#[turbo_tasks::value(transparent)]
+</span><span class="kw">pub struct </span>GetContentSourceContents(Vec&lt;GetContentSourceContentVc&gt;);
 
 <span class="attr">#[turbo_tasks::value]
 </span><span class="kw">pub struct </span>StaticContent {
@@ -668,6 +644,16 @@
     Static(StaticContentVc),
     HttpProxy(ProxyResultVc),
     Rewrite(RewriteVc),
+    <span class="doccomment">/// Continue with the next route
+    </span>Next,
+}
+
+<span class="doccomment">/// This trait can be emitted as collectible and will be applied after the
+/// request is handled and it&#39;s ensured that it finishes before the next request
+/// is handled.
+</span><span class="attr">#[turbo_tasks::value_trait]
+</span><span class="kw">pub trait </span>ContentSourceSideEffect {
+    <span class="kw">fn </span>apply(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; CompletionVc;
 }
 
 <span class="attr">#[turbo_tasks::value_impl]
@@ -675,6 +661,7 @@
     <span class="attr">#[turbo_tasks::function]
     </span><span class="kw">fn </span>get(
         self_vc: ContentSourceContentVc,
+        _path: <span class="kw-2">&amp;</span>str,
         _data: Value&lt;ContentSourceData&gt;,
     ) -&gt; ContentSourceContentVc {
         self_vc
@@ -736,25 +723,6 @@
     }
 }
 
-<span class="doccomment">/// Needed data content signals that the content source requires more
-/// information in order to serve the request. The held data allows us to
-/// partially compute some data, and resume computation after the needed vary
-/// data is supplied by the dev server.
-</span><span class="attr">#[turbo_tasks::value(shared, serialization = <span class="string">&quot;auto_for_input&quot;</span>)]
-#[derive(Debug, Clone, PartialOrd, Ord, Hash)]
-</span><span class="kw">pub struct </span>NeededData {
-    <span class="doccomment">/// A [ContentSource] to query once the data has been extracted from the
-    /// server. This _does not_ need to be the original content source.
-    </span><span class="kw">pub </span>source: ContentSourceVc,
-
-    <span class="doccomment">/// A path with which to call into that content source. This _does not_ need
-    /// to be the original path.
-    </span><span class="kw">pub </span>path: String,
-
-    <span class="doccomment">/// The vary data which is needed in order to process the request.
-    </span><span class="kw">pub </span>vary: ContentSourceDataVary,
-}
-
 <span class="doccomment">/// Additional info passed to the ContentSource. It was extracted from the http
 /// request.
 ///
@@ -768,6 +736,9 @@
     </span><span class="kw">pub </span>method: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="doccomment">/// The full url (including query string), if requested.
     </span><span class="kw">pub </span>url: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    <span class="doccomment">/// The full url (including query string) before rewrites where applied, if
+    /// requested.
+    </span><span class="kw">pub </span>original_url: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="doccomment">/// Query string items, if requested.
     </span><span class="kw">pub </span>query: <span class="prelude-ty">Option</span>&lt;Query&gt;,
     <span class="doccomment">/// raw query string, if requested. Does not include the `?`.
@@ -784,56 +755,41 @@
     </span><span class="kw">pub </span>cache_buster: u64,
 }
 
+<span class="kw">pub type </span>BodyChunk = <span class="prelude-ty">Result</span>&lt;Bytes, SharedError&gt;;
+
 <span class="doccomment">/// A request body.
 </span><span class="attr">#[turbo_tasks::value(shared)]
 #[derive(Default, Clone, Debug)]
 </span><span class="kw">pub struct </span>Body {
-    <span class="attr">#[turbo_tasks(debug_ignore, trace_ignore)]
-    </span>chunks: Arc&lt;Vec&lt;Bytes&gt;&gt;,
+    <span class="attr">#[turbo_tasks(trace_ignore)]
+    </span>chunks: Stream&lt;BodyChunk&gt;,
 }
 
 <span class="kw">impl </span>Body {
     <span class="doccomment">/// Creates a new body from a list of chunks.
-    </span><span class="kw">pub fn </span>new(chunks: Vec&lt;Bytes&gt;) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>new(chunks: Vec&lt;BodyChunk&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            chunks: Arc::new(chunks),
+            chunks: Stream::new_closed(chunks),
         }
     }
 
     <span class="doccomment">/// Returns an iterator over the body&#39;s chunks.
-    </span><span class="kw">pub fn </span>chunks(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="kw-2">&amp;</span>Bytes&gt; {
-        <span class="self">self</span>.chunks.iter()
+    </span><span class="kw">pub fn </span>read(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StreamRead&lt;BodyChunk&gt; {
+        <span class="self">self</span>.chunks.read()
+    }
+
+    <span class="kw">pub fn </span>from_stream&lt;T: StreamTrait&lt;Item = BodyChunk&gt; + Send + Unpin + <span class="lifetime">&#39;static</span>&gt;(
+        source: T,
+    ) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            chunks: Stream::from(source),
+        }
     }
 }
 
-<span class="doccomment">/// A wrapper around [hyper::body::Bytes] that implements [Serialize] and
-/// [Deserialize].
-</span><span class="attr">#[derive(Clone, Eq, PartialEq, Debug)]
-</span><span class="kw">pub struct </span>Bytes(hyper::body::Bytes);
-
-<span class="kw">impl </span>Bytes {
-    <span class="doccomment">/// Returns the bytes as a slice.
-    </span><span class="kw">pub fn </span>as_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u8] {
-        <span class="self">self</span>.<span class="number">0</span>.as_ref()
-    }
-}
-
-<span class="kw">impl </span>From&lt;hyper::body::Bytes&gt; <span class="kw">for </span>Bytes {
-    <span class="kw">fn </span>from(bytes: hyper::body::Bytes) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>(bytes)
-    }
-}
-
-<span class="kw">impl </span>Serialize <span class="kw">for </span>Bytes {
-    <span class="kw">fn </span>serialize&lt;S: Serializer&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, serializer: S) -&gt; <span class="prelude-ty">Result</span>&lt;S::Ok, S::Error&gt; {
-        serializer.serialize_bytes(<span class="self">self</span>.<span class="number">0</span>.as_ref())
-    }
-}
-
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>Bytes {
-    <span class="kw">fn </span>deserialize&lt;D: serde::Deserializer&lt;<span class="lifetime">&#39;de</span>&gt;&gt;(deserializer: D) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, D::Error&gt; {
-        <span class="kw">let </span>bytes = Vec::&lt;u8&gt;::deserialize(deserializer)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(Bytes(hyper::body::Bytes::from(bytes)))
+<span class="kw">impl</span>&lt;T: Into&lt;Bytes&gt;&gt; From&lt;T&gt; <span class="kw">for </span>Body {
+    <span class="kw">fn </span>from(value: T) -&gt; <span class="self">Self </span>{
+        Body::new(<span class="macro">vec!</span>[<span class="prelude-val">Ok</span>(value.into())])
     }
 }
 
@@ -915,6 +871,7 @@
 </span><span class="kw">pub struct </span>ContentSourceDataVary {
     <span class="kw">pub </span>method: bool,
     <span class="kw">pub </span>url: bool,
+    <span class="kw">pub </span>original_url: bool,
     <span class="kw">pub </span>query: <span class="prelude-ty">Option</span>&lt;ContentSourceDataFilter&gt;,
     <span class="kw">pub </span>raw_query: bool,
     <span class="kw">pub </span>headers: <span class="prelude-ty">Option</span>&lt;ContentSourceDataFilter&gt;,
@@ -934,6 +891,7 @@
         <span class="kw">let </span>ContentSourceDataVary {
             method,
             url,
+            original_url,
             query,
             raw_query,
             headers,
@@ -944,6 +902,7 @@
         } = <span class="self">self</span>;
         <span class="kw-2">*</span>method = <span class="kw-2">*</span>method || other.method;
         <span class="kw-2">*</span>url = <span class="kw-2">*</span>url || other.url;
+        <span class="kw-2">*</span>original_url = <span class="kw-2">*</span>original_url || other.original_url;
         <span class="kw-2">*</span>body = <span class="kw-2">*</span>body || other.body;
         <span class="kw-2">*</span>cache_buster = <span class="kw-2">*</span>cache_buster || other.cache_buster;
         <span class="kw-2">*</span>raw_query = <span class="kw-2">*</span>raw_query || other.raw_query;
@@ -959,6 +918,7 @@
         </span><span class="kw">let </span>ContentSourceDataVary {
             method,
             url,
+            original_url,
             query,
             raw_query,
             headers,
@@ -971,6 +931,9 @@
             <span class="kw">return </span><span class="bool-val">false</span>;
         }
         <span class="kw">if </span>other.url &amp;&amp; !url {
+            <span class="kw">return </span><span class="bool-val">false</span>;
+        }
+        <span class="kw">if </span>other.original_url &amp;&amp; !original_url {
             <span class="kw">return </span><span class="bool-val">false</span>;
         }
         <span class="kw">if </span>other.body &amp;&amp; !body {
@@ -998,12 +961,7 @@
 <span class="doccomment">/// A source of content that the dev server uses to respond to http requests.
 </span><span class="attr">#[turbo_tasks::value_trait]
 </span><span class="kw">pub trait </span>ContentSource {
-    <span class="doccomment">/// Gets content by `path` and request `data` from the source. `data` is
-    /// empty by default and will only be filled when returning `NeedData`.
-    /// This is useful as this method call will be cached based on it&#39;s
-    /// arguments, so we want to make the arguments contain as little
-    /// information as possible to increase cache hit ratio.
-    </span><span class="kw">fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, path: <span class="kw-2">&amp;</span>str, data: Value&lt;ContentSourceData&gt;) -&gt; ContentSourceResultVc;
+    <span class="kw">fn </span>get_routes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; RouteTreeVc;
 
     <span class="doccomment">/// Gets any content sources wrapped in this content source.
     </span><span class="kw">fn </span>get_children(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ContentSourcesVc {
@@ -1045,29 +1003,49 @@
 <span class="attr">#[turbo_tasks::value_impl]
 </span><span class="kw">impl </span>ContentSource <span class="kw">for </span>NoContentSource {
     <span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, _path: <span class="kw-2">&amp;</span>str, _data: Value&lt;ContentSourceData&gt;) -&gt; ContentSourceResultVc {
-        ContentSourceResultVc::not_found()
+    </span><span class="kw">fn </span>get_routes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; RouteTreeVc {
+        RouteTreeVc::empty()
     }
 }
 
-<span class="doccomment">/// A rewrite returned from a [ContentSource]. This tells the dev server to
-/// update its parsed url, path, and queries with this new information, and any
-/// later [NeededData] will receive data out of t these new values.
-</span><span class="attr">#[derive(Debug)]
-#[turbo_tasks::value(shared)]
-</span><span class="kw">pub struct </span>Rewrite {
-    <span class="doccomment">/// The new path and query used to lookup content. This _does not_ need to
-    /// be the original path or query.
-    </span><span class="kw">pub </span>path_and_query: String,
+<span class="attr">#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TraceRawVcs)]
+</span><span class="kw">pub enum </span>RewriteType {
+    Location {
+        <span class="doccomment">/// The new path and query used to lookup content. This _does not_ need
+        /// to be the original path or query.
+        </span>path_and_query: String,
+    },
+    ContentSource {
+        <span class="doccomment">/// [ContentSourceVc]s from which to restart the lookup
+        /// process. This _does not_ need to be the original content
+        /// source.
+        </span>source: ContentSourceVc,
+        <span class="doccomment">/// The new path and query used to lookup content. This _does not_ need
+        /// to be the original path or query.
+        </span>path_and_query: String,
+    },
+    Sources {
+        <span class="doccomment">/// [GetContentSourceContent]s from which to restart the lookup
+        /// process. This _does not_ need to be the original content
+        /// source.
+        </span>sources: GetContentSourceContentsVc,
+    },
+}
 
-    <span class="doccomment">/// A [ContentSource] from which to restart the lookup process. This _does
-    /// not_ need to be the original content source. Having [None] source will
-    /// restart the lookup process from the original root ContentSource.
-    </span><span class="kw">pub </span>source: <span class="prelude-ty">Option</span>&lt;ContentSourceVc&gt;,
+<span class="doccomment">/// A rewrite returned from a [ContentSource]. This tells the dev server to
+/// update its parsed url, path, and queries with this new information.
+</span><span class="attr">#[turbo_tasks::value(shared)]
+#[derive(Debug)]
+</span><span class="kw">pub struct </span>Rewrite {
+    <span class="kw">pub </span>ty: RewriteType,
 
     <span class="doccomment">/// A [Headers] which will be appended to the eventual, fully resolved
     /// content result. This overwrites any previous matching headers.
     </span><span class="kw">pub </span>response_headers: <span class="prelude-ty">Option</span>&lt;HeaderListVc&gt;,
+
+    <span class="doccomment">/// A [HeaderList] which will overwrite the values used during the lookup
+    /// process. All headers not present in this list will be deleted.
+    </span><span class="kw">pub </span>request_headers: <span class="prelude-ty">Option</span>&lt;HeaderListVc&gt;,
 }
 
 <span class="kw">pub struct </span>RewriteBuilder {
@@ -1078,20 +1056,35 @@
     <span class="kw">pub fn </span>new(path_and_query: String) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             rewrite: Rewrite {
-                path_and_query,
-                source: <span class="prelude-val">None</span>,
+                ty: RewriteType::Location { path_and_query },
                 response_headers: <span class="prelude-val">None</span>,
+                request_headers: <span class="prelude-val">None</span>,
             },
         }
     }
 
-    <span class="doccomment">/// Sets the [ContentSource] from which to restart the lookup process.
-    /// Without a source, the lookup will restart from the original root
-    /// ContentSource.
-    </span><span class="kw">pub fn </span>content_source(<span class="kw-2">mut </span><span class="self">self</span>, source: ContentSourceVc) -&gt; <span class="self">Self </span>{
-        <span class="self">self</span>.rewrite.source = <span class="prelude-val">Some</span>(source);
-        <span class="self">self
-    </span>}
+    <span class="kw">pub fn </span>new_source_with_path_and_query(source: ContentSourceVc, path_and_query: String) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            rewrite: Rewrite {
+                ty: RewriteType::ContentSource {
+                    source,
+                    path_and_query,
+                },
+                response_headers: <span class="prelude-val">None</span>,
+                request_headers: <span class="prelude-val">None</span>,
+            },
+        }
+    }
+
+    <span class="kw">pub fn </span>new_sources(sources: GetContentSourceContentsVc) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            rewrite: Rewrite {
+                ty: RewriteType::Sources { sources },
+                response_headers: <span class="prelude-val">None</span>,
+                request_headers: <span class="prelude-val">None</span>,
+            },
+        }
+    }
 
     <span class="doccomment">/// Sets response headers to append to the eventual, fully resolved content
     /// result.
@@ -1100,9 +1093,15 @@
         <span class="self">self
     </span>}
 
+    <span class="doccomment">/// Sets request headers to overwrite the headers used during the lookup
+    /// process.
+    </span><span class="kw">pub fn </span>request_headers(<span class="kw-2">mut </span><span class="self">self</span>, headers: HeaderListVc) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.rewrite.request_headers = <span class="prelude-val">Some</span>(headers);
+        <span class="self">self
+    </span>}
+
     <span class="kw">pub fn </span>build(<span class="self">self</span>) -&gt; RewriteVc {
         <span class="self">self</span>.rewrite.cell()
     }
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="turbopack_dev_server" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (900c35403 2023-03-08)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

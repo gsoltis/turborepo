@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/turbopack-core/src/resolve/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../turbopack_core/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `crates/turbopack-core/src/resolve/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-a23c9d150ad85d8b.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="turbopack_core" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0-nightly (839e9a6e1 2023-07-02)" data-channel="nightly" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../turbopack_core/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1282,14 +1282,189 @@
 <a href="#1282" id="1282">1282</a>
 <a href="#1283" id="1283">1283</a>
 <a href="#1284" id="1284">1284</a>
-</pre><pre class="rust"><code><span class="kw">use </span>std::{
+<a href="#1285" id="1285">1285</a>
+<a href="#1286" id="1286">1286</a>
+<a href="#1287" id="1287">1287</a>
+<a href="#1288" id="1288">1288</a>
+<a href="#1289" id="1289">1289</a>
+<a href="#1290" id="1290">1290</a>
+<a href="#1291" id="1291">1291</a>
+<a href="#1292" id="1292">1292</a>
+<a href="#1293" id="1293">1293</a>
+<a href="#1294" id="1294">1294</a>
+<a href="#1295" id="1295">1295</a>
+<a href="#1296" id="1296">1296</a>
+<a href="#1297" id="1297">1297</a>
+<a href="#1298" id="1298">1298</a>
+<a href="#1299" id="1299">1299</a>
+<a href="#1300" id="1300">1300</a>
+<a href="#1301" id="1301">1301</a>
+<a href="#1302" id="1302">1302</a>
+<a href="#1303" id="1303">1303</a>
+<a href="#1304" id="1304">1304</a>
+<a href="#1305" id="1305">1305</a>
+<a href="#1306" id="1306">1306</a>
+<a href="#1307" id="1307">1307</a>
+<a href="#1308" id="1308">1308</a>
+<a href="#1309" id="1309">1309</a>
+<a href="#1310" id="1310">1310</a>
+<a href="#1311" id="1311">1311</a>
+<a href="#1312" id="1312">1312</a>
+<a href="#1313" id="1313">1313</a>
+<a href="#1314" id="1314">1314</a>
+<a href="#1315" id="1315">1315</a>
+<a href="#1316" id="1316">1316</a>
+<a href="#1317" id="1317">1317</a>
+<a href="#1318" id="1318">1318</a>
+<a href="#1319" id="1319">1319</a>
+<a href="#1320" id="1320">1320</a>
+<a href="#1321" id="1321">1321</a>
+<a href="#1322" id="1322">1322</a>
+<a href="#1323" id="1323">1323</a>
+<a href="#1324" id="1324">1324</a>
+<a href="#1325" id="1325">1325</a>
+<a href="#1326" id="1326">1326</a>
+<a href="#1327" id="1327">1327</a>
+<a href="#1328" id="1328">1328</a>
+<a href="#1329" id="1329">1329</a>
+<a href="#1330" id="1330">1330</a>
+<a href="#1331" id="1331">1331</a>
+<a href="#1332" id="1332">1332</a>
+<a href="#1333" id="1333">1333</a>
+<a href="#1334" id="1334">1334</a>
+<a href="#1335" id="1335">1335</a>
+<a href="#1336" id="1336">1336</a>
+<a href="#1337" id="1337">1337</a>
+<a href="#1338" id="1338">1338</a>
+<a href="#1339" id="1339">1339</a>
+<a href="#1340" id="1340">1340</a>
+<a href="#1341" id="1341">1341</a>
+<a href="#1342" id="1342">1342</a>
+<a href="#1343" id="1343">1343</a>
+<a href="#1344" id="1344">1344</a>
+<a href="#1345" id="1345">1345</a>
+<a href="#1346" id="1346">1346</a>
+<a href="#1347" id="1347">1347</a>
+<a href="#1348" id="1348">1348</a>
+<a href="#1349" id="1349">1349</a>
+<a href="#1350" id="1350">1350</a>
+<a href="#1351" id="1351">1351</a>
+<a href="#1352" id="1352">1352</a>
+<a href="#1353" id="1353">1353</a>
+<a href="#1354" id="1354">1354</a>
+<a href="#1355" id="1355">1355</a>
+<a href="#1356" id="1356">1356</a>
+<a href="#1357" id="1357">1357</a>
+<a href="#1358" id="1358">1358</a>
+<a href="#1359" id="1359">1359</a>
+<a href="#1360" id="1360">1360</a>
+<a href="#1361" id="1361">1361</a>
+<a href="#1362" id="1362">1362</a>
+<a href="#1363" id="1363">1363</a>
+<a href="#1364" id="1364">1364</a>
+<a href="#1365" id="1365">1365</a>
+<a href="#1366" id="1366">1366</a>
+<a href="#1367" id="1367">1367</a>
+<a href="#1368" id="1368">1368</a>
+<a href="#1369" id="1369">1369</a>
+<a href="#1370" id="1370">1370</a>
+<a href="#1371" id="1371">1371</a>
+<a href="#1372" id="1372">1372</a>
+<a href="#1373" id="1373">1373</a>
+<a href="#1374" id="1374">1374</a>
+<a href="#1375" id="1375">1375</a>
+<a href="#1376" id="1376">1376</a>
+<a href="#1377" id="1377">1377</a>
+<a href="#1378" id="1378">1378</a>
+<a href="#1379" id="1379">1379</a>
+<a href="#1380" id="1380">1380</a>
+<a href="#1381" id="1381">1381</a>
+<a href="#1382" id="1382">1382</a>
+<a href="#1383" id="1383">1383</a>
+<a href="#1384" id="1384">1384</a>
+<a href="#1385" id="1385">1385</a>
+<a href="#1386" id="1386">1386</a>
+<a href="#1387" id="1387">1387</a>
+<a href="#1388" id="1388">1388</a>
+<a href="#1389" id="1389">1389</a>
+<a href="#1390" id="1390">1390</a>
+<a href="#1391" id="1391">1391</a>
+<a href="#1392" id="1392">1392</a>
+<a href="#1393" id="1393">1393</a>
+<a href="#1394" id="1394">1394</a>
+<a href="#1395" id="1395">1395</a>
+<a href="#1396" id="1396">1396</a>
+<a href="#1397" id="1397">1397</a>
+<a href="#1398" id="1398">1398</a>
+<a href="#1399" id="1399">1399</a>
+<a href="#1400" id="1400">1400</a>
+<a href="#1401" id="1401">1401</a>
+<a href="#1402" id="1402">1402</a>
+<a href="#1403" id="1403">1403</a>
+<a href="#1404" id="1404">1404</a>
+<a href="#1405" id="1405">1405</a>
+<a href="#1406" id="1406">1406</a>
+<a href="#1407" id="1407">1407</a>
+<a href="#1408" id="1408">1408</a>
+<a href="#1409" id="1409">1409</a>
+<a href="#1410" id="1410">1410</a>
+<a href="#1411" id="1411">1411</a>
+<a href="#1412" id="1412">1412</a>
+<a href="#1413" id="1413">1413</a>
+<a href="#1414" id="1414">1414</a>
+<a href="#1415" id="1415">1415</a>
+<a href="#1416" id="1416">1416</a>
+<a href="#1417" id="1417">1417</a>
+<a href="#1418" id="1418">1418</a>
+<a href="#1419" id="1419">1419</a>
+<a href="#1420" id="1420">1420</a>
+<a href="#1421" id="1421">1421</a>
+<a href="#1422" id="1422">1422</a>
+<a href="#1423" id="1423">1423</a>
+<a href="#1424" id="1424">1424</a>
+<a href="#1425" id="1425">1425</a>
+<a href="#1426" id="1426">1426</a>
+<a href="#1427" id="1427">1427</a>
+<a href="#1428" id="1428">1428</a>
+<a href="#1429" id="1429">1429</a>
+<a href="#1430" id="1430">1430</a>
+<a href="#1431" id="1431">1431</a>
+<a href="#1432" id="1432">1432</a>
+<a href="#1433" id="1433">1433</a>
+<a href="#1434" id="1434">1434</a>
+<a href="#1435" id="1435">1435</a>
+<a href="#1436" id="1436">1436</a>
+<a href="#1437" id="1437">1437</a>
+<a href="#1438" id="1438">1438</a>
+<a href="#1439" id="1439">1439</a>
+<a href="#1440" id="1440">1440</a>
+<a href="#1441" id="1441">1441</a>
+<a href="#1442" id="1442">1442</a>
+<a href="#1443" id="1443">1443</a>
+<a href="#1444" id="1444">1444</a>
+<a href="#1445" id="1445">1445</a>
+<a href="#1446" id="1446">1446</a>
+<a href="#1447" id="1447">1447</a>
+<a href="#1448" id="1448">1448</a>
+<a href="#1449" id="1449">1449</a>
+<a href="#1450" id="1450">1450</a>
+<a href="#1451" id="1451">1451</a>
+<a href="#1452" id="1452">1452</a>
+<a href="#1453" id="1453">1453</a>
+<a href="#1454" id="1454">1454</a>
+<a href="#1455" id="1455">1455</a>
+<a href="#1456" id="1456">1456</a>
+<a href="#1457" id="1457">1457</a>
+<a href="#1458" id="1458">1458</a>
+<a href="#1459" id="1459">1459</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     borrow::Cow,
     collections::{BTreeMap, HashMap, HashSet},
     future::Future,
     pin::Pin,
 };
 
-<span class="kw">use </span>anyhow::{anyhow, <span class="prelude-ty">Result</span>};
+<span class="kw">use </span>anyhow::{anyhow, bail, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>serde_json::Value <span class="kw">as </span>JsonValue;
 <span class="kw">use </span>turbo_tasks::{
     primitives::{BoolVc, StringVc, StringsVc},
@@ -1297,24 +1472,23 @@
 };
 <span class="kw">use </span>turbo_tasks_fs::{
     util::{normalize_path, normalize_request},
-    FileJsonContent, FileJsonContentVc, FileSystemEntryType, FileSystemPathVc, RealPathResult,
+    FileSystemEntryType, FileSystemPathVc, RealPathResult,
 };
 
 <span class="kw">use </span><span class="self">self</span>::{
-    exports::ExportsField,
     options::{
         resolve_modules_options, ImportMapResult, ResolveInPackage, ResolveIntoPackage,
         ResolveModules, ResolveModulesOptionsVc, ResolveOptionsVc,
     },
     parse::{Request, RequestVc},
     pattern::QueryMapVc,
+    remap::{ExportsField, ImportsField},
 };
 <span class="kw">use crate</span>::{
     asset::{Asset, AssetOptionVc, AssetVc, AssetsVc},
-    issue::{
-        package_json::{PackageJsonIssue, PackageJsonIssueVc},
-        resolve::{ResolvingIssue, ResolvingIssueVc},
-    },
+    file_source::FileSourceVc,
+    issue::resolve::{ResolvingIssue, ResolvingIssueVc},
+    package_json::{read_package_json, PackageJsonIssue, PackageJsonIssueVc},
     reference::{AssetReference, AssetReferenceVc},
     reference_type::ReferenceType,
     resolve::{
@@ -1322,22 +1496,23 @@
         pattern::{read_matches, Pattern, PatternMatch, PatternVc},
         plugin::ResolvePlugin,
     },
-    source_asset::SourceAssetVc,
 };
 
 <span class="kw">mod </span>alias_map;
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>exports;
 <span class="kw">pub mod </span>node;
 <span class="kw">pub mod </span>options;
 <span class="kw">pub mod </span>origin;
 <span class="kw">pub mod </span>parse;
 <span class="kw">pub mod </span>pattern;
 <span class="kw">pub mod </span>plugin;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>remap;
 
 <span class="kw">pub use </span>alias_map::{
     AliasMap, AliasMapIntoIter, AliasMapLookupIterator, AliasMatch, AliasPattern, AliasTemplate,
 };
-<span class="kw">pub use </span>exports::{ExportsValue, ResolveAliasMap, ResolveAliasMapVc};
+<span class="kw">pub use </span>remap::{ResolveAliasMap, ResolveAliasMapVc, SubpathValue};
+
+<span class="kw">use </span><span class="kw">crate</span>::issue::{IssueSeverity, IssueSeverityVc, OptionIssueSourceVc};
 
 <span class="attr">#[turbo_tasks::value(shared)]
 #[derive(Clone, Debug)]
@@ -1498,14 +1673,14 @@
 <span class="attr">#[turbo_tasks::value_impl]
 </span><span class="kw">impl </span>ResolveResultVc {
     <span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">pub async fn </span>add_reference(<span class="self">self</span>, reference: AssetReferenceVc) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+    </span><span class="kw">pub async fn </span>with_reference(<span class="self">self</span>, reference: AssetReferenceVc) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>this = <span class="self">self</span>.<span class="kw">await</span><span class="question-mark">?</span>.clone_value();
         this.add_reference(reference);
         <span class="prelude-val">Ok</span>(this.into())
     }
 
     <span class="attr">#[turbo_tasks::function]
-    </span><span class="kw">pub async fn </span>add_references(<span class="self">self</span>, references: Vec&lt;AssetReferenceVc&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+    </span><span class="kw">pub async fn </span>with_references(<span class="self">self</span>, references: Vec&lt;AssetReferenceVc&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>this = <span class="self">self</span>.<span class="kw">await</span><span class="question-mark">?</span>.clone_value();
         <span class="kw">for </span>reference <span class="kw">in </span>references {
             this.add_reference(reference);
@@ -1563,7 +1738,7 @@
                 .into_iter()
                 .next()
                 .unwrap()
-                .add_references(references));
+                .with_references(references));
         }
         <span class="kw">let </span><span class="kw-2">mut </span>iter = results.into_iter().try_join().<span class="kw">await</span><span class="question-mark">?</span>.into_iter();
         <span class="kw">if let </span><span class="prelude-val">Some</span>(current) = iter.next() {
@@ -1671,32 +1846,71 @@
     <span class="prelude-val">None</span>,
 }
 
-<span class="attr">#[turbo_tasks::function]
-</span><span class="kw">async fn </span>exports_field(
-    package_json_path: FileSystemPathVc,
-    package_json: FileJsonContentVc,
-    field: <span class="kw-2">&amp;</span>str,
-) -&gt; <span class="prelude-ty">Result</span>&lt;ExportsFieldResultVc&gt; {
-    <span class="kw">if let </span>FileJsonContent::Content(package_json) = <span class="kw-2">&amp;*</span>package_json.<span class="kw">await</span><span class="question-mark">? </span>{
-        <span class="kw">let </span>field_value = <span class="kw-2">&amp;</span>package_json[field];
-        <span class="kw">if let </span>serde_json::Value::Null = field_value {
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(ExportsFieldResult::None.into());
-        }
-        <span class="kw">let </span>exports_field: <span class="prelude-ty">Result</span>&lt;ExportsField&gt; = field_value.try_into();
-        <span class="kw">match </span>exports_field {
-            <span class="prelude-val">Ok</span>(exports_field) =&gt; <span class="prelude-val">Ok</span>(ExportsFieldResult::Some(exports_field).into()),
-            <span class="prelude-val">Err</span>(err) =&gt; {
-                <span class="kw">let </span>issue: PackageJsonIssueVc = PackageJsonIssue {
-                    path: package_json_path,
-                    error_message: err.to_string(),
-                }
-                .into();
-                issue.as_issue().emit();
-                <span class="prelude-val">Ok</span>(ExportsFieldResult::None.into())
+<span class="doccomment">/// Extracts the &quot;exports&quot; field out of the nearest package.json, parsing it
+/// into an appropriate [AliasMap] for lookups.
+</span><span class="attr">#[turbo_tasks::function]
+</span><span class="kw">async fn </span>exports_field(package_json_path: FileSystemPathVc) -&gt; <span class="prelude-ty">Result</span>&lt;ExportsFieldResultVc&gt; {
+    <span class="kw">let </span>read = read_package_json(package_json_path).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>package_json = <span class="kw">match </span><span class="kw-2">&amp;*</span>read {
+        <span class="prelude-val">Some</span>(json) =&gt; json,
+        <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(ExportsFieldResult::None.cell()),
+    };
+
+    <span class="kw">let </span><span class="prelude-val">Some</span>(exports) = package_json.get(<span class="string">&quot;exports&quot;</span>) <span class="kw">else </span>{
+        <span class="kw">return </span><span class="prelude-val">Ok</span>(ExportsFieldResult::None.cell());
+    };
+    <span class="kw">match </span>exports.try_into() {
+        <span class="prelude-val">Ok</span>(exports) =&gt; <span class="prelude-val">Ok</span>(ExportsFieldResult::Some(exports).cell()),
+        <span class="prelude-val">Err</span>(err) =&gt; {
+            <span class="kw">let </span>issue: PackageJsonIssueVc = PackageJsonIssue {
+                path: package_json_path,
+                error_message: err.to_string(),
             }
+            .into();
+            issue.as_issue().emit();
+            <span class="prelude-val">Ok</span>(ExportsFieldResult::None.cell())
         }
-    } <span class="kw">else </span>{
-        <span class="prelude-val">Ok</span>(ExportsFieldResult::None.into())
+    }
+}
+
+<span class="attr">#[turbo_tasks::value(shared)]
+</span><span class="kw">enum </span>ImportsFieldResult {
+    <span class="prelude-val">Some</span>(
+        <span class="attr">#[turbo_tasks(debug_ignore, trace_ignore)] </span>ImportsField,
+        FileSystemPathVc,
+    ),
+    <span class="prelude-val">None</span>,
+}
+
+<span class="doccomment">/// Extracts the &quot;imports&quot; field out of the nearest package.json, parsing it
+/// into an appropriate [AliasMap] for lookups.
+</span><span class="attr">#[turbo_tasks::function]
+</span><span class="kw">async fn </span>imports_field(context: FileSystemPathVc) -&gt; <span class="prelude-ty">Result</span>&lt;ImportsFieldResultVc&gt; {
+    <span class="kw">let </span>package_json_context = find_context_file(context, package_json()).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>FindContextFileResult::Found(package_json_path, _refs) = <span class="kw-2">&amp;*</span>package_json_context <span class="kw">else </span>{
+        <span class="kw">return </span><span class="prelude-val">Ok</span>(ImportsFieldResult::None.cell());
+    };
+
+    <span class="kw">let </span>read = read_package_json(<span class="kw-2">*</span>package_json_path).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>package_json = <span class="kw">match </span><span class="kw-2">&amp;*</span>read {
+        <span class="prelude-val">Some</span>(json) =&gt; json,
+        <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(ImportsFieldResult::None.cell()),
+    };
+
+    <span class="kw">let </span><span class="prelude-val">Some</span>(imports) = package_json.get(<span class="string">&quot;imports&quot;</span>) <span class="kw">else </span>{
+        <span class="kw">return </span><span class="prelude-val">Ok</span>(ImportsFieldResult::None.cell());
+    };
+    <span class="kw">match </span>imports.try_into() {
+        <span class="prelude-val">Ok</span>(imports) =&gt; <span class="prelude-val">Ok</span>(ImportsFieldResult::Some(imports, <span class="kw-2">*</span>package_json_path).cell()),
+        <span class="prelude-val">Err</span>(err) =&gt; {
+            <span class="kw">let </span>issue: PackageJsonIssueVc = PackageJsonIssue {
+                path: <span class="kw-2">*</span>package_json_path,
+                error_message: err.to_string(),
+            }
+            .into();
+            issue.as_issue().emit();
+            <span class="prelude-val">Ok</span>(ImportsFieldResult::None.cell())
+        }
     }
 }
 
@@ -1822,7 +2036,7 @@
             .into_iter()
             .next()
             .unwrap()
-            .add_references(references),
+            .with_references(references),
         <span class="kw">_ </span>=&gt; ResolveResultVc::alternatives_with_references(results, references),
     }
 }
@@ -1836,7 +2050,7 @@
     <span class="kw">async fn </span>to_result(path: FileSystemPathVc) -&gt; <span class="prelude-ty">Result</span>&lt;ResolveResultVc&gt; {
         <span class="kw">let </span>RealPathResult { path, symlinks } = <span class="kw-2">&amp;*</span>path.realpath_with_links().<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(ResolveResult::asset_with_references(
-            SourceAssetVc::new(<span class="kw-2">*</span>path).into(),
+            FileSourceVc::new(<span class="kw-2">*</span>path).into(),
             symlinks
                 .iter()
                 .map(|p| AffectingResolvingAssetReferenceVc::new(<span class="kw-2">*</span>p).into())
@@ -1973,7 +2187,7 @@
 
     <span class="comment">// Apply import mappings if provided
     </span><span class="kw">if let </span><span class="prelude-val">Some</span>(import_map) = <span class="kw-2">&amp;</span>options_value.import_map {
-        <span class="kw">let </span>result_ref = import_map.lookup(request).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>result_ref = import_map.lookup(context, request).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let </span>result = <span class="kw-2">&amp;*</span>result_ref;
         <span class="kw">if </span>!<span class="macro">matches!</span>(result, ImportMapResult::NoEntry) {
             <span class="kw">let </span>resolved_result =
@@ -2019,12 +2233,7 @@
                             .push(resolved(<span class="kw-2">*</span>path, context, request, options_value, options).<span class="kw">await</span><span class="question-mark">?</span>);
                     }
                     PatternMatch::Directory(<span class="kw">_</span>, path) =&gt; {
-                        <span class="kw">let </span>package_json_path = path.join(<span class="string">&quot;package.json&quot;</span>);
-                        <span class="kw">let </span>package_json = package_json_path.read_json();
-                        results.push(
-                            resolve_into_folder(<span class="kw-2">*</span>path, package_json, package_json_path, options)
-                                .<span class="kw">await</span><span class="question-mark">?</span>,
-                        );
+                        results.push(resolve_into_folder(<span class="kw-2">*</span>path, options).<span class="kw">await</span><span class="question-mark">?</span>);
                     }
                 }
             }
@@ -2040,13 +2249,20 @@
                 path.push(ext.clone().into());
                 patterns.push(path);
             }
-            <span class="kw">let </span>new_pat = Pattern::alternatives(patterns);
 
-            resolve_internal(
-                context,
-                RequestVc::raw(Value::new(new_pat), <span class="kw-2">*</span>force_in_context),
-                options,
-            )
+            <span class="comment">// This ensures the order of the patterns (extensions) is
+            // preserved, `Pattern::Alternatives` inside a `Request::Raw` does not preserve
+            // the order
+            </span><span class="kw">let </span><span class="kw-2">mut </span>results = Vec::new();
+            <span class="kw">for </span>pattern <span class="kw">in </span>patterns {
+                results.push(resolve_internal(
+                    context,
+                    RequestVc::raw(Value::new(pattern), <span class="kw-2">*</span>force_in_context),
+                    options,
+                ));
+            }
+
+            merge_results(results)
         }
         Request::Module {
             module,
@@ -2059,6 +2275,7 @@
             <span class="kw">let </span>relative = RequestVc::relative(Value::new(new_pat), <span class="bool-val">true</span>);
 
             <span class="kw">let </span>issue: ResolvingIssueVc = ResolvingIssue {
+                severity: IssueSeverity::Error.cell(),
                 request_type: <span class="string">&quot;server relative import: not implemented yet&quot;</span>.to_string(),
                 request,
                 context,
@@ -2068,6 +2285,7 @@
                      relative to the file you are importing from.&quot;
                         </span>.to_string(),
                 ),
+                source: OptionIssueSourceVc::none(),
             }
             .into();
             issue.as_issue().emit();
@@ -2076,11 +2294,13 @@
         }
         Request::Windows { path: <span class="kw">_ </span>} =&gt; {
             <span class="kw">let </span>issue: ResolvingIssueVc = ResolvingIssue {
+                severity: IssueSeverity::Error.cell(),
                 request_type: <span class="string">&quot;windows import: not implemented yet&quot;</span>.to_string(),
                 request,
                 context,
                 resolve_options: options,
                 error_message: <span class="prelude-val">Some</span>(<span class="string">&quot;windows imports are not implemented yet&quot;</span>.to_string()),
+                source: OptionIssueSourceVc::none(),
             }
             .into();
             issue.as_issue().emit();
@@ -2088,18 +2308,29 @@
             ResolveResult::unresolveable().into()
         }
         Request::Empty =&gt; ResolveResult::unresolveable().into(),
-        Request::PackageInternal { path: <span class="kw">_ </span>} =&gt; {
-            <span class="kw">let </span>issue: ResolvingIssueVc = ResolvingIssue {
-                request_type: <span class="string">&quot;package internal import: not implemented yet&quot;</span>.to_string(),
-                request,
+        Request::PackageInternal { path } =&gt; {
+            <span class="kw">let </span>options_value = options.<span class="kw">await</span><span class="question-mark">?</span>;
+            <span class="kw">let </span>(conditions, unspecified_conditions) = options_value
+                .in_package
+                .iter()
+                .find_map(|item| <span class="kw">match </span>item {
+                    ResolveInPackage::ImportsField {
+                        conditions,
+                        unspecified_conditions,
+                    } =&gt; <span class="prelude-val">Some</span>((Cow::Borrowed(conditions), <span class="kw-2">*</span>unspecified_conditions)),
+                    <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+                })
+                .unwrap_or_else(|| (Default::default(), ConditionValue::Unset));
+            resolve_package_internal_with_imports_field(
                 context,
-                resolve_options: options,
-                error_message: <span class="prelude-val">Some</span>(<span class="string">&quot;package internal imports are not implemented yet&quot;</span>.to_string()),
-            }
-            .into();
-            issue.as_issue().emit();
-            ResolveResult::unresolveable().into()
-        }
+                request,
+                options,
+                path,
+                <span class="kw-2">&amp;</span>conditions,
+                <span class="kw-2">&amp;</span>unspecified_conditions,
+            )
+            .<span class="kw">await</span><span class="question-mark">?
+        </span>}
         Request::Uri {
             protocol,
             remainder,
@@ -2109,11 +2340,13 @@
         .into(),
         Request::Unknown { path } =&gt; {
             <span class="kw">let </span>issue: ResolvingIssueVc = ResolvingIssue {
+                severity: IssueSeverity::Error.cell(),
                 request_type: <span class="macro">format!</span>(<span class="string">&quot;unknown import: `{}`&quot;</span>, path),
                 request,
                 context,
                 resolve_options: options,
                 error_message: <span class="prelude-val">None</span>,
+                source: OptionIssueSourceVc::none(),
             }
             .into();
             issue.as_issue().emit();
@@ -2124,7 +2357,7 @@
     <span class="comment">// Apply fallback import mappings if provided
     </span><span class="kw">if let </span><span class="prelude-val">Some</span>(import_map) = <span class="kw-2">&amp;</span>options_value.fallback_import_map {
         <span class="kw">if </span><span class="kw-2">*</span>result.is_unresolveable().<span class="kw">await</span><span class="question-mark">? </span>{
-            <span class="kw">let </span>result_ref = import_map.lookup(request).<span class="kw">await</span><span class="question-mark">?</span>;
+            <span class="kw">let </span>result_ref = import_map.lookup(context, request).<span class="kw">await</span><span class="question-mark">?</span>;
             <span class="kw">let </span>result = <span class="kw-2">&amp;*</span>result_ref;
             <span class="kw">let </span>resolved_result =
                 resolve_import_map_result(result, context, context, request, options).<span class="kw">await</span><span class="question-mark">?</span>;
@@ -2139,16 +2372,15 @@
 
 <span class="kw">async fn </span>resolve_into_folder(
     package_path: FileSystemPathVc,
-    package_json: FileJsonContentVc,
-    package_json_path: FileSystemPathVc,
     options: ResolveOptionsVc,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ResolveResultVc&gt; {
+    <span class="kw">let </span>package_json_path = package_path.join(<span class="string">&quot;package.json&quot;</span>);
     <span class="kw">let </span>options_value = options.<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="kw">for </span>resolve_into_package <span class="kw">in </span>options_value.into_package.iter() {
         <span class="kw">match </span>resolve_into_package {
             ResolveIntoPackage::Default(req) =&gt; {
                 <span class="kw">let </span>str = <span class="string">&quot;./&quot;</span>.to_string()
-                    + <span class="kw-2">&amp;</span>normalize_path(req).ok_or_else(|| {
+                    + <span class="kw-2">&amp;*</span>normalize_path(req).ok_or_else(|| {
                         <span class="macro">anyhow!</span>(
                             <span class="string">&quot;ResolveIntoPackage::Default can&#39;t be used with a request that \
                              escapes the current directory&quot;
@@ -2158,7 +2390,7 @@
                 <span class="kw">return </span><span class="prelude-val">Ok</span>(resolve_internal(package_path, request, options));
             }
             ResolveIntoPackage::MainField(name) =&gt; {
-                <span class="kw">if let </span>FileJsonContent::Content(package_json) = <span class="kw-2">&amp;*</span>package_json.<span class="kw">await</span><span class="question-mark">? </span>{
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(package_json) = <span class="kw-2">&amp;*</span>read_package_json(package_json_path).<span class="kw">await</span><span class="question-mark">? </span>{
                     <span class="kw">if let </span><span class="prelude-val">Some</span>(field_value) = package_json[name].as_str() {
                         <span class="kw">let </span>request =
                             RequestVc::parse(Value::new(normalize_request(field_value).into()));
@@ -2174,18 +2406,17 @@
                             <span class="kw">return </span><span class="prelude-val">Ok</span>(result.into());
                         }
                     }
-                }
+                };
             }
             ResolveIntoPackage::ExportsField {
-                field,
                 conditions,
                 unspecified_conditions,
             } =&gt; {
                 <span class="kw">if let </span>ExportsFieldResult::Some(exports_field) =
-                    <span class="kw-2">&amp;*</span>exports_field(package_json_path, package_json, field).<span class="kw">await</span><span class="question-mark">?
+                    <span class="kw-2">&amp;*</span>exports_field(package_json_path).<span class="kw">await</span><span class="question-mark">?
                 </span>{
                     <span class="comment">// other options do not apply anymore when an exports field exist
-                    </span><span class="kw">return </span>handle_exports_field(
+                    </span><span class="kw">return </span>handle_exports_imports_field(
                         package_path,
                         package_json_path,
                         options,
@@ -2209,6 +2440,45 @@
     path: <span class="kw-2">&amp;</span>Pattern,
     <span class="kw">_</span>: <span class="kw-2">&amp;</span>QueryMapVc,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ResolveResultVc&gt; {
+    <span class="comment">// Check alias field for module aliases first
+    </span><span class="kw">for </span>in_package <span class="kw">in </span>options_value.in_package.iter() {
+        <span class="kw">match </span>in_package {
+            ResolveInPackage::AliasField(field) =&gt; {
+                <span class="kw">if let </span>FindContextFileResult::Found(package_json_path, refs) =
+                    <span class="kw-2">&amp;*</span>find_context_file(context, package_json()).<span class="kw">await</span><span class="question-mark">?
+                </span>{
+                    <span class="kw">let </span>read = read_package_json(<span class="kw-2">*</span>package_json_path).<span class="kw">await</span><span class="question-mark">?</span>;
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(package_json) = <span class="kw-2">&amp;*</span>read {
+                        <span class="kw">if let </span><span class="prelude-val">Some</span>(field_value) = package_json[field].as_object() {
+                            <span class="kw">let </span>package_path = package_json_path.parent();
+                            <span class="kw">let </span>full_pattern =
+                                Pattern::concat([module.to_string().into(), path.clone()]);
+                            <span class="kw">if let </span><span class="prelude-val">Some</span>(request) = full_pattern.into_string() {
+                                <span class="kw">if let </span><span class="prelude-val">Some</span>(value) = field_value.get(<span class="kw-2">&amp;</span>request) {
+                                    <span class="kw">return </span>resolve_alias_field_result(
+                                        value,
+                                        refs.clone(),
+                                        package_path,
+                                        options,
+                                        <span class="kw-2">*</span>package_json_path,
+                                        <span class="kw-2">&amp;</span>request,
+                                        field,
+                                    )
+                                    .<span class="kw">await</span>;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            ResolveInPackage::ImportsField { .. } =&gt; {
+                <span class="comment">// resolve_module_request is called when importing a node
+                // module, not a PackageInternal one, so the imports field
+                // doesn&#39;t apply.
+            </span>}
+        }
+    }
+
     <span class="kw">let </span>result = find_package(
         context,
         module.to_string(),
@@ -2230,13 +2500,8 @@
     // &quot;[baseUrl]/foo/bar&quot; or &quot;[baseUrl]/node_modules/foo/bar&quot;, and we&#39;ll need to
     // try both.
     </span><span class="kw">for </span>package_path <span class="kw">in </span><span class="kw-2">&amp;</span>result.packages {
-        <span class="kw">let </span>package_json_path = package_path.join(<span class="string">&quot;package.json&quot;</span>);
-        <span class="kw">let </span>package_json = package_json_path.read_json();
         <span class="kw">if </span>is_match {
-            results.push(
-                resolve_into_folder(<span class="kw-2">*</span>package_path, package_json, package_json_path, options)
-                    .<span class="kw">await</span><span class="question-mark">?</span>,
-            );
+            results.push(resolve_into_folder(<span class="kw-2">*</span>package_path, options).<span class="kw">await</span><span class="question-mark">?</span>);
         }
         <span class="kw">if </span>could_match_others {
             <span class="kw">for </span>resolve_into_package <span class="kw">in </span>options_value.into_package.iter() {
@@ -2244,27 +2509,19 @@
                     ResolveIntoPackage::Default(<span class="kw">_</span>) | ResolveIntoPackage::MainField(<span class="kw">_</span>) =&gt; {
                         <span class="comment">// doesn&#39;t affect packages with subpath
                         </span><span class="kw">if </span>path.is_match(<span class="string">&quot;/&quot;</span>) {
-                            results.push(
-                                resolve_into_folder(
-                                    <span class="kw-2">*</span>package_path,
-                                    package_json,
-                                    package_json_path,
-                                    options,
-                                )
-                                .<span class="kw">await</span><span class="question-mark">?</span>,
-                            );
+                            results.push(resolve_into_folder(<span class="kw-2">*</span>package_path, options).<span class="kw">await</span><span class="question-mark">?</span>);
                         }
                     }
                     ResolveIntoPackage::ExportsField {
-                        field,
                         conditions,
                         unspecified_conditions,
                     } =&gt; {
+                        <span class="kw">let </span>package_json_path = package_path.join(<span class="string">&quot;package.json&quot;</span>);
                         <span class="kw">if let </span>ExportsFieldResult::Some(exports_field) =
-                            <span class="kw-2">&amp;*</span>exports_field(package_json_path, package_json, field).<span class="kw">await</span><span class="question-mark">?
+                            <span class="kw-2">&amp;*</span>exports_field(package_json_path).<span class="kw">await</span><span class="question-mark">?
                         </span>{
                             <span class="kw">if let </span><span class="prelude-val">Some</span>(path) = path.clone().into_string() {
-                                results.push(handle_exports_field(
+                                results.push(handle_exports_imports_field(
                                     <span class="kw-2">*</span>package_path,
                                     package_json_path,
                                     options,
@@ -2372,14 +2629,16 @@
             RequestVc::parse(Value::new(Pattern::Constant(value.to_string()))),
             resolve_options,
         )
-        .add_references(refs));
+        .with_references(refs));
     }
     <span class="kw">let </span>issue: ResolvingIssueVc = ResolvingIssue {
+        severity: IssueSeverity::Error.cell(),
         context: issue_context,
         request_type: <span class="macro">format!</span>(<span class="string">&quot;alias field ({field_name})&quot;</span>),
         request: RequestVc::parse(Value::new(Pattern::Constant(issue_request.to_string()))),
         resolve_options,
         error_message: <span class="prelude-val">Some</span>(<span class="macro">format!</span>(<span class="string">&quot;invalid alias field value: {}&quot;</span>, result)),
+        source: OptionIssueSourceVc::none(),
     }
     .cell();
     issue.as_issue().emit();
@@ -2398,15 +2657,16 @@
     options: ResolveOptionsVc,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ResolveResultVc&gt; {
     <span class="kw">let </span>RealPathResult { path, symlinks } = <span class="kw-2">&amp;*</span>fs_path.realpath_with_links().<span class="kw">await</span><span class="question-mark">?</span>;
-    <span class="kw">for </span>resolve_in <span class="kw">in </span>in_package.iter() {
-        <span class="kw">match </span>resolve_in {
+    <span class="kw">for </span>in_package <span class="kw">in </span>in_package.iter() {
+        <span class="kw">match </span>in_package {
             ResolveInPackage::AliasField(field) =&gt; {
-                <span class="kw">if let </span>FindContextFileResult::Found(package_json, refs) =
+                <span class="kw">if let </span>FindContextFileResult::Found(package_json_path, refs) =
                     <span class="kw-2">&amp;*</span>find_context_file(fs_path.parent(), package_json()).<span class="kw">await</span><span class="question-mark">?
                 </span>{
-                    <span class="kw">if let </span>FileJsonContent::Content(package) = <span class="kw-2">&amp;*</span>package_json.read_json().<span class="kw">await</span><span class="question-mark">? </span>{
-                        <span class="kw">if let </span><span class="prelude-val">Some</span>(field_value) = package[field].as_object() {
-                            <span class="kw">let </span>package_path = package_json.parent();
+                    <span class="kw">let </span>read = read_package_json(<span class="kw-2">*</span>package_json_path).<span class="kw">await</span><span class="question-mark">?</span>;
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(package_json) = <span class="kw-2">&amp;*</span>read {
+                        <span class="kw">if let </span><span class="prelude-val">Some</span>(field_value) = package_json[field].as_object() {
+                            <span class="kw">let </span>package_path = package_json_path.parent();
                             <span class="kw">if let </span><span class="prelude-val">Some</span>(rel_path) =
                                 package_path.<span class="kw">await</span><span class="question-mark">?</span>.get_relative_path_to(<span class="kw-2">&amp;*</span>fs_path.<span class="kw">await</span><span class="question-mark">?</span>)
                             {
@@ -2416,7 +2676,7 @@
                                         refs.clone(),
                                         package_path,
                                         options,
-                                        <span class="kw-2">*</span>package_json,
+                                        <span class="kw-2">*</span>package_json_path,
                                         <span class="kw-2">&amp;</span>rel_path,
                                         field,
                                     )
@@ -2427,11 +2687,17 @@
                     }
                 }
             }
+            ResolveInPackage::ImportsField { .. } =&gt; {
+                <span class="comment">// resolved is called when importing a relative path, not a
+                // PackageInternal one, so the imports field doesn&#39;t apply.
+            </span>}
         }
     }
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(resolved_map) = resolved_map {
-        <span class="kw">let </span>result = resolved_map.lookup(<span class="kw-2">*</span>path, original_request).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>result = resolved_map
+            .lookup(<span class="kw-2">*</span>path, original_context, original_request)
+            .<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let </span>resolved_result = resolve_import_map_result(
             <span class="kw-2">&amp;</span>result,
             path.parent(),
@@ -2446,7 +2712,7 @@
     }
 
     <span class="prelude-val">Ok</span>(ResolveResult::asset_with_references(
-        SourceAssetVc::new(<span class="kw-2">*</span>path).into(),
+        FileSourceVc::new(<span class="kw-2">*</span>path).into(),
         symlinks
             .iter()
             .map(|p| AffectingResolvingAssetReferenceVc::new(<span class="kw-2">*</span>p).into())
@@ -2455,21 +2721,21 @@
     .into())
 }
 
-<span class="kw">fn </span>handle_exports_field(
+<span class="kw">fn </span>handle_exports_imports_field(
     package_path: FileSystemPathVc,
-    package_json: FileSystemPathVc,
+    package_json_path: FileSystemPathVc,
     options: ResolveOptionsVc,
-    exports_field: <span class="kw-2">&amp;</span>ExportsField,
+    exports_imports_field: <span class="kw-2">&amp;</span>AliasMap&lt;SubpathValue&gt;,
     path: <span class="kw-2">&amp;</span>str,
     conditions: <span class="kw-2">&amp;</span>BTreeMap&lt;String, ConditionValue&gt;,
     unspecified_conditions: <span class="kw-2">&amp;</span>ConditionValue,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ResolveResultVc&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>results = Vec::new();
     <span class="kw">let </span><span class="kw-2">mut </span>conditions_state = HashMap::new();
-    <span class="kw">let </span>values = exports_field
+    <span class="kw">let </span>values = exports_imports_field
         .lookup(path)
         .map(AliasMatch::try_into_self)
-        .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;Cow&lt;<span class="lifetime">&#39;_</span>, ExportsValue&gt;&gt;&gt;&gt;()<span class="question-mark">?</span>;
+        .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;&gt;()<span class="question-mark">?</span>;
     <span class="kw">for </span>value <span class="kw">in </span>values.iter() {
         <span class="kw">if </span>value.add_results(
             conditions,
@@ -2494,8 +2760,56 @@
     <span class="comment">// other options do not apply anymore when an exports field exist
     </span><span class="prelude-val">Ok</span>(merge_results_with_references(
         resolved_results,
-        <span class="macro">vec!</span>[AffectingResolvingAssetReferenceVc::new(package_json).into()],
+        <span class="macro">vec!</span>[AffectingResolvingAssetReferenceVc::new(package_json_path).into()],
     ))
+}
+
+<span class="doccomment">/// Resolves a `#dep` import using the containing package.json&#39;s `imports`
+/// field. The dep may be a constant string or a pattern, and the values can be
+/// static strings or conditions like `import` or `require` to handle ESM/CJS
+/// with differently compiled files.
+</span><span class="kw">async fn </span>resolve_package_internal_with_imports_field(
+    context: FileSystemPathVc,
+    request: RequestVc,
+    resolve_options: ResolveOptionsVc,
+    pattern: <span class="kw-2">&amp;</span>Pattern,
+    conditions: <span class="kw-2">&amp;</span>BTreeMap&lt;String, ConditionValue&gt;,
+    unspecified_conditions: <span class="kw-2">&amp;</span>ConditionValue,
+) -&gt; <span class="prelude-ty">Result</span>&lt;ResolveResultVc&gt; {
+    <span class="kw">let </span>Pattern::Constant(specifier) = pattern <span class="kw">else </span>{
+        <span class="macro">bail!</span>(<span class="string">&quot;PackageInternal requests can only be Constant strings&quot;</span>);
+    };
+    <span class="comment">// https://github.com/nodejs/node/blob/1b177932/lib/internal/modules/esm/resolve.js#L615-L619
+    </span><span class="kw">if </span>specifier == <span class="string">&quot;#&quot; </span>|| specifier.starts_with(<span class="string">&quot;#/&quot;</span>) || specifier.ends_with(<span class="string">&#39;/&#39;</span>) {
+        <span class="kw">let </span>issue: ResolvingIssueVc = ResolvingIssue {
+            severity: IssueSeverity::Error.cell(),
+            context,
+            request_type: <span class="macro">format!</span>(<span class="string">&quot;package imports request: `{specifier}`&quot;</span>),
+            request,
+            resolve_options,
+            error_message: <span class="prelude-val">None</span>,
+            source: OptionIssueSourceVc::none(),
+        }
+        .into();
+        issue.as_issue().emit();
+        <span class="kw">return </span><span class="prelude-val">Ok</span>(ResolveResult::unresolveable().into());
+    }
+
+    <span class="kw">let </span>imports_result = imports_field(context).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>(imports, package_json_path) = <span class="kw">match </span><span class="kw-2">&amp;*</span>imports_result {
+        ImportsFieldResult::Some(i, p) =&gt; (i, p),
+        ImportsFieldResult::None =&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(ResolveResult::unresolveable().into()),
+    };
+
+    handle_exports_imports_field(
+        package_json_path.parent(),
+        <span class="kw-2">*</span>package_json_path,
+        resolve_options,
+        imports,
+        specifier,
+        conditions,
+        unspecified_conditions,
+    )
 }
 
 <span class="attr">#[turbo_tasks::value]
@@ -2515,7 +2829,7 @@
 </span><span class="kw">impl </span>AssetReference <span class="kw">for </span>AffectingResolvingAssetReference {
     <span class="attr">#[turbo_tasks::function]
     </span><span class="kw">fn </span>resolve_reference(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ResolveResultVc {
-        ResolveResult::asset(SourceAssetVc::new(<span class="self">self</span>.path).into()).into()
+        ResolveResult::asset(FileSourceVc::new(<span class="self">self</span>.path).into()).into()
     }
 }
 
@@ -2536,16 +2850,20 @@
     origin_path: FileSystemPathVc,
     request: RequestVc,
     resolve_options: ResolveOptionsVc,
+    source: OptionIssueSourceVc,
+    severity: IssueSeverityVc,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ResolveResultVc&gt; {
     <span class="prelude-val">Ok</span>(<span class="kw">match </span>result.is_unresolveable().<span class="kw">await </span>{
         <span class="prelude-val">Ok</span>(unresolveable) =&gt; {
             <span class="kw">if </span><span class="kw-2">*</span>unresolveable {
                 <span class="kw">let </span>issue: ResolvingIssueVc = ResolvingIssue {
+                    severity,
                     context: origin_path,
                     request_type: <span class="macro">format!</span>(<span class="string">&quot;{} request&quot;</span>, reference_type.into_value()),
                     request,
                     resolve_options,
                     error_message: <span class="prelude-val">None</span>,
+                    source,
                 }
                 .into();
                 issue.as_issue().emit();
@@ -2554,11 +2872,13 @@
         }
         <span class="prelude-val">Err</span>(err) =&gt; {
             <span class="kw">let </span>issue: ResolvingIssueVc = ResolvingIssue {
+                severity,
                 context: origin_path,
                 request_type: <span class="macro">format!</span>(<span class="string">&quot;{} request&quot;</span>, reference_type.into_value()),
                 request,
                 resolve_options,
                 error_message: <span class="prelude-val">Some</span>(err.to_string()),
+                source,
             }
             .into();
             issue.as_issue().emit();
@@ -2566,5 +2886,34 @@
         }
     })
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="turbopack_core" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (900c35403 2023-03-08)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+
+<span class="doccomment">/// ModulePart represnts a part of a module.
+///
+/// Currently this is used only for ESMs.
+</span><span class="attr">#[turbo_tasks::value]
+</span><span class="kw">pub enum </span>ModulePart {
+    <span class="doccomment">/// Represents the side effects of a module. This part is evaluated even if
+    /// all exports are unused.
+    </span>ModuleEvaluation,
+    <span class="doccomment">/// Represents an export of a module.
+    </span>Export(StringVc),
+    <span class="doccomment">/// A pointer to a specific part.
+    </span>Internal(u32),
+}
+
+<span class="attr">#[turbo_tasks::value_impl]
+</span><span class="kw">impl </span>ModulePartVc {
+    <span class="attr">#[turbo_tasks::function]
+    </span><span class="kw">pub fn </span>module_evaluation() -&gt; <span class="self">Self </span>{
+        ModulePart::ModuleEvaluation.cell()
+    }
+    <span class="attr">#[turbo_tasks::function]
+    </span><span class="kw">pub fn </span>export(export: String) -&gt; <span class="self">Self </span>{
+        ModulePart::Export(StringVc::cell(export)).cell()
+    }
+    <span class="attr">#[turbo_tasks::function]
+    </span><span class="kw">pub fn </span>internal(id: u32) -&gt; <span class="self">Self </span>{
+        ModulePart::Internal(id).cell()
+    }
+}
+</code></pre></div></section></main></body></html>
