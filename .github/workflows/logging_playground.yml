@@ -25,7 +25,7 @@ jobs:
           echo "some non-failing text"
           echo "some more non-failing text"
           echo "::error::group 3 stderr error" 1>&2
-          echo "[ERROR] group 3 bracketed stdout error" 1>&2
+          echo "[ERROR] group 3 bracketed stderr error" 1>&2
           echo "more non-failing output after stderr errors"
           echo "::endgroup::"
           echo "post group output"
