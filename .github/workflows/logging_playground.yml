@@ -10,6 +10,7 @@ jobs:
       - name: Output stuff
         run: |
           echo "starting"
+          echo "::error::ERROR: hmm"
           echo "::error::outside stdout error"
           echo "[ERROR] outside bracket stdout error"
           echo "::error::outside stderr error" 1>&2
