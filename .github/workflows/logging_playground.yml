@@ -1,0 +1,32 @@
+name: Debug GH Logging
+
+on:
+  workflow_dispatch:
+
+jobs:
+  stage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output stuff
+        run: |
+          echo "starting"
+          echo "::error::outside stdout error"
+          echo "[ERROR] outside bracket stdout error"
+          echo "::error::outside stderr error" 1>&2
+          echo "[ERROR] outside bracket stderr error" 1>&2
+          echo "::group::Group1"
+          echo "no errors here"
+          echo "::endgroup::"
+          echo "::group::Group2"
+          echo "::error::group 2 stdout error"
+          echo "[ERROR] group 2 bracketed stdout error"
+          echo "::endgroup::"
+          echo "::group::Group3"
+          echo "some non-failing text"
+          echo "some more non-failing text"
+          echo "::error::group 3 stderr error" 1>&2
+          echo "[ERROR] group 3 bracketed stdout error" 1>&2
+          echo "more non-failing output after stderr errors"
+          echo "::endgroup::"
+          echo "post group output"
+          echo "more post group output"
