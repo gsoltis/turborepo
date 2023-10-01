@@ -1,0 +1,6 @@
+{
+  "name": "turborepo-napi",
+  "devDependencies": {
+    "@napi-rs/cli": "^2.16.3"
+  }
+}
