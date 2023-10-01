@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  next: ^13.4.12
-
 importers:
 
   .:
@@ -201,6 +198,12 @@ importers:
       styled-jsx:
         specifier: ^5.1.2
         version: 5.1.2(@babel/core@7.20.12)(react@18.2.0)
+
+  crates/turborepo-napi:
+    devDependencies:
+      '@napi-rs/cli':
+        specifier: ^2.16.3
+        version: 2.16.3
 
   docs:
     dependencies:
@@ -2576,6 +2579,12 @@ packages:
       hey-listen: 1.0.8
       tslib: 2.6.1
     dev: false
+
+  /@napi-rs/cli@2.16.3:
+    resolution: {integrity: sha512-3mLNPlbbOhpbIUKicLrJtIearlHXUuXL3UeueYyRRplpVMNkdn8xCyzY6PcYZi3JXR8bmCOiWgkVmLnrSL7DKw==}
+    engines: {node: '>= 10'}
+    hasBin: true
+    dev: true
 
   /@napi-rs/simple-git-android-arm-eabi@0.1.9:
     resolution: {integrity: sha512-9D4JnfePMpgL4pg9aMUX7/TIWEUQ+Tgx8n3Pf8TNCMGjUbImJyYsDSLJzbcv9wH7srgn4GRjSizXFJHAPjzEug==}
