@@ -42,7 +42,7 @@ switch (platform) {
           if (localFileExisted) {
             nativeBinding = require("./index.android-arm64.node");
           } else {
-            nativeBinding = require("turborepo-napi-android-arm64");
+            nativeBinding = require("@turbo/repository-android-arm64");
           }
         } catch (e) {
           loadError = e;
@@ -56,7 +56,7 @@ switch (platform) {
           if (localFileExisted) {
             nativeBinding = require("./index.android-arm-eabi.node");
           } else {
-            nativeBinding = require("turborepo-napi-android-arm-eabi");
+            nativeBinding = require("@turbo/repository-android-arm-eabi");
           }
         } catch (e) {
           loadError = e;
@@ -76,7 +76,7 @@ switch (platform) {
           if (localFileExisted) {
             nativeBinding = require("./index.win32-x64-msvc.node");
           } else {
-            nativeBinding = require("turborepo-napi-win32-x64-msvc");
+            nativeBinding = require("@turbo/repository-win32-x64-msvc");
           }
         } catch (e) {
           loadError = e;
@@ -90,7 +90,7 @@ switch (platform) {
           if (localFileExisted) {
             nativeBinding = require("./index.win32-ia32-msvc.node");
           } else {
-            nativeBinding = require("turborepo-napi-win32-ia32-msvc");
+            nativeBinding = require("@turbo/repository-win32-ia32-msvc");
           }
         } catch (e) {
           loadError = e;
@@ -104,7 +104,7 @@ switch (platform) {
           if (localFileExisted) {
             nativeBinding = require("./index.win32-arm64-msvc.node");
           } else {
-            nativeBinding = require("turborepo-napi-win32-arm64-msvc");
+            nativeBinding = require("@turbo/repository-win32-arm64-msvc");
           }
         } catch (e) {
           loadError = e;
@@ -122,7 +122,7 @@ switch (platform) {
       if (localFileExisted) {
         nativeBinding = require("./index.darwin-universal.node");
       } else {
-        nativeBinding = require("turborepo-napi-darwin-universal");
+        nativeBinding = require("@turbo/repository-darwin-universal");
       }
       break;
     } catch {}
@@ -133,7 +133,7 @@ switch (platform) {
           if (localFileExisted) {
             nativeBinding = require("./index.darwin-x64.node");
           } else {
-            nativeBinding = require("turborepo-napi-darwin-x64");
+            nativeBinding = require("@turbo/repository-darwin-x64");
           }
         } catch (e) {
           loadError = e;
@@ -147,7 +147,7 @@ switch (platform) {
           if (localFileExisted) {
             nativeBinding = require("./index.darwin-arm64.node");
           } else {
-            nativeBinding = require("turborepo-napi-darwin-arm64");
+            nativeBinding = require("@turbo/repository-darwin-arm64");
           }
         } catch (e) {
           loadError = e;
@@ -166,7 +166,7 @@ switch (platform) {
       if (localFileExisted) {
         nativeBinding = require("./index.freebsd-x64.node");
       } else {
-        nativeBinding = require("turborepo-napi-freebsd-x64");
+        nativeBinding = require("@turbo/repository-freebsd-x64");
       }
     } catch (e) {
       loadError = e;
@@ -183,7 +183,7 @@ switch (platform) {
             if (localFileExisted) {
               nativeBinding = require("./index.linux-x64-musl.node");
             } else {
-              nativeBinding = require("turborepo-napi-linux-x64-musl");
+              nativeBinding = require("@turbo/repository-linux-x64-musl");
             }
           } catch (e) {
             loadError = e;
@@ -196,7 +196,7 @@ switch (platform) {
             if (localFileExisted) {
               nativeBinding = require("./index.linux-x64-gnu.node");
             } else {
-              nativeBinding = require("turborepo-napi-linux-x64-gnu");
+              nativeBinding = require("@turbo/repository-linux-x64-gnu");
             }
           } catch (e) {
             loadError = e;
@@ -212,7 +212,7 @@ switch (platform) {
             if (localFileExisted) {
               nativeBinding = require("./index.linux-arm64-musl.node");
             } else {
-              nativeBinding = require("turborepo-napi-linux-arm64-musl");
+              nativeBinding = require("@turbo/repository-linux-arm64-musl");
             }
           } catch (e) {
             loadError = e;
@@ -225,7 +225,7 @@ switch (platform) {
             if (localFileExisted) {
               nativeBinding = require("./index.linux-arm64-gnu.node");
             } else {
-              nativeBinding = require("turborepo-napi-linux-arm64-gnu");
+              nativeBinding = require("@turbo/repository-linux-arm64-gnu");
             }
           } catch (e) {
             loadError = e;
@@ -240,7 +240,7 @@ switch (platform) {
           if (localFileExisted) {
             nativeBinding = require("./index.linux-arm-gnueabihf.node");
           } else {
-            nativeBinding = require("turborepo-napi-linux-arm-gnueabihf");
+            nativeBinding = require("@turbo/repository-linux-arm-gnueabihf");
           }
         } catch (e) {
           loadError = e;
@@ -261,8 +261,6 @@ if (!nativeBinding) {
   throw new Error(`Failed to load native binding`);
 }
 
-const { hello, Repository, findRoot } = nativeBinding;
+const { Repository } = nativeBinding;
 
-module.exports.hello = hello;
 module.exports.Repository = Repository;
-module.exports.findRoot = findRoot;
