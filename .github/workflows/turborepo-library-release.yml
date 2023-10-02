@@ -1,0 +1,49 @@
+name: Turborepo Library Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    defaults:
+      run:
+        shell: bash -leo pipefail {0}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        settings:
+          - host: macos-latest
+            target: "aarch64-apple-darwin"
+    runs-on: ${{ matrix.settings.host }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Rust
+        uses: ./.github/actions/setup-rust
+        with:
+          targets: ${{ matrix.settings.target }}
+
+      - uses: ./.github/actions/setup-node
+        with:
+          enable-corepack: false
+
+      - name: Build native library
+        run: |
+          cd packages/turbo-repository
+          mkdir -p js/dist
+          pnpm build:release
+          ls -la
+          ls -la native
+          ls -la native/@turbo
+          mkdir tars
+          pnpm package
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: turbo-library-${{ matrix.settings.target }}
+          path: packages/turbo-repository/tars
