@@ -7,4 +7,8 @@ export class Repository {
   root: string;
   isMonorepo: boolean;
   static detectJS(path?: string | undefined | null): Repository;
+  packageManager(): PackageManager;
+}
+export class PackageManager {
+  name: string;
 }

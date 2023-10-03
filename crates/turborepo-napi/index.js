@@ -261,6 +261,7 @@ if (!nativeBinding) {
   throw new Error(`Failed to load native binding`);
 }
 
-const { Repository } = nativeBinding;
+const { Repository, PackageManager } = nativeBinding;
 
 module.exports.Repository = Repository;
+module.exports.PackageManager = PackageManager;
