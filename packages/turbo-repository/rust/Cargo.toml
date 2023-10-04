@@ -12,7 +12,7 @@ anyhow.workspace = true
 napi = { version = "2.13.3", features = ["anyhow"] }
 napi-derive = "2.13.0"
 turbopath = { workspace = true }
-turborepo-repository = { path = "../turborepo-repository" }
+turborepo-repository = { workspace = true }
 
 [build-dependencies]
 napi-build = "2.0.1"
