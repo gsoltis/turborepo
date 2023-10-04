@@ -17,15 +17,11 @@ const cwd = process.cwd();
       await readFile(path.join(cwd, "package.json"))
     ).version;
 
-    console.log("version", version);
-
     // Copy binaries to package folders, update version, and publish
     let nativePackagesDir = path.join(cwd, "npm");
     let platforms = (await readdir(nativePackagesDir)).filter(
       (name) => !name.startsWith(".")
     );
-
-    console.log(platforms);
 
     await Promise.all(
       platforms.map(async (platform) => {
@@ -58,10 +54,13 @@ const cwd = process.cwd();
           //   ],
           //   { stdio: 'inherit' }
           // )
-          console.log(execa);
           await execa(
             `npm`,
-            [`pack`, `${path.join(nativePackagesDir, platform)}`],
+            [
+              `pack`,
+              "--pack-destination=./tars",
+              `${path.join(nativePackagesDir, platform)}`,
+            ],
             {
               stdio: "inherit",
             }
