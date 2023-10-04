@@ -13,7 +13,7 @@
     "@turbo/repository-darwin-64": "0.0.1",
     "@turbo/repository-darwin-arm64": "0.0.1",
     "@turbo/repository-linux-64": "0.0.1",
-    "@turbo/repository-linux-arm64": "0.0.1",
+    "@turbo/repository-linux-arm64-gnu": "0.0.1",
     "@turbo/repository-windows-64": "0.0.1",
     "@turbo/repository-windows-arm64": "0.0.1"
   }
