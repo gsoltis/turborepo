@@ -36,6 +36,9 @@ jobs:
           cd packages/turbo-repository
           mkdir -p js/dist
           pnpm build:release
+          ls -la
+          ls -la native
+          ls -la native/@turbo
           mkdir tars
           pnpm package
 
