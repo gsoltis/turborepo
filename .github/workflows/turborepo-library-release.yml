@@ -34,6 +34,7 @@ jobs:
       - name: Build native library
         run: |
           cd packages/turbo-repository
+          mkdir -p js/dist
           pnpm build:release
           mkdir tars
           pnpm package
