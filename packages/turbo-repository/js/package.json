@@ -1,0 +1,20 @@
+{
+  "name": "@turbo/repository",
+  "version": "0.0.1-canary.0",
+  "description": "",
+  "bugs": "https://github.com/vercel/turbo/issues",
+  "homepage": "https://turbo.build/repo",
+  "main": "dist/index.js",
+  "files": [
+    "dist/index.js",
+    "dist/index.d.ts"
+  ],
+  "optionalDependencies": {
+    "@turbo/repository-darwin-64": "0.0.1",
+    "@turbo/repository-darwin-arm64": "0.0.1",
+    "@turbo/repository-linux-64": "0.0.1",
+    "@turbo/repository-linux-arm64": "0.0.1",
+    "@turbo/repository-windows-64": "0.0.1",
+    "@turbo/repository-windows-arm64": "0.0.1"
+  }
+}

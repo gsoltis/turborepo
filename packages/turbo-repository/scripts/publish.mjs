@@ -14,7 +14,7 @@ const cwd = process.cwd();
 
     // TODO: version
     let version = JSON.parse(
-      await readFile(path.join(cwd, "package.json"))
+      await readFile(path.join(cwd, "js", "package.json"))
     ).version;
 
     // Copy binaries to package folders, update version, and publish
