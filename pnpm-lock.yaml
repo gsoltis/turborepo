@@ -202,12 +202,6 @@ importers:
         specifier: ^5.1.2
         version: 5.1.2(@babel/core@7.20.12)(react@18.2.0)
 
-  crates/turborepo-napi:
-    devDependencies:
-      '@napi-rs/cli':
-        specifier: ^2.16.3
-        version: 2.16.3
-
   docs:
     dependencies:
       '@headlessui/react':
