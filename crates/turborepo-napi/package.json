@@ -1,6 +1,0 @@
-{
-  "name": "@turbo/repository",
-  "devDependencies": {
-    "@napi-rs/cli": "^2.16.3"
-  }
-}

@@ -1,0 +1,48 @@
+{
+  "name": "@turbo/repository",
+  "version": "0.0.1",
+  "description": "",
+  "bugs": "https://github.com/vercel/turbo/issues",
+  "homepage": "https://turbo.build/repo",
+  "scripts": {
+    "build": "napi build --platform -p turborepo-napi --cargo-cwd ../../ --cargo-name turborepo_napi native --js ../dist/index.js --dts ../dist/index.d.ts",
+    "build:release": "napi build --release --platform -p turborepo-napi --cargo-cwd ../../ --cargo-name turborepo_napi native",
+    "package": "node scripts/publish.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MPL-2.0",
+  "devDependencies": {
+    "@napi-rs/cli": "^2.16.3",
+    "async-sema": "^3.1.1",
+    "execa": "^8.0.1",
+    "fs-extra": "^11.1.1"
+  },
+  "main": "dist/index.js",
+  "napi": {
+    "name": "@turbo/repository",
+    "triples": {
+      "defaults": true,
+      "additional": [
+        "x86_64-pc-windows-msvc",
+        "aarch64-apple-darwin",
+        "x86_64-apple-darwin",
+        "x86_64-unknown-linux-musl",
+        "aarch64-unknown-linux-musl",
+        "aarch64-pc-windows-msvc"
+      ]
+    }
+  },
+  "files": [
+    "dist/index.js",
+    "dist/index.d.ts"
+  ],
+  "optionalDependencies": {
+    "@turbo/repository-darwin-64": "0.0.1",
+    "@turbo/repository-darwin-arm64": "0.0.1",
+    "@turbo/repository-linux-64": "0.0.1",
+    "@turbo/repository-linux-arm64": "0.0.1",
+    "@turbo/repository-windows-64": "0.0.1",
+    "@turbo/repository-windows-arm64": "0.0.1"
+  }
+}
