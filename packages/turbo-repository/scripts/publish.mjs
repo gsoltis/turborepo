@@ -77,7 +77,7 @@ const cwd = process.cwd();
           ) {
             console.error("Ignoring already published error", platform, err);
           } else {
-            // throw err
+            throw err;
           }
         } finally {
           publishSema.release();
