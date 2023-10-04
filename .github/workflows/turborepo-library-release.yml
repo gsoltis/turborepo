@@ -35,10 +35,11 @@ jobs:
         run: |
           cd packages/turbo-repository
           mkdir -p js/dist
-          pnpm build:release
+          pnpm build:release --target=${{ matrix.settings.target }}
           ls -la
           ls -la native
           ls -la native/@turbo
+          file native/@turbo/repository.darwin-arm64.node
           mkdir tars
           pnpm package
 
