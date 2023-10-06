@@ -5,6 +5,9 @@
   "bugs": "https://github.com/vercel/turbo/issues",
   "homepage": "https://turbo.build/repo",
   "main": "dist/index.js",
+  "scripts": {
+    "build": "cp index.js dist/index.js"
+  },
   "files": [
     "dist/index.js",
     "dist/index.d.ts"

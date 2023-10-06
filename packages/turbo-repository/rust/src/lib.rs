@@ -60,4 +60,28 @@ impl Repository {
             Err(ref e) => Err(anyhow!("{}", e)),
         }
     }
+
+    #[napi]
+    pub fn workspace_directories(&self) -> Result<Vec<String>> {
+        let package_manager = self
+            .repo_state
+            .package_manager
+            .as_ref()
+            .map_err(|e| anyhow!("{}", e))?;
+        let workspace_directories = package_manager
+            .get_package_jsons(&self.repo_state.root)?
+            .map(|path| {
+                path.parent()
+                    .map(|dir| {
+                        self.repo_state
+                            .root
+                            .anchor(dir)
+                            .expect("workspaces are contained within the root")
+                    })
+                    .map(|dir| dir.to_string())
+                    .ok_or_else(|| anyhow!("{} does not have a parent directory", path))
+            })
+            .collect::<Result<Vec<String>>>()?;
+        Ok(workspace_directories)
+    }
 }

@@ -41,11 +41,9 @@ jobs:
           cd packages/turbo-repository
           mkdir -p js/dist
           pnpm build:release --target=${{ matrix.settings.target }}
-          mkdir tars
-          pnpm package
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: turbo-library-${{ matrix.settings.target }}
-          path: packages/turbo-repository/tars
+          path: packages/turbo-repository/native
