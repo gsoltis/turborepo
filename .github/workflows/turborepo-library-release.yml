@@ -21,6 +21,9 @@ jobs:
             target: "aarch64-unknown-linux-gnu"
             container: ghcr.io/napi-rs/napi-rs/nodejs-rust:stable-2023-09-17-alpine
             setup: |
+              echo "toolchain: ${RUST_TOOLCHAIN}"
+              which rustup
+              ls /root/.cargo/bin/rustup
               rustup toolchain install "${RUST_TOOLCHAIN}" &&
               rustup default "${RUST_TOOLCHAIN}" &&
               rustup target add aarch64-unknown-linux-gnu &&
