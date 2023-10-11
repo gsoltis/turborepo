@@ -22,6 +22,7 @@ jobs:
             container: ghcr.io/napi-rs/napi-rs/nodejs-rust:stable-2023-09-17-alpine
             setup: |
               echo "toolchain: ${RUST_TOOLCHAIN}"
+              export PATH=/root/.cargo/bin:${PATH}
               echo ${PATH}
               ls /root/.cargo/bin/rustup
               which rustup
