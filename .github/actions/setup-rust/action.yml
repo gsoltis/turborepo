@@ -33,6 +33,11 @@ runs:
       shell: bash
       run: echo "toolchain=$(cat ./rust-toolchain)" >> $GITHUB_OUTPUT
 
+    - shell: bash
+      run: |
+        : force toolchain version
+        echo "RUST_TOOLCHAIN=${{ steps.file.outputs.toolchain }}" >> $GITHUB_ENV
+
     - name: "Set rust default environment"
       shell: bash
       run: |
