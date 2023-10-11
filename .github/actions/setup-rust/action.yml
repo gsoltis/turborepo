@@ -10,6 +10,9 @@ inputs:
   components:
     description: "Comma-separated list of components to be additionally installed"
     required: false
+  skip-install:
+    description: "Sets environment variables without installing the rust toolchain"
+    required: false
 
   shared-cache-key:
     description: "A cache key that is used instead of the automatic `job`-based key, and is stable over multiple jobs."
@@ -42,6 +45,7 @@ runs:
 
     - name: "Setup Rust toolchain"
       uses: dtolnay/rust-toolchain@master
+      if: ${{ !inputs.skip-install }}
       with:
         toolchain: ${{ steps.file.outputs.toolchain }}
         targets: ${{ inputs.targets }}
@@ -57,6 +61,7 @@ runs:
       run: echo "::add-matcher::${{ github.action_path }}/matchers.json"
 
     - uses: rui314/setup-mold@v1
+      if: ${{ !inputs.skip-install }}
 
     - name: "Setup Rust Cache"
       uses: Swatinem/rust-cache@v2
