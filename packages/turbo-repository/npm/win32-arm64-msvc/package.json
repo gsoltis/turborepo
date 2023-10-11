@@ -1,23 +1,20 @@
 {
-  "name": "@turbo/repository-linux-arm64-gnu",
+  "name": "@turbo/repository-win32-arm64-msvc",
   "version": "0.0.1-canary.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/vercel/turbo",
-    "directory": "packages/turbo-repository/npm/linux-arm64-gnu"
+    "directory": "packages/turbo-repository/npm/win32-x64-msvc"
   },
   "os": [
-    "linux"
+    "win32"
   ],
   "cpu": [
     "arm64"
   ],
-  "libc": [
-    "glibc"
-  ],
-  "main": "repository.linux-arm64-gnu.node",
+  "main": "repository.win32-arm64-msvc.node",
   "files": [
-    "repository.linux-arm64-gnu.node"
+    "repository.win32-arm64-msvc.node"
   ],
   "license": "MPL-2.0",
   "engines": {
