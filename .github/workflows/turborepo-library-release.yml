@@ -61,6 +61,7 @@ jobs:
 
       - name: Build native library
         run: |
+          export PATH=${PATH}
           echo $PATH
           cd packages/turbo-repository
           mkdir -p js/dist
