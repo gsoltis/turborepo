@@ -22,7 +22,7 @@ jobs:
             container: ghcr.io/napi-rs/napi-rs/nodejs-rust:stable-2023-09-17-alpine
             setup: |
               echo "toolchain: ${RUST_TOOLCHAIN}"
-              #export PATH=/root/.cargo/bin:${PATH}
+              export PATH=/root/.cargo/bin:${PATH}
               #echo PATH=${PATH} >> $GITHUB_ENV
               echo "/root/.cargo/bin" >> $GITHUB_PATH
               echo $PATH
