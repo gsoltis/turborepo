@@ -31,243 +31,65 @@ function isMusl() {
   }
 }
 
+// TODO: find-up to turbo-repository? This currently only works from turbo-repository/js/dist
+const localPath = join(__dirname, "..", "..", "native", "@turbo");
+const pkgRoot = "@turbo/repository";
+
+function loadViaSuffix(suffix) {
+  const localNativePath = join(localPath, `repository.${suffix}.node`);
+  if (existsSync(localNativePath)) {
+    return require(localNativePath);
+  }
+  return require(`${pkgRoot}-${suffix}`);
+}
+
+let suffix;
 switch (platform) {
-  case "android":
-    switch (arch) {
-      case "arm64":
-        localFileExisted = existsSync(
-          join(__dirname, "@turbo/repository.android-arm64.node")
-        );
-        try {
-          if (localFileExisted) {
-            nativeBinding = require("./@turbo/repository.android-arm64.node");
-          } else {
-            nativeBinding = require("turborepo-repository-android-arm64");
-          }
-        } catch (e) {
-          loadError = e;
-        }
-        break;
-      case "arm":
-        localFileExisted = existsSync(
-          join(__dirname, "@turbo/repository.android-arm-eabi.node")
-        );
-        try {
-          if (localFileExisted) {
-            nativeBinding = require("./@turbo/repository.android-arm-eabi.node");
-          } else {
-            nativeBinding = require("turborepo-repository-android-arm-eabi");
-          }
-        } catch (e) {
-          loadError = e;
-        }
-        break;
-      default:
-        throw new Error(`Unsupported architecture on Android ${arch}`);
-    }
-    break;
   case "win32":
     switch (arch) {
       case "x64":
-        localFileExisted = existsSync(
-          join(__dirname, "@turbo/repository.win32-x64-msvc.node")
-        );
-        try {
-          if (localFileExisted) {
-            nativeBinding = require("./@turbo/repository.win32-x64-msvc.node");
-          } else {
-            nativeBinding = require("turborepo-repository-win32-x64-msvc");
-          }
-        } catch (e) {
-          loadError = e;
-        }
-        break;
-      case "ia32":
-        localFileExisted = existsSync(
-          join(__dirname, "@turbo/repository.win32-ia32-msvc.node")
-        );
-        try {
-          if (localFileExisted) {
-            nativeBinding = require("./@turbo/repository.win32-ia32-msvc.node");
-          } else {
-            nativeBinding = require("turborepo-repository-win32-ia32-msvc");
-          }
-        } catch (e) {
-          loadError = e;
-        }
+        suffix = "win32-x64-msvc";
         break;
       case "arm64":
-        localFileExisted = existsSync(
-          join(__dirname, "@turbo/repository.win32-arm64-msvc.node")
-        );
-        try {
-          if (localFileExisted) {
-            nativeBinding = require("./@turbo/repository.win32-arm64-msvc.node");
-          } else {
-            nativeBinding = require("turborepo-repository-win32-arm64-msvc");
-          }
-        } catch (e) {
-          loadError = e;
-        }
+        suffix = "win32-arm64-msvc";
         break;
       default:
         throw new Error(`Unsupported architecture on Windows: ${arch}`);
     }
     break;
   case "darwin":
-    localFileExisted = existsSync(
-      join(__dirname, "@turbo/repository.darwin-universal.node")
-    );
-    try {
-      if (localFileExisted) {
-        nativeBinding = require("./@turbo/repository.darwin-universal.node");
-      } else {
-        nativeBinding = require("turborepo-repository-darwin-universal");
-      }
-      break;
-    } catch {}
     switch (arch) {
       case "x64":
-        localFileExisted = existsSync(
-          join(__dirname, "@turbo/repository.darwin-x64.node")
-        );
-        try {
-          if (localFileExisted) {
-            nativeBinding = require("./@turbo/repository.darwin-x64.node");
-          } else {
-            nativeBinding = require("turborepo-repository-darwin-x64");
-          }
-        } catch (e) {
-          loadError = e;
-        }
+        suffix = "darwin-x64";
         break;
       case "arm64":
-        const localPath = join(
-          __dirname,
-          "..",
-          "..",
-          "native/@turbo/repository.darwin-arm64.node"
-        );
-        localFileExisted = existsSync(localPath);
-        try {
-          if (localFileExisted) {
-            nativeBinding = require(localPath);
-          } else {
-            nativeBinding = require("turborepo-repository-darwin-arm64");
-          }
-        } catch (e) {
-          loadError = e;
-        }
+        suffix = "darwin-arm64";
         break;
       default:
         throw new Error(`Unsupported architecture on macOS: ${arch}`);
     }
     break;
-  case "freebsd":
-    if (arch !== "x64") {
-      throw new Error(`Unsupported architecture on FreeBSD: ${arch}`);
-    }
-    localFileExisted = existsSync(
-      join(__dirname, "@turbo/repository.freebsd-x64.node")
-    );
-    try {
-      if (localFileExisted) {
-        nativeBinding = require("./@turbo/repository.freebsd-x64.node");
-      } else {
-        nativeBinding = require("turborepo-repository-freebsd-x64");
-      }
-    } catch (e) {
-      loadError = e;
-    }
-    break;
   case "linux":
-    switch (arch) {
-      case "x64":
-        if (isMusl()) {
-          localFileExisted = existsSync(
-            join(__dirname, "@turbo/repository.linux-x64-musl.node")
-          );
-          try {
-            if (localFileExisted) {
-              nativeBinding = require("./@turbo/repository.linux-x64-musl.node");
-            } else {
-              nativeBinding = require("turborepo-repository-linux-x64-musl");
-            }
-          } catch (e) {
-            loadError = e;
-          }
-        } else {
-          localFileExisted = existsSync(
-            join(__dirname, "@turbo/repository.linux-x64-gnu.node")
-          );
-          try {
-            if (localFileExisted) {
-              nativeBinding = require("./@turbo/repository.linux-x64-gnu.node");
-            } else {
-              nativeBinding = require("turborepo-repository-linux-x64-gnu");
-            }
-          } catch (e) {
-            loadError = e;
-          }
-        }
-        break;
-      case "arm64":
-        if (isMusl()) {
-          localFileExisted = existsSync(
-            join(__dirname, "@turbo/repository.linux-arm64-musl.node")
-          );
-          try {
-            if (localFileExisted) {
-              nativeBinding = require("./@turbo/repository.linux-arm64-musl.node");
-            } else {
-              nativeBinding = require("turborepo-repository-linux-arm64-musl");
-            }
-          } catch (e) {
-            loadError = e;
-          }
-        } else {
-          localFileExisted = existsSync(
-            join(__dirname, "@turbo/repository.linux-arm64-gnu.node")
-          );
-          try {
-            if (localFileExisted) {
-              nativeBinding = require("./@turbo/repository.linux-arm64-gnu.node");
-            } else {
-              nativeBinding = require("turborepo-repository-linux-arm64-gnu");
-            }
-          } catch (e) {
-            loadError = e;
-          }
-        }
-        break;
-      case "arm":
-        localFileExisted = existsSync(
-          join(__dirname, "@turbo/repository.linux-arm-gnueabihf.node")
-        );
-        try {
-          if (localFileExisted) {
-            nativeBinding = require("./@turbo/repository.linux-arm-gnueabihf.node");
-          } else {
-            nativeBinding = require("turborepo-repository-linux-arm-gnueabihf");
-          }
-        } catch (e) {
-          loadError = e;
-        }
-        break;
-      default:
-        throw new Error(`Unsupported architecture on Linux: ${arch}`);
+    if (isMusl()) {
+      throw new Error("musl not yet supported");
+    } else {
+      switch (arch) {
+        case "x64":
+          suffix = "linux-x64-gnu";
+          break;
+        case "arm64":
+          suffix = "linux-arm64-gnu";
+          break;
+        default:
+          throw new Error(`Unsupported architecture on Linux: ${arch}`);
+      }
     }
     break;
   default:
     throw new Error(`Unsupported OS: ${platform}, architecture: ${arch}`);
 }
 
-if (!nativeBinding) {
-  if (loadError) {
-    throw loadError;
-  }
-  throw new Error(`Failed to load native binding`);
-}
+nativeBinding = loadViaSuffix(suffix);
 
 const { Repository, PackageManager } = nativeBinding;
 
