@@ -23,9 +23,7 @@ jobs:
             setup: |
               echo "toolchain: ${RUST_TOOLCHAIN}"
               export PATH=/root/.cargo/bin:${PATH}
-              echo ${PATH}
-              ls /root/.cargo/bin/rustup
-              which rustup
+              echo PATH=${PATH} >> $GITHUB_ENV
               rustup toolchain install "${RUST_TOOLCHAIN}" &&
               rustup default "${RUST_TOOLCHAIN}" &&
               rustup target add aarch64-unknown-linux-gnu &&
@@ -63,6 +61,7 @@ jobs:
 
       - name: Build native library
         run: |
+          echo $PATH
           cd packages/turbo-repository
           mkdir -p js/dist
           pnpm build:release --target=${{ matrix.settings.target }}
