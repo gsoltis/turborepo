@@ -7,13 +7,16 @@ import { Sema } from "async-sema";
 import { readFile, readdir, writeFile } from "fs/promises";
 
 const cwd = process.cwd();
-const platform = process.argv[process.argv.length - 1];
+let platform = process.argv[process.argv.length - 1];
+
+if (platform.endsWith("publish.mjs")) {
+  // No platform was passed, default to dev platform
+  platform = "darwin-arm64";
+}
 console.log("platform", platform);
 
 (async function () {
   try {
-    const publishSema = new Sema(2);
-
     // TODO: version
     let version = JSON.parse(
       await readFile(path.join(cwd, "js", "package.json"))
@@ -21,11 +24,6 @@ console.log("platform", platform);
 
     // Copy binaries to package folders, update version, and publish
     let nativePackagesDir = path.join(cwd, "npm");
-    // let platforms = (await readdir(nativePackagesDir)).filter(
-    //   (name) => !name.startsWith(".")
-    // );
-
-    await publishSema.acquire();
 
     try {
       let binaryName = `repository.${platform}.node`;
@@ -41,24 +39,9 @@ console.log("platform", platform);
         path.join(nativePackagesDir, platform, "package.json"),
         JSON.stringify(pkg, null, 2)
       );
-      // await execa(
-      //   `npm`,
-      //   [
-      //     `publish`,
-      //     `${path.join(nativePackagesDir, platform)}`,
-      //     `--access`,
-      //     `public`,
-      //     ...(version.includes('canary') ? ['--tag', 'canary'] : []),
-      //   ],
-      //   { stdio: 'inherit' }
-      // )
       await execa(
         `npm`,
-        [
-          `pack`,
-          "--pack-destination=./tars",
-          `${path.join(nativePackagesDir, platform)}`,
-        ],
+        [`pack`, `${path.join(nativePackagesDir, platform)}`],
         {
           stdio: "inherit",
         }
@@ -77,23 +60,7 @@ console.log("platform", platform);
       } else {
         throw err;
       }
-    } finally {
-      publishSema.release();
     }
-
-    // Update optional dependencies versions
-    //   let nextPkg = JSON.parse(
-    //     await readFile(path.join(cwd, "packages/next/package.json"))
-    //   );
-    //   for (let platform of platforms) {
-    //     let optionalDependencies = nextPkg.optionalDependencies || {};
-    //     optionalDependencies["@next/swc-" + platform] = version;
-    //     nextPkg.optionalDependencies = optionalDependencies;
-    //   }
-    //   await writeFile(
-    //     path.join(path.join(cwd, "packages/next/package.json")),
-    //     JSON.stringify(nextPkg, null, 2)
-    //   );
   } catch (err) {
     console.error(err);
     process.exit(1);
