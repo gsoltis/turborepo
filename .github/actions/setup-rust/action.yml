@@ -22,6 +22,10 @@ inputs:
     description: "Determiners whether the cache should be saved. If `false`, the cache is only restored."
     required: false
     default: "false"
+  skip-sudo:
+    description: "Suppress sudo in setup-mold"
+    required: false
+    default: "false"
 
 runs:
   using: "composite"
@@ -57,7 +61,11 @@ runs:
       shell: bash
       run: echo "::add-matcher::${{ github.action_path }}/matchers.json"
 
-    - uses: rui314/setup-mold@v1
+    #- uses: rui314/setup-mold@v1
+    - name: "Setup Mold"
+      uses: ./.github/actions/setup-mold
+      with:
+        skip-sudo: ${{ inputs.skip-sudo }}
 
     - name: "Setup Rust Cache"
       uses: Swatinem/rust-cache@v2

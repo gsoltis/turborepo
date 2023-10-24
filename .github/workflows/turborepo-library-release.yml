@@ -28,6 +28,7 @@ jobs:
           - host: ubuntu-latest
             target: "x86_64-unknown-linux-gnu"
             container: "quay.io/pypa/manylinux2014_x86_64:latest"
+            skip-sudo: "true"
             setup: |
               rpm -Uvh http://www.city-fan.org/ftp/contrib/yum-repo/rhel7/x86_64/city-fan.org-release-3-9.rhel7.noarch.rpm
               yum -y --enablerepo=city-fan.org install libcurl libcurl-devel
@@ -53,6 +54,7 @@ jobs:
         uses: ./.github/actions/setup-rust
         with:
           targets: ${{ matrix.settings.target }}
+          skip-sudo: ${{ matrix.settings.skip-sudo }}
 
       - name: Setup Node
         uses: ./.github/actions/setup-node
