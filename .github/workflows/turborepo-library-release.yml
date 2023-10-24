@@ -27,7 +27,10 @@ jobs:
               echo "CXX_aarch64_unknown_linux_gnu=aarch64-linux-gnu-g++" >> $GITHUB_ENV
           - host: ubuntu-latest
             target: "x86_64-unknown-linux-gnu"
-            container: "centos:7"
+            container: "quay.io/pypa/manylinux2014_x86_64:latest"
+            setup: |
+              sudo rpm -Uvh http://www.city-fan.org/ftp/contrib/yum-repo/rhel7/x86_64/city-fan.org-release-3-9.rhel7.noarch.rpm
+              sudo yum -y --enablerepo=city-fan.org install libcurl libcurl-devel
           # - host: windows-latest
           #   target: "aarch64-pc-windows-msvc"
           # - host: windows-latest
