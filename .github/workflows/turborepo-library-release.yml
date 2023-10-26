@@ -30,8 +30,8 @@ jobs:
             container: "quay.io/pypa/manylinux2014_x86_64:latest"
             setup: |
               yum -y install sudo
-              rpm -Uvh http://www.city-fan.org/ftp/contrib/yum-repo/rhel7/x86_64/city-fan.org-release-3-9.rhel7.noarch.rpm
-              yum -y --enablerepo=city-fan.org install libcurl libcurl-devel
+              sudo rpm -Uvh http://www.city-fan.org/ftp/contrib/yum-repo/rhel7/x86_64/city-fan.org-release-3-9.rhel7.noarch.rpm
+              sudo yum -y --enablerepo=city-fan.org install libcurl libcurl-devel
           # - host: windows-latest
           #   target: "aarch64-pc-windows-msvc"
           # - host: windows-latest
