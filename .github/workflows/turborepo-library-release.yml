@@ -27,7 +27,10 @@ jobs:
               echo "CXX_aarch64_unknown_linux_gnu=aarch64-linux-gnu-g++" >> $GITHUB_ENV
           - host: ubuntu-latest
             target: "x86_64-unknown-linux-gnu"
-            container: "amazonlinux:2"
+            container: "ubuntu:xenial"
+            setup: |
+              apt update
+              apt-get install -y sudo
             # container: "quay.io/pypa/manylinux2014_x86_64:latest"
             # setup: |
             #   yum -y install sudo
