@@ -30,7 +30,7 @@ jobs:
             container: "ubuntu:xenial"
             setup: |
               apt update
-              apt-get install -y sudo
+              apt-get install -y sudo curl
             # container: "quay.io/pypa/manylinux2014_x86_64:latest"
             # setup: |
             #   yum -y install sudo
